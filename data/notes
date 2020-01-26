@@ -1,0 +1,1 @@
+split -n l/50 -d names.dat names --additional-suffix=.dat
