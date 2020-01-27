@@ -18,13 +18,13 @@ import String.Extra exposing (leftOf, rightOfBack)
 import StringDistance exposing (sift3Distance)
 
 
-port saveToLocalStorage : E.Value -> Cmd msg
+port saveToIndexedDb : E.Value -> Cmd msg
 
 
-port loadFromLocalStorage : String -> Cmd msg
+port loadFromIndexedDb : String -> Cmd msg
 
 
-port loadedFromLocalStorage : (E.Value -> msg) -> Sub msg
+port loadedFromIndexedDb : (E.Value -> msg) -> Sub msg
 
 
 type alias Model =
@@ -44,15 +44,15 @@ type SearchMode
     | SearchDict
 
 
-type DataFromLocalStorage
-    = LocalStorageData { content : String, filename : String }
+type DataFromIndexedDb
+    = IndexedDbData { content : String, filename : String }
     | NoData String
 
 
 type Msg
     = GetData
     | GotRemoteData String (Result Http.Error String)
-    | GotDataFromLocalStorage E.Value
+    | GotDataFromIndexedDb E.Value
     | SearchInput String
     | Search
     | NoOp
@@ -118,7 +118,7 @@ update msg model =
             in
             ( { model | requested = Set.fromList (List.map dataPath ids) }
             , List.map dataPath ids
-                |> List.map loadFromLocalStorage
+                |> List.map loadFromIndexedDb
                 |> Cmd.batch
             )
 
@@ -165,32 +165,31 @@ update msg model =
                         , requested = Set.remove path model.requested
                         , maxLineLength = maxLineLength
                       }
-                      --, E.object
-                      --    [ ( "filename", E.string path )
-                      --    , ( "content", E.string str )
-                      --    ]
-                      --    |> saveToLocalStorage
-                    , Cmd.none
+                    , E.object
+                        [ ( "filename", E.string path )
+                        , ( "content", E.string str )
+                        ]
+                        |> saveToIndexedDb
                     )
 
                 Err _ ->
                     ( model, Cmd.none )
 
-        GotDataFromLocalStorage value ->
+        GotDataFromIndexedDb value ->
             let
-                decodeDataFromLocalStorage =
+                decodeDataFromIndexedDb =
                     D.oneOf
                         [ D.map2
                             (\f c ->
-                                LocalStorageData { filename = f, content = c }
+                                IndexedDbData { filename = f, content = c }
                             )
                             (D.field "filename" D.string)
                             (D.field "content" D.string)
                         , D.map NoData (D.field "noData" D.string)
                         ]
             in
-            case D.decodeValue decodeDataFromLocalStorage value of
-                Ok (LocalStorageData { filename, content }) ->
+            case D.decodeValue decodeDataFromIndexedDb value of
+                Ok (IndexedDbData { filename, content }) ->
                     let
                         maxLineLength =
                             String.lines content
@@ -509,7 +508,7 @@ main =
 
 subscriptions model =
     Sub.batch
-        [ loadedFromLocalStorage GotDataFromLocalStorage ]
+        [ loadedFromIndexedDb GotDataFromIndexedDb ]
 
 
 buttonStyle isActive =
