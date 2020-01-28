@@ -79,19 +79,38 @@ type alias Entry =
     }
 
 
-entryView : Entry -> Element Msg
-entryView e =
+entryView : Int -> Entry -> Element Msg
+entryView n e =
     column
-        [ spacing 10 ]
-        [ el [ Font.bold ] (text e.key)
-        , case e.reading of
-            Just r ->
-                text <| "reading: " ++ r
+        [ width fill
+        , spacing 10
+        , padding 10
+        , Background.color
+            (if modBy 2 n == 0 then
+                rgba255 187 210 217 0.6
 
-            Nothing ->
-                Element.none
-        , text <| "kind: " ++ String.join ", " (List.map kindToStr e.kind)
-        , text <| "meaning: " ++ e.meaning
+             else
+                rgba255 215 177 215 0.6
+            )
+        ]
+        [ wrappedRow
+            [ spacing 15 ]
+            [ el [ Font.bold ] (text e.key)
+            , el [ Font.size 15 ]
+                (case e.reading of
+                    Just r ->
+                        text <| "[" ++ r ++ "]"
+
+                    Nothing ->
+                        Element.none
+                )
+            ]
+        , el
+            [ Font.size 15
+            , Font.color (Element.rgb255 77 129 144)
+            ]
+            (text <| String.join ", " (List.map kindToStr e.kind))
+        , el [ Font.size 15 ] (text <| e.meaning)
         , case e.abr of
             Just abr ->
                 text <| "abbr: " ++ abr
@@ -278,6 +297,7 @@ update msg model =
                                 |> Set.toList
                                 |> List.map (parseEntry >> Result.toMaybe)
                                 |> List.filterMap identity
+                                |> List.filter (\e -> String.contains s e.key)
                                 |> List.sortBy (\e -> sift3Distance e.key s)
                     in
                     ( { model
@@ -363,9 +383,11 @@ entryParser =
 
 keyParser =
     succeed identity
+        |. spaces
         |= (getChompedString <|
                 succeed ()
-                    |. chompWhile (\c -> c /= ' ' && c /= '/')
+                    |. chompWhile
+                        (\c -> c /= ' ' && c /= '/' && c /= '[' && c /= ']')
            )
         |. spaces
 
@@ -431,6 +453,7 @@ abrParser =
                         succeed ()
                             |. chompWhile (\c -> c /= '/' && c /= '\n')
                    )
+                |. symbol "/"
             )
         , succeed Nothing
         ]
@@ -482,9 +505,13 @@ loadingView model status =
 
 searchView model =
     column
-        [ spacing 15 ]
+        [ spacing 15
+        , width fill
+        ]
         [ row
-            [ spacing 15 ]
+            [ spacing 15
+            , width fill
+            ]
             [ Input.text
                 []
                 { onChange = SearchInput
@@ -493,14 +520,14 @@ searchView model =
                 , label = Input.labelHidden "searchInput"
                 }
             , Input.button
-                []
+                (buttonStyle True)
                 { onPress = Just Search
                 , label = text <| "search"
                 }
             ]
         , column
-            [ spacing 15 ]
-            (List.map entryView model.searchResult)
+            [ width fill ]
+            (List.indexedMap entryView model.searchResult)
         ]
 
 
