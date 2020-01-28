@@ -27,21 +27,32 @@ port loadFromIndexedDb : String -> Cmd msg
 port loadedFromIndexedDb : (E.Value -> msg) -> Sub msg
 
 
+port indexedDbStatus : (E.Value -> msg) -> Sub msg
+
+
 type alias Model =
-    { data : Dict String (List Entry)
-    , rawData : String
+    { rawData : String
     , parsingErrors : List ( String, List Parser.DeadEnd )
     , requested : Set String
     , searchInput : Maybe String
     , searchResult : List Entry
-    , searchRawResult : List Entry
     , maxLineLength : Int
+    , appState : AppState
+    , indexedDbStatusStr : String
+    , loadingStatusStr : String
     }
 
 
-type SearchMode
-    = SearchRawString
-    | SearchDict
+type AppState
+    = Loading Status
+    | Ready
+
+
+type Status
+    = Initial
+    | Pending
+    | Success
+    | Failure
 
 
 type DataFromIndexedDb
@@ -50,7 +61,8 @@ type DataFromIndexedDb
 
 
 type Msg
-    = GetData
+    = GotIndexedDbStatus E.Value
+    | GetData
     | GotRemoteData String (Result Http.Error String)
     | GotDataFromIndexedDb E.Value
     | SearchInput String
@@ -91,14 +103,19 @@ entryView e =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { data = Dict.empty
-      , rawData = ""
-      , requested = Set.empty
+    let
+        ids =
+            List.range 0 (nbrFiles - 1)
+    in
+    ( { rawData = ""
+      , requested = Set.fromList (List.map dataPath ids)
       , parsingErrors = []
       , searchInput = Nothing
       , searchResult = []
-      , searchRawResult = []
       , maxLineLength = 0
+      , appState = Loading Initial
+      , indexedDbStatusStr = "loading indexedDb..."
+      , loadingStatusStr = "loading..."
       }
     , Cmd.none
     )
@@ -111,6 +128,22 @@ nbrFiles =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        GotIndexedDbStatus value ->
+            let
+                statusDecoder =
+                    D.field "indexedDbReady" D.bool
+            in
+            case D.decodeValue statusDecoder value of
+                Ok True ->
+                    ( { model | indexedDbStatusStr = "indexedDb is ready" }
+                    , Set.toList model.requested
+                        |> List.map loadFromIndexedDb
+                        |> Cmd.batch
+                    )
+
+                _ ->
+                    ( { model | indexedDbStatusStr = "indexedDb error" }, Cmd.none )
+
         GetData ->
             let
                 ids =
@@ -126,44 +159,27 @@ update msg model =
             case res of
                 Ok str ->
                     let
-                        --    ( errors, entries ) =
-                        --        String.lines str
-                        --            |> List.foldr
-                        --                (\s ( errs, es ) ->
-                        --                    case parseEntry s of
-                        --                        Ok e ->
-                        --                            ( errs, e :: es )
-                        --                        Err err ->
-                        --                            ( ( s, err ) :: errs, es )
-                        --                )
-                        --                ( [], [] )
-                        --    newData =
-                        --        List.foldr
-                        --            (\e acc ->
-                        --                Dict.update
-                        --                    e.key
-                        --                    (\mbv ->
-                        --                        case mbv of
-                        --                            Just v ->
-                        --                                Just <| e :: v
-                        --                            Nothing ->
-                        --                                Just [ e ]
-                        --                    )
-                        --                    acc
-                        --            )
-                        --            model.data
-                        --            entries
                         maxLineLength =
                             String.lines str
                                 |> List.foldr (\s acc -> max (String.length s) acc) model.maxLineLength
+
+                        filename =
+                            rightOfBack "/" path
+
+                        requested =
+                            Set.remove path model.requested
                     in
                     ( { model
-                        | data = Dict.empty --newData
-                        , rawData = model.rawData ++ String.cons '\n' str
-
-                        --, parsingErrors = errors ++ model.parsingErrors
-                        , requested = Set.remove path model.requested
+                        | rawData = model.rawData ++ String.cons '\n' str
+                        , requested = requested
                         , maxLineLength = maxLineLength
+                        , loadingStatusStr = "Loaded " ++ filename ++ " from network"
+                        , appState =
+                            if requested == Set.empty then
+                                Ready
+
+                            else
+                                model.appState
                       }
                     , E.object
                         [ ( "filename", E.string path )
@@ -177,7 +193,7 @@ update msg model =
 
         GotDataFromIndexedDb value ->
             let
-                decodeDataFromIndexedDb =
+                dataFromIndexedDbSecoder =
                     D.oneOf
                         [ D.map2
                             (\f c ->
@@ -188,7 +204,7 @@ update msg model =
                         , D.map NoData (D.field "noData" D.string)
                         ]
             in
-            case D.decodeValue decodeDataFromIndexedDb value of
+            case D.decodeValue dataFromIndexedDbSecoder value of
                 Ok (IndexedDbData { filename, content }) ->
                     let
                         maxLineLength =
@@ -196,12 +212,24 @@ update msg model =
                                 |> List.foldr
                                     (\s acc -> max (String.length s) acc)
                                     model.maxLineLength
+
+                        filename_ =
+                            rightOfBack "/" filename
+
+                        requested =
+                            Set.remove filename model.requested
                     in
                     ( { model
-                        | data = Dict.empty
-                        , rawData = model.rawData ++ String.cons '\n' content
-                        , requested = Set.remove filename model.requested
+                        | rawData = model.rawData ++ String.cons '\n' content
+                        , requested = requested
                         , maxLineLength = maxLineLength
+                        , loadingStatusStr = "Loaded " ++ filename_ ++ " from local backup"
+                        , appState =
+                            if requested == Set.empty then
+                                Ready
+
+                            else
+                                model.appState
                       }
                     , Cmd.none
                     )
@@ -240,19 +268,7 @@ update msg model =
                             in
                             leftStr ++ rigthStr
 
-                        --searchRawResult =
-                        --    String.indexes s model.rawData
-                        --        |> List.map getMatch
-                        --        |> List.map (parseEntry >> Result.toMaybe)
-                        --        |> List.filterMap identity
-                        --        |> List.sortBy (\e -> sift3Distance e.key s)
-                        --searchRawResult =
-                        --    case parseEntries s model.rawData of
-                        --        Ok res ->
-                        --            List.sortBy (\e -> sift3Distance e.key s) res
-                        --        Err _ ->
-                        --            []
-                        searchRawResult =
+                        searchResult =
                             String.indexes s model.rawData
                                 |> List.map (\n -> String.slice (n - model.maxLineLength) (n + model.maxLineLength) model.rawData)
                                 |> List.map String.lines
@@ -265,9 +281,7 @@ update msg model =
                                 |> List.sortBy (\e -> sift3Distance e.key s)
                     in
                     ( { model
-                        | searchResult =
-                            Dict.get s model.data |> Maybe.withDefault []
-                        , searchRawResult = searchRawResult
+                        | searchResult = searchResult
                       }
                     , Cmd.none
                     )
@@ -433,68 +447,61 @@ view model =
                 , width fill
                 , centerX
                 ]
-                [ row
-                    [ spacing 15 ]
-                    [ Input.text
-                        []
-                        { onChange = SearchInput
-                        , text = model.searchInput |> Maybe.withDefault ""
-                        , placeholder = Nothing
-                        , label = Input.labelHidden "searchInput"
-                        }
-                    , Input.button
-                        []
-                        { onPress = Just Search
-                        , label = text <| "search"
-                        }
-                    ]
-                , column
-                    [ spacing 15 ]
-                    (List.map entryView model.searchResult)
-                , column
-                    [ spacing 15 ]
-                    (List.map entryView model.searchRawResult)
-                , Input.button
-                    []
-                    { onPress = Just GetData
-                    , label = text <| "get Data"
-                    }
-                , text <| String.fromInt (Set.size model.requested)
-                , text <| String.fromInt model.maxLineLength
+                [ case model.appState of
+                    Loading s ->
+                        loadingView model s
 
-                --, text <|
-                --    if Set.size model.requested > 0 then
-                --        "processing..."
-                --    else
-                --        String.fromInt (List.length model.parsingErrors)
-                --, text <|
-                --    if Set.size model.requested > 0 then
-                --        "processing..."
-                --    else
-                --        String.fromInt (Dict.size model.data)
-                --, text <|
-                --    if Set.size model.requested > 0 then
-                --        "processing..."
-                --    else
-                --        String.fromInt
-                --            (Dict.foldr
-                --                (\k v acc -> List.length v + acc)
-                --                0
-                --                model.data
-                --            )
-                --, if Set.size model.requested > 0 then
-                --    Element.none
-                --  else
-                --    column [ spacing 15 ]
-                --        (List.take 10 model.parsingErrors
-                --            |> List.map (\( s, es ) -> s)
-                --            --(s,List.map Debug.toString)
-                --            |> List.map (\s -> row [] [ text s ])
-                --        )
+                    Ready ->
+                        searchView model
                 ]
             )
         ]
     }
+
+
+loadingView model status =
+    column
+        [ spacing 15 ]
+        [ (100 * (toFloat (nbrFiles - Set.size model.requested) / toFloat nbrFiles))
+            |> round
+            |> progressBar
+            |> el [ centerX ]
+        , el [ Font.size 14 ] (text <| model.indexedDbStatusStr)
+        , el [ Font.size 14 ] (text <| model.loadingStatusStr)
+        , if status == Failure then
+            Input.button
+                []
+                { onPress = Just GetData
+                , label = text <| "reload data"
+                }
+
+          else
+            Element.none
+        ]
+
+
+searchView model =
+    column
+        [ spacing 15 ]
+        [ row
+            [ spacing 15 ]
+            [ Input.text
+                []
+                { onChange = SearchInput
+                , text = model.searchInput |> Maybe.withDefault ""
+                , placeholder = Nothing
+                , label = Input.labelHidden "searchInput"
+                }
+            , Input.button
+                []
+                { onPress = Just Search
+                , label = text <| "search"
+                }
+            ]
+        , column
+            [ spacing 15 ]
+            (List.map entryView model.searchResult)
+        ]
 
 
 main =
@@ -508,7 +515,9 @@ main =
 
 subscriptions model =
     Sub.batch
-        [ loadedFromIndexedDb GotDataFromIndexedDb ]
+        [ loadedFromIndexedDb GotDataFromIndexedDb
+        , indexedDbStatus GotIndexedDbStatus
+        ]
 
 
 buttonStyle isActive =
@@ -613,3 +622,70 @@ type Kind
     | Product
     | Company
     | Unknown
+
+
+
+-------------------------------------------------------------------------------
+
+
+progressBar : Int -> Element msg
+progressBar n =
+    row
+        [ width (px 200)
+        , height (px 25)
+        , Border.innerShadow
+            { offset = ( 0, 1 )
+            , size = 1
+            , blur = 1
+            , color = rgb255 127 127 127
+            }
+        , Background.color (rgb255 245 245 245)
+        , Border.rounded 5
+        , clip
+        , inFront <|
+            el
+                [ width (px 200)
+                , height (px 25)
+                , Font.center
+                ]
+                (el
+                    [ centerX
+                    , centerY
+                    ]
+                    (String.fromInt n
+                        |> String.padLeft 2 '0'
+                        |> strCons "%"
+                        |> text
+                    )
+                )
+        ]
+        [ el
+            [ width (fillPortion n)
+            , height fill
+            , Background.color
+                (if n < 25 then
+                    rgb255 217 83 79
+
+                 else if n < 50 then
+                    rgb255 240 173 78
+
+                 else if n < 75 then
+                    rgb255 91 192 222
+
+                 else
+                    rgb255 92 184 92
+                )
+            , Font.center
+            ]
+            Element.none
+        , el
+            [ width (fillPortion (100 - n))
+            , height fill
+            ]
+            Element.none
+        ]
+
+
+strCons : String -> String -> String
+strCons tail head =
+    head ++ tail

@@ -15,7 +15,7 @@ app.ports.saveToIndexedDb.subscribe(function(data) {
 app.ports.loadFromIndexedDb.subscribe(function(key) {
 		if (!db){
 			console.log("indexedDB not working");
-			app.ports.loadedFromIndexedDb.send({ noData : key });
+			app.ports.indexedDbStatus.send({ indexedDbReady : false });
 			return;
 		}
 
@@ -51,6 +51,7 @@ var db;
 request.onsuccess = function (event) {
 	db = request.result;
 	console.log('The database has opened successfully');
+	app.ports.indexedDbStatus.send({ indexedDbReady : true });
 };
 
 request.onupgradeneeded = function (event) {
@@ -64,6 +65,13 @@ request.onupgradeneeded = function (event) {
 		objectStore.createIndex('filename', 'filename', { unique: true });
 		objectStore.createIndex('content', 'content', { unique: false });
 	}
+
+	var transaction = event.target.transaction;
+
+    transaction.oncomplete =
+        function(event) {    
+            app.ports.indexedDbStatus.send({ indexedDbReady : true });
+        }
 }
 
 
