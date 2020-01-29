@@ -1,6 +1,7 @@
 port module Main exposing (..)
 
 import Browser
+import Browser.Events exposing (onAnimationFrame)
 import Dict exposing (..)
 import Element exposing (..)
 import Element.Background as Background
@@ -8,6 +9,7 @@ import Element.Border as Border
 import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
+import Element.Lazy as Lazy
 import Html.Attributes as HtmlAttr
 import Http exposing (..)
 import Json.Decode as D
@@ -16,6 +18,8 @@ import Parser exposing (..)
 import Set exposing (..)
 import String.Extra exposing (leftOf, rightOfBack)
 import StringDistance exposing (sift3Distance)
+import Task exposing (perform)
+import Time exposing (..)
 
 
 port saveToIndexedDb : E.Value -> Cmd msg
@@ -40,6 +44,8 @@ type alias Model =
     , appState : AppState
     , indexedDbStatusStr : String
     , loadingStatusStr : String
+    , lastInputTimestamp : Maybe Time.Posix
+    , useAutoSearch : Bool
     }
 
 
@@ -66,6 +72,8 @@ type Msg
     | GotRemoteData String (Result Http.Error String)
     | GotDataFromIndexedDb E.Value
     | SearchInput String
+    | SetTimeStamp Time.Posix
+    | Tick Time.Posix
     | Search
     | NoOp
 
@@ -135,6 +143,8 @@ init flags =
       , appState = Loading Initial
       , indexedDbStatusStr = "loading indexedDb..."
       , loadingStatusStr = "loading..."
+      , lastInputTimestamp = Nothing
+      , useAutoSearch = False
       }
     , Cmd.none
     )
@@ -268,8 +278,23 @@ update msg model =
                     else
                         Just s
               }
-            , Cmd.none
+            , Task.perform SetTimeStamp Time.now
             )
+
+        SetTimeStamp t ->
+            ( { model | lastInputTimestamp = Just t }, Cmd.none )
+
+        Tick t ->
+            case model.lastInputTimestamp of
+                Just t1 ->
+                    if Time.posixToMillis t - Time.posixToMillis t1 > 500 then
+                        update Search { model | lastInputTimestamp = Nothing }
+
+                    else
+                        ( model, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         Search ->
             case model.searchInput of
@@ -527,7 +552,7 @@ searchView model =
             ]
         , column
             [ width fill ]
-            (List.indexedMap entryView model.searchResult)
+            (List.indexedMap (Lazy.lazy2 entryView) model.searchResult)
         ]
 
 
@@ -544,6 +569,12 @@ subscriptions model =
     Sub.batch
         [ loadedFromIndexedDb GotDataFromIndexedDb
         , indexedDbStatus GotIndexedDbStatus
+        , case ( model.lastInputTimestamp, model.useAutoSearch ) of
+            ( Just _, True ) ->
+                onAnimationFrame Tick
+
+            _ ->
+                Sub.none
         ]
 
 
