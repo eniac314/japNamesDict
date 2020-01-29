@@ -34,6 +34,9 @@ port loadedFromIndexedDb : (E.Value -> msg) -> Sub msg
 port indexedDbStatus : (E.Value -> msg) -> Sub msg
 
 
+port serviceWorkerMessage : (String -> msg) -> Sub msg
+
+
 type alias Model =
     { rawData : String
     , parsingErrors : List ( String, List Parser.DeadEnd )
@@ -46,6 +49,7 @@ type alias Model =
     , loadingStatusStr : String
     , lastInputTimestamp : Maybe Time.Posix
     , useAutoSearch : Bool
+    , serviceWorkerMessages : List String
     }
 
 
@@ -75,6 +79,7 @@ type Msg
     | SetTimeStamp Time.Posix
     | Tick Time.Posix
     | Search
+    | GotServiceWorkerMsg String
     | NoOp
 
 
@@ -145,6 +150,7 @@ init flags =
       , loadingStatusStr = "loading..."
       , lastInputTimestamp = Nothing
       , useAutoSearch = False
+      , serviceWorkerMessages = []
       }
     , Cmd.none
     )
@@ -334,6 +340,11 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        GotServiceWorkerMsg message ->
+            ( { model | serviceWorkerMessages = message :: model.serviceWorkerMessages }
+            , Cmd.none
+            )
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -516,6 +527,11 @@ loadingView model status =
             |> el [ centerX ]
         , el [ Font.size 14 ] (text <| model.indexedDbStatusStr)
         , el [ Font.size 14 ] (text <| model.loadingStatusStr)
+        , column
+            [ Font.size 12 ]
+            (List.map text model.serviceWorkerMessages
+                |> List.reverse
+            )
         , if status == Failure then
             Input.button
                 []
@@ -569,6 +585,7 @@ subscriptions model =
     Sub.batch
         [ loadedFromIndexedDb GotDataFromIndexedDb
         , indexedDbStatus GotIndexedDbStatus
+        , serviceWorkerMessage GotServiceWorkerMsg
         , case ( model.lastInputTimestamp, model.useAutoSearch ) of
             ( Just _, True ) ->
                 onAnimationFrame Tick
