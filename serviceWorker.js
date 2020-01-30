@@ -16,6 +16,8 @@ var urlsToCache = [
             "/js/main.js",
             "/js/nameDictWorker.js",
             "/js/nameDictWorkerLoader.js",
+            "/js/dictWorker.js",
+            "/js/dictWorkerLoader.js",
             "/favicon.ico",
             "/manifest.json"
         ];

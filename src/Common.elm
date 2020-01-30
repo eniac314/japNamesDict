@@ -5,16 +5,21 @@ import Codec exposing (..)
 
 type Worker
     = NameDictWorker
+    | DictWorker
 
 
 workerCodec =
     Codec.custom
-        (\fNameDictWorker value ->
+        (\fNameDictWorker fDictWorker value ->
             case value of
                 NameDictWorker ->
                     fNameDictWorker
+
+                DictWorker ->
+                    fDictWorker
         )
         |> Codec.variant0 "NameDictWorker" NameDictWorker
+        |> Codec.variant0 "DictWorker" DictWorker
         |> Codec.buildCustom
 
 
@@ -66,16 +71,21 @@ searchResultMetaCodec =
 
 type SearchResult
     = NameDictResult (List NameDictEntry)
+    | DictResult (List DictEntry)
 
 
 searchResultCodec =
     Codec.custom
-        (\fNameDictResult value ->
+        (\fNameDictResult fDictResult value ->
             case value of
                 NameDictResult xs ->
                     fNameDictResult xs
+
+                DictResult xs ->
+                    fDictResult xs
         )
         |> Codec.variant1 "NameDictResult" NameDictResult (Codec.list nameDictEntryCodec)
+        |> Codec.variant1 "DictResult" DictResult (Codec.list dictEntryCodec)
         |> Codec.buildCustom
 
 
@@ -154,6 +164,7 @@ type NameKind
     | Female
     | Surname
     | Fullname
+    | Given
     | Place
     | Station
     | Organisation
@@ -165,7 +176,7 @@ type NameKind
 nameKindCodec : Codec NameKind
 nameKindCodec =
     Codec.custom
-        (\fPerson fFemale fSurname fFullname fPlace fStation fOrganisation fProduct fCompany fUnknown value ->
+        (\fPerson fFemale fSurname fFullname fGiven fPlace fStation fOrganisation fProduct fCompany fUnknown value ->
             case value of
                 Person ->
                     fPerson
@@ -178,6 +189,9 @@ nameKindCodec =
 
                 Fullname ->
                     fFullname
+
+                Given ->
+                    fGiven
 
                 Place ->
                     fPlace
@@ -201,6 +215,7 @@ nameKindCodec =
         |> Codec.variant0 "Female" Female
         |> Codec.variant0 "Surname" Surname
         |> Codec.variant0 "Fullname" Fullname
+        |> Codec.variant0 "Given" Given
         |> Codec.variant0 "Place" Place
         |> Codec.variant0 "Station" Station
         |> Codec.variant0 "Organisation" Organisation
@@ -239,6 +254,9 @@ stringToKing s =
         "s" ->
             Surname
 
+        "g" ->
+            Given
+
         _ ->
             Unknown
 
@@ -257,6 +275,9 @@ kindToStr k =
         Surname ->
             "Surname"
 
+        Given ->
+            "Given"
+
         Place ->
             "Place"
 
@@ -274,3 +295,26 @@ kindToStr k =
 
         Unknown ->
             "Unknown"
+
+
+type alias DictEntry =
+    { key : String
+    , reading : Maybe String
+    , meanings : List String
+    }
+
+
+
+--type alias DictMeaning =
+--    { kinds : List NameKind
+--    , synonyms : List String
+--    }
+
+
+dictEntryCodec : Codec DictEntry
+dictEntryCodec =
+    Codec.object DictEntry
+        |> Codec.field "key" .key Codec.string
+        |> Codec.field "reading" .reading (Codec.maybe Codec.string)
+        |> Codec.field "meanings" .meanings (Codec.list Codec.string)
+        |> Codec.buildObject

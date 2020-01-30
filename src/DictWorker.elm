@@ -1,4 +1,4 @@
-port module NameDictWorker exposing (..)
+port module DictWorker exposing (..)
 
 import Codec exposing (decoder, encoder)
 import Common exposing (..)
@@ -147,7 +147,7 @@ update msg model =
                                 else
                                     Pending
                           }
-                            |> LoadingStatusMsg NameDictWorker
+                            |> LoadingStatusMsg DictWorker
                             |> Codec.encoder workerMsgCodec
                             |> outbound
                         ]
@@ -198,7 +198,7 @@ update msg model =
                             else
                                 Pending
                       }
-                        |> LoadingStatusMsg NameDictWorker
+                        |> LoadingStatusMsg DictWorker
                         |> Codec.encoder workerMsgCodec
                         |> outbound
                     )
@@ -219,7 +219,7 @@ update msg model =
                         |> List.map (List.head >> Maybe.withDefault "")
                         |> Set.fromList
                         |> Set.toList
-                        |> List.map (parseNameDictEntry >> Result.toMaybe)
+                        |> List.map (parseDictEntry >> Result.toMaybe)
                         |> List.filterMap identity
                         |> List.filter (\e -> String.contains s e.key)
                         |> List.sortBy (\e -> sift3Distance e.key s)
@@ -228,7 +228,7 @@ update msg model =
             , Codec.encoder workerMsgCodec
                 (SearchResultMsg
                     { searchString = s
-                    , result = NameDictResult searchResult
+                    , result = DictResult searchResult
                     }
                 )
                 |> outbound
@@ -258,7 +258,7 @@ subscriptions model =
 
 
 dataPath id =
-    "/data/names"
+    "/data/dict"
         ++ (String.fromInt id
                 |> String.padLeft 2 '0'
            )
@@ -276,53 +276,16 @@ getData path =
 -------------------------------------------------------------------------------
 
 
-parseNameDictEntry e =
+parseDictEntry e =
     Parser.run entryParser e
 
 
-parseEntries s es =
-    Parser.run (entriesParsers s) es
-
-
-entriesParsers s =
-    let
-        go xs =
-            Parser.oneOf
-                [ backtrackable <|
-                    succeed (\match -> Loop (match :: xs))
-                        |= matchingNameDictEntryParser s
-                , succeed (Loop xs)
-                    |. chompUntil "\n"
-                    |. symbol "\n"
-                , succeed ()
-                    |> Parser.map (\_ -> Done xs)
-                ]
-    in
-    Parser.loop
-        []
-        go
-
-
-matchingNameDictEntryParser s =
-    succeed NameDictEntry
-        |= matchParser s
-        |= readingParser
-        |. symbol "/"
-        |= kindParser
-        |= meaningParser
-        |. symbol "/"
-        |= abrParser
-
-
 entryParser =
-    succeed NameDictEntry
+    succeed DictEntry
         |= keyParser
         |= readingParser
         |. symbol "/"
-        |= kindParser
-        |= meaningParser
-        |. symbol "/"
-        |= abrParser
+        |= synonymsParser
 
 
 keyParser =
@@ -379,25 +342,63 @@ kindParser =
         |. symbol ")"
 
 
+
+--meaningsParser =
+--    Parser.oneOf
+--        [ backtrackable <|
+--            multipleMeaningsParser
+--        , synonymsParser
+--            |> Parser.map List.singleton
+--        ]
+
+
+synonymsParser =
+    let
+        go xs =
+            Parser.oneOf
+                [ backtrackable <|
+                    succeed (\match -> Loop (match :: xs))
+                        |= meaningParser
+                        |. symbol "/"
+                , succeed ()
+                    |> Parser.map (\_ -> Done (List.reverse xs))
+                ]
+    in
+    Parser.loop
+        []
+        go
+
+
+
+--multipleMeaningsParser =
+--    let
+--        meaningNbrParser n =
+--            succeed ()
+--                |. spaces
+--                |. symbol "("
+--                |. token (String.fromInt n)
+--                |. symbol ")"
+--                |. spaces
+--        go ( n, xs ) =
+--            Parser.oneOf
+--                [ backtrackable <|
+--                    succeed (\match -> Loop ( n + 1, match :: xs ))
+--                        |. meaningNbrParser n
+--                        |= synonymsParser
+--                , succeed ()
+--                    |> Parser.map (\_ -> Done xs)
+--                ]
+--    in
+--    Parser.loop
+--        ( 1, [] )
+--        go
+
+
 meaningParser =
     succeed identity
         |. spaces
         |= (getChompedString <|
                 succeed ()
-                    |. chompWhile (\c -> c /= '/' && c /= '\n')
+                    |. chompWhile (\c -> c /= '/')
            )
         |. spaces
-
-
-abrParser =
-    Parser.oneOf
-        [ backtrackable
-            (succeed Just
-                |= (getChompedString <|
-                        succeed ()
-                            |. chompWhile (\c -> c /= '/' && c /= '\n')
-                   )
-                |. symbol "/"
-            )
-        , succeed Nothing
-        ]

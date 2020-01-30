@@ -44,7 +44,17 @@
     });
 
     nameDictWorker.addEventListener('message', function(e) {
-      app.ports.fromNameDict.send(e.data);
+      app.ports.fromDicts.send(e.data);
+    }, false);
+
+    var dictWorker = new Worker('/js/dictWorkerLoader.js');
+
+    app.ports.toDict.subscribe(function(s){
+       dictWorker.postMessage(s);
+    });
+
+    dictWorker.addEventListener('message', function(e) {
+      app.ports.fromDicts.send(e.data);
     }, false);
 
 

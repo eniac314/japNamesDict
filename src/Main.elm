@@ -27,7 +27,10 @@ import Time exposing (..)
 port toNameDict : E.Value -> Cmd msg
 
 
-port fromNameDict : (D.Value -> msg) -> Sub msg
+port toDict : E.Value -> Cmd msg
+
+
+port fromDicts : (D.Value -> msg) -> Sub msg
 
 
 port serviceWorkerMessage : (String -> msg) -> Sub msg
@@ -36,7 +39,8 @@ port serviceWorkerMessage : (String -> msg) -> Sub msg
 type alias Model =
     { searchInput : Maybe String
     , nameDictSearchResult : { res : List NameDictEntry, showing : Int }
-    , workersState : { nameDict : WorkerState }
+    , dictSearchResult : { res : List DictEntry, showing : Int }
+    , workersState : { nameDict : WorkerState, dict : WorkerState }
     , appState : AppState
     , lastInputTimestamp : Maybe Time.Posix
     , useAutoSearch : Bool
@@ -95,8 +99,11 @@ init flags =
     in
     ( { searchInput = Nothing
       , nameDictSearchResult = { res = [], showing = 15 }
+      , dictSearchResult = { res = [], showing = 15 }
       , workersState =
-            { nameDict = WorkerLoading { progress = 0, message = "", status = Initial } }
+            { nameDict = WorkerLoading { progress = 0, message = "", status = Initial }
+            , dict = WorkerLoading { progress = 0, message = "", status = Initial }
+            }
       , appState = Loading Initial
       , lastInputTimestamp = Nothing
       , useAutoSearch = True
@@ -155,14 +162,23 @@ update msg model =
                     case w of
                         NameDictWorker ->
                             { cws | nameDict = WorkerLoading s }
+
+                        DictWorker ->
+                            { cws | dict = WorkerLoading s }
             in
             ( { model
                 | appState =
-                    if s.status == Success then
-                        Ready
+                    case ( workersState.nameDict, workersState.dict ) of
+                        ( WorkerLoading st, WorkerLoading st_ ) ->
+                            case ( st.status, st_.status ) of
+                                ( Success, Success ) ->
+                                    Ready
 
-                    else
-                        model.appState
+                                _ ->
+                                    model.appState
+
+                        _ ->
+                            model.appState
                 , workersState = workersState
               }
             , Cmd.none
@@ -174,6 +190,9 @@ update msg model =
                     NameDictResult xs ->
                         ( { model | nameDictSearchResult = { res = xs, showing = 15 } }, Cmd.none )
 
+                    DictResult xs ->
+                        ( { model | dictSearchResult = { res = xs, showing = 15 } }, Cmd.none )
+
             else
                 ( model, Cmd.none )
 
@@ -181,8 +200,12 @@ update msg model =
             case model.searchInput of
                 Just s ->
                     ( model
-                    , Codec.encoder workerCmdCodec (SearchCmd s)
-                        |> toNameDict
+                    , Cmd.batch
+                        [ Codec.encoder workerCmdCodec (SearchCmd s)
+                            |> toNameDict
+                        , Codec.encoder workerCmdCodec (SearchCmd s)
+                            |> toDict
+                        ]
                     )
 
                 Nothing ->
@@ -201,7 +224,7 @@ subscriptions model =
 
             _ ->
                 Sub.none
-        , fromNameDict
+        , fromDicts
             (\c ->
                 case D.decodeValue (Codec.decoder workerMsgCodec) c of
                     Ok (LoadingStatusMsg w s) ->
@@ -213,6 +236,8 @@ subscriptions model =
                     _ ->
                         NoOp
             )
+
+        --, onAnimationFrame Tick
         ]
 
 
@@ -248,6 +273,14 @@ loadingView model status =
 
                 _ ->
                     ( 0, "" )
+
+        ( dictProgress, dictMessage ) =
+            case model.workersState.dict of
+                WorkerLoading s ->
+                    ( s.progress, s.message )
+
+                _ ->
+                    ( 0, "" )
     in
     column
         [ spacing 15 ]
@@ -255,6 +288,10 @@ loadingView model status =
             |> progressBar
             |> el [ centerX ]
         , el [ Font.size 14 ] (text <| nameDictMessage)
+        , dictProgress
+            |> progressBar
+            |> el [ centerX ]
+        , el [ Font.size 14 ] (text <| dictMessage)
         , column
             [ Font.size 12 ]
             (List.map text model.serviceWorkerMessages
@@ -274,8 +311,11 @@ loadingView model status =
 
 searchView model =
     let
-        results =
+        nameDictResults =
             List.take model.nameDictSearchResult.showing model.nameDictSearchResult.res
+
+        dictResults =
+            List.take model.dictSearchResult.showing model.dictSearchResult.res
     in
     column
         [ spacing 15
@@ -300,12 +340,45 @@ searchView model =
             ]
         , column
             [ width fill ]
-            (List.indexedMap (Lazy.lazy2 entryView) results)
+            (List.indexedMap (Lazy.lazy2 nameEntryView) nameDictResults)
+        , column
+            [ width fill ]
+            (List.indexedMap (Lazy.lazy2 dictEntryView) dictResults)
         ]
 
 
-entryView : Int -> NameDictEntry -> Element Msg
-entryView n e =
+dictEntryView : Int -> DictEntry -> Element Msg
+dictEntryView n e =
+    column
+        [ width fill
+        , spacing 10
+        , padding 10
+        , Background.color
+            (if modBy 2 n == 0 then
+                rgba255 187 110 217 0.6
+
+             else
+                rgba255 215 77 215 0.6
+            )
+        ]
+        [ wrappedRow
+            [ spacing 15 ]
+            [ el [ Font.bold ] (text e.key)
+            , el [ Font.size 15 ]
+                (case e.reading of
+                    Just r ->
+                        text <| "[" ++ r ++ "]"
+
+                    Nothing ->
+                        Element.none
+                )
+            ]
+        , column [ Font.size 15 ] (List.map text e.meanings)
+        ]
+
+
+nameEntryView : Int -> NameDictEntry -> Element Msg
+nameEntryView n e =
     column
         [ width fill
         , spacing 10
