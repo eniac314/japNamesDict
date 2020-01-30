@@ -141,11 +141,27 @@
         };
     }
 
-    const channel = new BroadcastChannel('sw-messages');
-    channel.addEventListener('message', function(event) {
-        app.ports.serviceWorkerMessage.send(event.data);
+    
+
+    var nameDictWorker = new Worker('/js/nameDictWorkerLoader.js');
+
+    app.ports.toNameDict.subscribe(function(s){
+       nameDictWorker.postMessage(s);
     });
 
+    nameDictWorker.addEventListener('message', function(e) {
+      app.ports.NameDictSearchResult.send(e.data);
+    }, false);
+
+
+
+    if ('BroadcastChannel' in window){
+        console.log("BroadcastChannel available")
+        const channel = new BroadcastChannel('sw-messages');
+        channel.addEventListener('message', function(event) {
+            app.ports.serviceWorkerMessage.send(event.data);
+        });
+    }
     // navigator.serviceWorker.controller.postMessage(message.value);
 
     navigator.serviceWorker.register('serviceWorker.js');
