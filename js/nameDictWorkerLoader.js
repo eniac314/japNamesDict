@@ -38,7 +38,7 @@ app.ports.loadFromIndexedDb.subscribe(function(key) {
     };
 });
 
-var request = window.indexedDB.open("japElmNames", 2);
+var request = self.indexedDB.open("japElmNames", 2);
 
 request.onerror = function(event) {
     console.log('The database failed opening');

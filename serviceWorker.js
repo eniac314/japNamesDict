@@ -7,14 +7,6 @@ try{
     console.log("BroadcastChannel not available");
     logger = function(m){console.log(m)};
 }
-// if ('BroadcastChannel' in self){
-//     console.log("BroadcastChannel is available in service Worker");
-//     const channel = new BroadcastChannel('sw-messages');
-//     logger = function(m){channel.postMessage(m)};
-// } else {
-//     console.log("BroadcastChannel not available");
-//     logger = function(m){console.log(m)};
-// }
 
 var cacheName = "japdict";
 
@@ -22,6 +14,8 @@ var urlsToCache = [
             "/",
             "/index.html",
             "/js/main.js",
+            "/js/nameDictWorker.js",
+            "/js/nameDictWorkerLoader.js",
             "/favicon.ico",
             "/manifest.json"
         ];

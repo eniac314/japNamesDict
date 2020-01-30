@@ -1,5 +1,7 @@
 port module NameDictWorker exposing (..)
 
+import Codec exposing (decoder, encoder)
+import Common exposing (..)
 import Http exposing (..)
 import Json.Decode as D
 import Json.Encode as E
@@ -18,7 +20,7 @@ port saveToIndexedDb : E.Value -> Cmd msg
 port loadFromIndexedDb : String -> Cmd msg
 
 
-port inbound : (String -> msg) -> Sub msg
+port inbound : (D.Value -> msg) -> Sub msg
 
 
 port loadedFromIndexedDb : (E.Value -> msg) -> Sub msg
@@ -30,18 +32,9 @@ port indexedDbStatus : (E.Value -> msg) -> Sub msg
 type alias Model =
     { rawData : String
     , requested : Set String
-    , searchResult : List Entry
     , maxLineLength : Int
     , indexedDbStatusStr : String
-    , loadingStatusStr : String
     }
-
-
-type Status
-    = Initial
-    | Pending
-    | Success
-    | Failure
 
 
 type DataFromIndexedDb
@@ -56,15 +49,6 @@ type Msg
     | GotDataFromIndexedDb E.Value
     | Search String
     | NoOp
-
-
-type alias Entry =
-    { key : String
-    , reading : Maybe String
-    , kind : List Kind
-    , meaning : String
-    , abr : Maybe String
-    }
 
 
 main : Program Flags Model Msg
@@ -88,10 +72,8 @@ init flags =
     in
     ( { rawData = ""
       , requested = Set.fromList (List.map dataPath ids)
-      , searchResult = []
       , maxLineLength = 0
       , indexedDbStatusStr = "loading indexedDb..."
-      , loadingStatusStr = "loading..."
       }
     , Cmd.none
     )
@@ -149,13 +131,26 @@ update msg model =
                         | rawData = model.rawData ++ String.cons '\n' str
                         , requested = requested
                         , maxLineLength = maxLineLength
-                        , loadingStatusStr = "Loaded " ++ filename ++ " from network"
                       }
-                    , E.object
-                        [ ( "filename", E.string path )
-                        , ( "content", E.string str )
+                    , Cmd.batch
+                        [ E.object
+                            [ ( "filename", E.string path )
+                            , ( "content", E.string str )
+                            ]
+                            |> saveToIndexedDb
+                        , { progress = round <| 100 * toFloat (nbrFiles - Set.size requested) / toFloat nbrFiles
+                          , message = "Loaded " ++ filename ++ " from network"
+                          , status =
+                                if requested == Set.empty then
+                                    Success
+
+                                else
+                                    Pending
+                          }
+                            |> LoadingStatusMsg NameDictWorker
+                            |> Codec.encoder workerMsgCodec
+                            |> outbound
                         ]
-                        |> saveToIndexedDb
                     )
 
                 Err _ ->
@@ -193,9 +188,19 @@ update msg model =
                         | rawData = model.rawData ++ String.cons '\n' content
                         , requested = requested
                         , maxLineLength = maxLineLength
-                        , loadingStatusStr = "Loaded " ++ filename_ ++ " from local backup"
                       }
-                    , Cmd.none
+                    , { progress = round <| 100 * toFloat (nbrFiles - Set.size requested) / toFloat nbrFiles
+                      , message = "Loaded " ++ filename_ ++ " from local backup"
+                      , status =
+                            if requested == Set.empty then
+                                Success
+
+                            else
+                                Pending
+                      }
+                        |> LoadingStatusMsg NameDictWorker
+                        |> Codec.encoder workerMsgCodec
+                        |> outbound
                     )
 
                 Ok (NoData path) ->
@@ -226,15 +231,19 @@ update msg model =
                         |> List.map (List.head >> Maybe.withDefault "")
                         |> Set.fromList
                         |> Set.toList
-                        |> List.map (parseEntry >> Result.toMaybe)
+                        |> List.map (parseNameDictEntry >> Result.toMaybe)
                         |> List.filterMap identity
                         |> List.filter (\e -> String.contains s e.key)
                         |> List.sortBy (\e -> sift3Distance e.key s)
             in
-            ( { model
-                | searchResult = searchResult
-              }
-            , Cmd.none
+            ( model
+            , Codec.encoder workerMsgCodec
+                (SearchResultMsg
+                    { searchString = s
+                    , result = NameDictResult searchResult
+                    }
+                )
+                |> outbound
             )
 
         NoOp ->
@@ -245,7 +254,18 @@ subscriptions model =
     Sub.batch
         [ loadedFromIndexedDb GotDataFromIndexedDb
         , indexedDbStatus GotIndexedDbStatus
-        , inbound Search
+        , inbound
+            (\c ->
+                case D.decodeValue (Codec.decoder workerCmdCodec) c of
+                    Ok (SearchCmd s) ->
+                        Search s
+
+                    Ok LoadAssets ->
+                        GetData
+
+                    _ ->
+                        NoOp
+            )
         ]
 
 
@@ -268,7 +288,7 @@ getData path =
 -------------------------------------------------------------------------------
 
 
-parseEntry e =
+parseNameDictEntry e =
     Parser.run entryParser e
 
 
@@ -282,7 +302,7 @@ entriesParsers s =
             Parser.oneOf
                 [ backtrackable <|
                     succeed (\match -> Loop (match :: xs))
-                        |= matchingEntryParser s
+                        |= matchingNameDictEntryParser s
                 , succeed (Loop xs)
                     |. chompUntil "\n"
                     |. symbol "\n"
@@ -295,8 +315,8 @@ entriesParsers s =
         go
 
 
-matchingEntryParser s =
-    succeed Entry
+matchingNameDictEntryParser s =
+    succeed NameDictEntry
         |= matchParser s
         |= readingParser
         |. symbol "/"
@@ -307,7 +327,7 @@ matchingEntryParser s =
 
 
 entryParser =
-    succeed Entry
+    succeed NameDictEntry
         |= keyParser
         |= readingParser
         |. symbol "/"
@@ -393,82 +413,3 @@ abrParser =
             )
         , succeed Nothing
         ]
-
-
-stringToKing s =
-    case s of
-        "o" ->
-            Organisation
-
-        "pr" ->
-            Product
-
-        "c" ->
-            Company
-
-        "f" ->
-            Female
-
-        "p" ->
-            Place
-
-        "st" ->
-            Station
-
-        "u" ->
-            Person
-
-        "h" ->
-            Fullname
-
-        "s" ->
-            Surname
-
-        _ ->
-            Unknown
-
-
-kindToStr k =
-    case k of
-        Person ->
-            "Person"
-
-        Female ->
-            "Female"
-
-        Fullname ->
-            "Fullname"
-
-        Surname ->
-            "Surname"
-
-        Place ->
-            "Place"
-
-        Station ->
-            "Station"
-
-        Organisation ->
-            "Organisation"
-
-        Product ->
-            "Product"
-
-        Company ->
-            "Company"
-
-        Unknown ->
-            "Unknown"
-
-
-type Kind
-    = Person
-    | Female
-    | Surname
-    | Fullname
-    | Place
-    | Station
-    | Organisation
-    | Product
-    | Company
-    | Unknown

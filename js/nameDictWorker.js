@@ -80,6 +80,87 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
 
 
 
+var _List_Nil = { $: 0 };
+var _List_Nil_UNUSED = { $: '[]' };
+
+function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
+function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
+
+
+var _List_cons = F2(_List_Cons);
+
+function _List_fromArray(arr)
+{
+	var out = _List_Nil;
+	for (var i = arr.length; i--; )
+	{
+		out = _List_Cons(arr[i], out);
+	}
+	return out;
+}
+
+function _List_toArray(xs)
+{
+	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		out.push(xs.a);
+	}
+	return out;
+}
+
+var _List_map2 = F3(function(f, xs, ys)
+{
+	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
+	{
+		arr.push(A2(f, xs.a, ys.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map3 = F4(function(f, xs, ys, zs)
+{
+	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A3(f, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map4 = F5(function(f, ws, xs, ys, zs)
+{
+	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
+{
+	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_sortBy = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		return _Utils_cmp(f(a), f(b));
+	}));
+});
+
+var _List_sortWith = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		var ord = A2(f, a, b);
+		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
+	}));
+});
+
+
+
 var _JsArray_empty = [];
 
 function _JsArray_singleton(value)
@@ -519,11 +600,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.a1.ao === region.bh.ao)
+	if (region.a$.ap === region.bg.ap)
 	{
-		return 'on line ' + region.a1.ao;
+		return 'on line ' + region.a$.ap;
 	}
-	return 'on lines ' + region.a1.ao + ' through ' + region.bh.ao;
+	return 'on lines ' + region.a$.ap + ' through ' + region.bg.ap;
 }
 
 
@@ -709,87 +790,6 @@ function _Utils_ap(xs, ys)
 	}
 	return root;
 }
-
-
-
-var _List_Nil = { $: 0 };
-var _List_Nil_UNUSED = { $: '[]' };
-
-function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
-function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
-
-
-var _List_cons = F2(_List_Cons);
-
-function _List_fromArray(arr)
-{
-	var out = _List_Nil;
-	for (var i = arr.length; i--; )
-	{
-		out = _List_Cons(arr[i], out);
-	}
-	return out;
-}
-
-function _List_toArray(xs)
-{
-	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		out.push(xs.a);
-	}
-	return out;
-}
-
-var _List_map2 = F3(function(f, xs, ys)
-{
-	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
-	{
-		arr.push(A2(f, xs.a, ys.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map3 = F4(function(f, xs, ys, zs)
-{
-	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A3(f, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map4 = F5(function(f, ws, xs, ys, zs)
-{
-	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
-{
-	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_sortBy = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		return _Utils_cmp(f(a), f(b));
-	}));
-});
-
-var _List_sortWith = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		var ord = A2(f, a, b);
-		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
-	}));
-});
 
 
 
@@ -1894,9 +1894,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dc,
-		impl.eh,
-		impl.dZ,
+		impl.dj,
+		impl.el,
+		impl.d1,
 		function() { return function() {} }
 	);
 });
@@ -2403,25 +2403,25 @@ var _Http_toTask = F3(function(router, toTask, request)
 	return _Scheduler_binding(function(callback)
 	{
 		function done(response) {
-			callback(toTask(request.c_.a(response)));
+			callback(toTask(request.c5.a(response)));
 		}
 
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
-		xhr.addEventListener('load', function() { done(_Http_toResponse(request.c_.b, xhr)); });
-		$elm$core$Maybe$isJust(request.b8) && _Http_track(router, xhr, request.b8.a);
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.c5.b, xhr)); });
+		$elm$core$Maybe$isJust(request.cg) && _Http_track(router, xhr, request.cg.a);
 
 		try {
-			xhr.open(request.$7, request.ei, true);
+			xhr.open(request.dt, request.em, true);
 		} catch (e) {
-			return done($elm$http$Http$BadUrl_(request.ei));
+			return done($elm$http$Http$BadUrl_(request.em));
 		}
 
 		_Http_configureRequest(xhr, request);
 
-		request.cF.a && xhr.setRequestHeader('Content-Type', request.cF.a);
-		xhr.send(request.cF.b);
+		request.cM.a && xhr.setRequestHeader('Content-Type', request.cM.a);
+		xhr.send(request.cM.b);
 
 		return function() { xhr.c = true; xhr.abort(); };
 	});
@@ -2432,13 +2432,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.bq; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.bp; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.ec.a || 0;
-	xhr.responseType = request.c_.d;
-	xhr.withCredentials = request.cx;
+	xhr.timeout = request.eg.a || 0;
+	xhr.responseType = request.c5.d;
+	xhr.withCredentials = request.cE;
 }
 
 
@@ -2459,10 +2459,10 @@ function _Http_toResponse(toBody, xhr)
 function _Http_toMetadata(xhr)
 {
 	return {
-		ei: xhr.responseURL,
-		dS: xhr.status,
-		dT: xhr.statusText,
-		bq: _Http_parseHeaders(xhr.getAllResponseHeaders())
+		em: xhr.responseURL,
+		dW: xhr.status,
+		dX: xhr.statusText,
+		bp: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
 
@@ -2557,15 +2557,15 @@ function _Http_track(router, xhr, tracker)
 	xhr.upload.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Sending({
-			dL: event.loaded,
-			b3: event.total
+			dP: event.loaded,
+			ca: event.total
 		}))));
 	});
 	xhr.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Receiving({
-			dD: event.loaded,
-			b3: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
+			dH: event.loaded,
+			ca: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
 		}))));
 	});
 }
@@ -2577,8 +2577,8 @@ var _Regex_never = /.^/;
 var _Regex_fromStringWith = F2(function(options, string)
 {
 	var flags = 'g';
-	if (options.dr) { flags += 'm'; }
-	if (options.cO) { flags += 'i'; }
+	if (options.dw) { flags += 'm'; }
+	if (options.cV) { flags += 'i'; }
 
 	try
 	{
@@ -2799,6 +2799,8 @@ var _Parser_findSubString = F5(function(smallString, offset, row, col, bigString
 
 	return _Utils_Tuple3(newOffset, row, col);
 });
+var $elm$core$Basics$EQ = 1;
+var $elm$core$Basics$LT = 0;
 var $elm$core$List$cons = _List_cons;
 var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var $elm$core$Array$foldr = F3(
@@ -2876,9 +2878,7 @@ var $elm$core$Set$toList = function (_v0) {
 	var dict = _v0;
 	return $elm$core$Dict$keys(dict);
 };
-var $elm$core$Basics$EQ = 1;
 var $elm$core$Basics$GT = 2;
-var $elm$core$Basics$LT = 0;
 var $elm$core$Basics$apR = F2(
 	function (x, f) {
 		return f(x);
@@ -3434,25 +3434,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.g) {
+		if (!builder.i) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.j),
+				$elm$core$Elm$JsArray$length(builder.l),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.j);
+				builder.l);
 		} else {
-			var treeLen = builder.g * $elm$core$Array$branchFactor;
+			var treeLen = builder.i * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.k) : builder.k;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.g);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.m) : builder.m;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.i);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.j) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.l) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.j);
+				builder.l);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -3465,7 +3465,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{k: nodeList, g: (len / $elm$core$Array$branchFactor) | 0, j: tail});
+					{m: nodeList, i: (len / $elm$core$Array$branchFactor) | 0, l: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -3509,47 +3509,228 @@ var $author$project$NameDictWorker$init = function (flags) {
 	var ids = A2($elm$core$List$range, 0, $author$project$NameDictWorker$nbrFiles - 1);
 	return _Utils_Tuple2(
 		{
-			aE: 'loading indexedDb...',
-			aG: 'loading...',
-			P: 0,
-			E: '',
-			T: $elm$core$Set$fromList(
-				A2($elm$core$List$map, $author$project$NameDictWorker$dataPath, ids)),
-			a_: _List_Nil
+			aF: 'loading indexedDb...',
+			R: 0,
+			G: '',
+			U: $elm$core$Set$fromList(
+				A2($elm$core$List$map, $author$project$NameDictWorker$dataPath, ids))
 		},
 		$elm$core$Platform$Cmd$none);
 };
+var $author$project$NameDictWorker$GetData = {$: 1};
 var $author$project$NameDictWorker$GotDataFromIndexedDb = function (a) {
 	return {$: 3, a: a};
 };
 var $author$project$NameDictWorker$GotIndexedDbStatus = function (a) {
 	return {$: 0, a: a};
 };
+var $author$project$NameDictWorker$NoOp = {$: 5};
 var $author$project$NameDictWorker$Search = function (a) {
 	return {$: 4, a: a};
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$NameDictWorker$inbound = _Platform_incomingPort('inbound', $elm$json$Json$Decode$string);
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $miniBill$elm_codec$Codec$decoder = function (_v0) {
+	var m = _v0;
+	return m.e;
+};
 var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $author$project$NameDictWorker$inbound = _Platform_incomingPort('inbound', $elm$json$Json$Decode$value);
 var $author$project$NameDictWorker$indexedDbStatus = _Platform_incomingPort('indexedDbStatus', $elm$json$Json$Decode$value);
 var $author$project$NameDictWorker$loadedFromIndexedDb = _Platform_incomingPort('loadedFromIndexedDb', $elm$json$Json$Decode$value);
+var $author$project$Common$LoadAssets = {$: 1};
+var $author$project$Common$SearchCmd = function (a) {
+	return {$: 0, a: a};
+};
+var $miniBill$elm_codec$Codec$Codec = $elm$core$Basics$identity;
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $miniBill$elm_codec$Codec$buildCustom = function (_v0) {
+	var am = _v0;
+	return {
+		e: A2(
+			$elm$json$Json$Decode$andThen,
+			function (tag) {
+				var error = 'tag ' + (tag + 'did not match');
+				return A2(
+					$elm$json$Json$Decode$field,
+					'args',
+					A2(
+						am.e,
+						tag,
+						$elm$json$Json$Decode$fail(error)));
+			},
+			A2($elm$json$Json$Decode$field, 'tag', $elm$json$Json$Decode$string)),
+		g: function (v) {
+			return am.ds(v);
+		}
+	};
+};
+var $miniBill$elm_codec$Codec$CustomCodec = $elm$core$Basics$identity;
+var $miniBill$elm_codec$Codec$custom = function (match) {
+	return {
+		e: function (_v0) {
+			return $elm$core$Basics$identity;
+		},
+		ds: match
+	};
+};
+var $miniBill$elm_codec$Codec$build = F2(
+	function (encoder_, decoder_) {
+		return {e: decoder_, g: encoder_};
+	});
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $miniBill$elm_codec$Codec$string = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$string, $elm$json$Json$Decode$string);
+var $elm$json$Json$Decode$succeed = _Json_succeed;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(0),
+				entries));
+	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(0),
+			pairs));
+};
+var $miniBill$elm_codec$Codec$variant = F4(
+	function (name, matchPiece, decoderPiece, _v0) {
+		var am = _v0;
+		var enc = function (v) {
+			return $elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'tag',
+						$elm$json$Json$Encode$string(name)),
+						_Utils_Tuple2(
+						'args',
+						A2($elm$json$Json$Encode$list, $elm$core$Basics$identity, v))
+					]));
+		};
+		var decoder_ = F2(
+			function (tag, orElse) {
+				return _Utils_eq(tag, name) ? decoderPiece : A2(am.e, tag, orElse);
+			});
+		return {
+			e: decoder_,
+			ds: am.ds(
+				matchPiece(enc))
+		};
+	});
+var $miniBill$elm_codec$Codec$variant0 = F2(
+	function (name, ctor) {
+		return A3(
+			$miniBill$elm_codec$Codec$variant,
+			name,
+			function (c) {
+				return c(_List_Nil);
+			},
+			$elm$json$Json$Decode$succeed(ctor));
+	});
+var $miniBill$elm_codec$Codec$encoder = function (_v0) {
+	var m = _v0;
+	return m.g;
+};
+var $elm$json$Json$Decode$index = _Json_decodeIndex;
+var $elm$json$Json$Decode$map = _Json_map1;
+var $miniBill$elm_codec$Codec$variant1 = F3(
+	function (name, ctor, m1) {
+		return A3(
+			$miniBill$elm_codec$Codec$variant,
+			name,
+			F2(
+				function (c, v) {
+					return c(
+						_List_fromArray(
+							[
+								A2($miniBill$elm_codec$Codec$encoder, m1, v)
+							]));
+				}),
+			A2(
+				$elm$json$Json$Decode$map,
+				ctor,
+				A2(
+					$elm$json$Json$Decode$index,
+					0,
+					$miniBill$elm_codec$Codec$decoder(m1))));
+	});
+var $author$project$Common$workerCmdCodec = $miniBill$elm_codec$Codec$buildCustom(
+	A3(
+		$miniBill$elm_codec$Codec$variant0,
+		'LoadAssets',
+		$author$project$Common$LoadAssets,
+		A4(
+			$miniBill$elm_codec$Codec$variant1,
+			'SearchCmd',
+			$author$project$Common$SearchCmd,
+			$miniBill$elm_codec$Codec$string,
+			$miniBill$elm_codec$Codec$custom(
+				F3(
+					function (fSearchCmd, fLoadAssets, value) {
+						if (!value.$) {
+							var s = value.a;
+							return fSearchCmd(s);
+						} else {
+							return fLoadAssets;
+						}
+					})))));
 var $author$project$NameDictWorker$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
 				$author$project$NameDictWorker$loadedFromIndexedDb($author$project$NameDictWorker$GotDataFromIndexedDb),
 				$author$project$NameDictWorker$indexedDbStatus($author$project$NameDictWorker$GotIndexedDbStatus),
-				$author$project$NameDictWorker$inbound($author$project$NameDictWorker$Search)
+				$author$project$NameDictWorker$inbound(
+				function (c) {
+					var _v0 = A2(
+						$elm$json$Json$Decode$decodeValue,
+						$miniBill$elm_codec$Codec$decoder($author$project$Common$workerCmdCodec),
+						c);
+					if (!_v0.$) {
+						if (!_v0.a.$) {
+							var s = _v0.a.a;
+							return $author$project$NameDictWorker$Search(s);
+						} else {
+							var _v1 = _v0.a;
+							return $author$project$NameDictWorker$GetData;
+						}
+					} else {
+						return $author$project$NameDictWorker$NoOp;
+					}
+				})
 			]));
 };
-var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $author$project$NameDictWorker$IndexedDbData = function (a) {
 	return {$: 0, a: a};
 };
+var $author$project$Common$LoadingStatusMsg = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $author$project$Common$NameDictResult = $elm$core$Basics$identity;
+var $author$project$Common$NameDictWorker = 0;
 var $author$project$NameDictWorker$NoData = function (a) {
 	return {$: 1, a: a};
 };
+var $author$project$Common$Pending = 1;
+var $author$project$Common$SearchResultMsg = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Common$Success = 2;
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
@@ -3557,7 +3738,6 @@ var $elm$core$Basics$composeR = F3(
 			f(x));
 	});
 var $elm$core$String$contains = _String_contains;
-var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$core$String$slice = _String_slice;
 var $elm$core$String$dropLeft = F2(
 	function (n, string) {
@@ -3567,7 +3747,6 @@ var $elm$core$String$dropLeft = F2(
 			$elm$core$String$length(string),
 			string);
 	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -4076,7 +4255,7 @@ var $elm$http$Http$resolve = F2(
 			case 3:
 				var metadata = response.a;
 				return $elm$core$Result$Err(
-					$elm$http$Http$BadStatus(metadata.dS));
+					$elm$http$Http$BadStatus(metadata.dW));
 			default:
 				var body = response.b;
 				return A2(
@@ -4097,7 +4276,7 @@ var $elm$http$Http$Request = function (a) {
 };
 var $elm$http$Http$State = F2(
 	function (reqs, subs) {
-		return {bV: reqs, b5: subs};
+		return {b_: reqs, cd: subs};
 	});
 var $elm$core$Task$succeed = _Scheduler_succeed;
 var $elm$http$Http$init = $elm$core$Task$succeed(
@@ -4144,7 +4323,7 @@ var $elm$http$Http$updateReqs = F3(
 					return A2(
 						$elm$core$Task$andThen,
 						function (pid) {
-							var _v4 = req.b8;
+							var _v4 = req.cg;
 							if (_v4.$ === 1) {
 								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
@@ -4174,7 +4353,7 @@ var $elm$http$Http$onEffects = F4(
 				return $elm$core$Task$succeed(
 					A2($elm$http$Http$State, reqs, subs));
 			},
-			A3($elm$http$Http$updateReqs, router, cmds, state.bV));
+			A3($elm$http$Http$updateReqs, router, cmds, state.b_));
 	});
 var $elm$http$Http$maybeSend = F4(
 	function (router, desiredTracker, progress, _v0) {
@@ -4221,7 +4400,7 @@ var $elm$http$Http$onSelfMsg = F3(
 				A2(
 					$elm$core$List$filterMap,
 					A3($elm$http$Http$maybeSend, router, tracker, progress),
-					state.b5)));
+					state.cd)));
 	});
 var $elm$http$Http$Cancel = function (a) {
 	return {$: 0, a: a};
@@ -4235,14 +4414,14 @@ var $elm$http$Http$cmdMap = F2(
 			var r = cmd.a;
 			return $elm$http$Http$Request(
 				{
-					cx: r.cx,
-					cF: r.cF,
-					c_: A2(_Http_mapExpect, func, r.c_),
-					bq: r.bq,
-					$7: r.$7,
-					ec: r.ec,
-					b8: r.b8,
-					ei: r.ei
+					cE: r.cE,
+					cM: r.cM,
+					c5: A2(_Http_mapExpect, func, r.c5),
+					bp: r.bp,
+					dt: r.dt,
+					eg: r.eg,
+					cg: r.cg,
+					em: r.em
 				});
 		}
 	});
@@ -4265,18 +4444,18 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{cx: false, cF: r.cF, c_: r.c_, bq: r.bq, $7: r.$7, ec: r.ec, b8: r.b8, ei: r.ei}));
+			{cE: false, cM: r.cM, c5: r.c5, bp: r.bp, dt: r.dt, eg: r.eg, cg: r.cg, em: r.em}));
 };
 var $elm$http$Http$get = function (r) {
 	return $elm$http$Http$request(
-		{cF: $elm$http$Http$emptyBody, c_: r.c_, bq: _List_Nil, $7: 'GET', ec: $elm$core$Maybe$Nothing, b8: $elm$core$Maybe$Nothing, ei: r.ei});
+		{cM: $elm$http$Http$emptyBody, c5: r.c5, bp: _List_Nil, dt: 'GET', eg: $elm$core$Maybe$Nothing, cg: $elm$core$Maybe$Nothing, em: r.em});
 };
 var $author$project$NameDictWorker$getData = function (path) {
 	return $elm$http$Http$get(
 		{
-			c_: $elm$http$Http$expectString(
+			c5: $elm$http$Http$expectString(
 				$author$project$NameDictWorker$GotRemoteData(path)),
-			ei: path
+			em: path
 		});
 };
 var $elm$core$List$head = function (list) {
@@ -4295,7 +4474,7 @@ var $elm$core$String$left = F2(
 	});
 var $elm$regex$Regex$Match = F4(
 	function (match, index, number, submatches) {
-		return {db: index, dm: match, dt: number, dY: submatches};
+		return {di: index, ds: match, dy: number, d0: submatches};
 	});
 var $elm$regex$Regex$findAtMost = _Regex_findAtMost;
 var $elm_community$string_extra$String$Extra$firstResultHelp = F2(
@@ -4327,7 +4506,7 @@ var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
 var $elm$regex$Regex$fromString = function (string) {
 	return A2(
 		$elm$regex$Regex$fromStringWith,
-		{cO: false, dr: false},
+		{cV: false, dw: false},
 		string);
 };
 var $elm$regex$Regex$never = _Regex_never;
@@ -4349,7 +4528,7 @@ var $elm_community$string_extra$String$Extra$regexEscape = A2(
 	$elm$regex$Regex$replace,
 	$elm_community$string_extra$String$Extra$regexFromString('[-/\\^$*+?.()|[\\]{}]'),
 	function (_v0) {
-		var match = _v0.dm;
+		var match = _v0.ds;
 		return '\\' + match;
 	});
 var $elm_community$string_extra$String$Extra$leftOf = F2(
@@ -4362,7 +4541,7 @@ var $elm_community$string_extra$String$Extra$leftOf = F2(
 				A2(
 					$elm$core$Basics$composeR,
 					function ($) {
-						return $.dY;
+						return $.d0;
 					},
 					$elm_community$string_extra$String$Extra$firstResult),
 				A3(
@@ -4373,27 +4552,13 @@ var $elm_community$string_extra$String$Extra$leftOf = F2(
 					string)));
 	});
 var $elm$core$String$lines = _String_lines;
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$NameDictWorker$loadFromIndexedDb = _Platform_outgoingPort('loadFromIndexedDb', $elm$json$Json$Encode$string);
-var $elm$json$Json$Decode$map = _Json_map1;
 var $elm$json$Json$Decode$map2 = _Json_map2;
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(0),
-			pairs));
-};
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $author$project$NameDictWorker$Entry = F5(
+var $author$project$NameDictWorker$outbound = _Platform_outgoingPort('outbound', $elm$core$Basics$identity);
+var $author$project$Common$NameDictEntry = F5(
 	function (key, reading, kind, meaning, abr) {
-		return {cm: abr, aU: key, dk: kind, dn: meaning, dC: reading};
+		return {a4: abr, bA: key, bB: kind, bG: meaning, bY: reading};
 	});
 var $elm$parser$Parser$Advanced$Bad = F2(
 	function (a, b) {
@@ -4433,7 +4598,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 					$elm$parser$Parser$Advanced$Good,
 					_Utils_cmp(s0.b, offset) < 0,
 					0,
-					{be: col, d: s0.d, e: s0.e, b: offset, b_: row, a: s0.a});
+					{bd: col, d: s0.d, f: s0.f, b: offset, b4: row, a: s0.a});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -4465,7 +4630,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.b_, s.be, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.b4, s.bd, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -4606,14 +4771,14 @@ var $elm$parser$Parser$Advanced$AddRight = F2(
 	});
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {be: col, cU: contextStack, bP: problem, b_: row};
+		return {bd: col, c$: contextStack, bS: problem, b4: row};
 	});
 var $elm$parser$Parser$Advanced$fromState = F2(
 	function (s, x) {
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.b_, s.be, x, s.d));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.b4, s.bd, x, s.d));
 	});
 var $elm$core$String$isEmpty = function (string) {
 	return string === '';
@@ -4625,7 +4790,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(str);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.b_, s.be, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.b4, s.bd, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -4636,7 +4801,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{be: newCol, d: s.d, e: s.e, b: newOffset, b_: newRow, a: s.a});
+			{bd: newCol, d: s.d, f: s.f, b: newOffset, b4: newRow, a: s.a});
 	};
 };
 var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
@@ -4689,17 +4854,17 @@ var $author$project$NameDictWorker$keyParser = A2(
 						return (c !== ' ') && ((c !== '/') && ((c !== '[') && (c !== ']')));
 					}))),
 		$elm$parser$Parser$spaces));
-var $author$project$NameDictWorker$Company = 8;
-var $author$project$NameDictWorker$Female = 1;
-var $author$project$NameDictWorker$Fullname = 3;
-var $author$project$NameDictWorker$Organisation = 6;
-var $author$project$NameDictWorker$Person = 0;
-var $author$project$NameDictWorker$Place = 4;
-var $author$project$NameDictWorker$Product = 7;
-var $author$project$NameDictWorker$Station = 5;
-var $author$project$NameDictWorker$Surname = 2;
-var $author$project$NameDictWorker$Unknown = 9;
-var $author$project$NameDictWorker$stringToKing = function (s) {
+var $author$project$Common$Company = 8;
+var $author$project$Common$Female = 1;
+var $author$project$Common$Fullname = 3;
+var $author$project$Common$Organisation = 6;
+var $author$project$Common$Person = 0;
+var $author$project$Common$Place = 4;
+var $author$project$Common$Product = 7;
+var $author$project$Common$Station = 5;
+var $author$project$Common$Surname = 2;
+var $author$project$Common$Unknown = 9;
+var $author$project$Common$stringToKing = function (s) {
 	switch (s) {
 		case 'o':
 			return 6;
@@ -4731,7 +4896,7 @@ var $author$project$NameDictWorker$kindParser = A2(
 			function (res) {
 				return A2(
 					$elm$core$List$map,
-					$author$project$NameDictWorker$stringToKing,
+					$author$project$Common$stringToKing,
 					A2($elm$core$String$split, ',', res));
 			}),
 		$elm$parser$Parser$symbol('(')),
@@ -4802,7 +4967,7 @@ var $author$project$NameDictWorker$entryParser = A2(
 				$elm$parser$Parser$keeper,
 				A2(
 					$elm$parser$Parser$keeper,
-					$elm$parser$Parser$succeed($author$project$NameDictWorker$Entry),
+					$elm$parser$Parser$succeed($author$project$Common$NameDictEntry),
 					$author$project$NameDictWorker$keyParser),
 				A2(
 					$elm$parser$Parser$ignorer,
@@ -4816,10 +4981,10 @@ var $author$project$NameDictWorker$entryParser = A2(
 	$author$project$NameDictWorker$abrParser);
 var $elm$parser$Parser$DeadEnd = F3(
 	function (row, col, problem) {
-		return {be: col, bP: problem, b_: row};
+		return {bd: col, bS: problem, b4: row};
 	});
 var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.b_, p.be, p.bP);
+	return A3($elm$parser$Parser$DeadEnd, p.b4, p.bd, p.bS);
 };
 var $elm$parser$Parser$Advanced$bagToList = F2(
 	function (bag, list) {
@@ -4851,7 +5016,7 @@ var $elm$parser$Parser$Advanced$run = F2(
 	function (_v0, src) {
 		var parse = _v0;
 		var _v1 = parse(
-			{be: 1, d: _List_Nil, e: 1, b: 0, b_: 1, a: src});
+			{bd: 1, d: _List_Nil, f: 1, b: 0, b4: 1, a: src});
 		if (!_v1.$) {
 			var value = _v1.b;
 			return $elm$core$Result$Ok(value);
@@ -4873,7 +5038,7 @@ var $elm$parser$Parser$run = F2(
 				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
 		}
 	});
-var $author$project$NameDictWorker$parseEntry = function (e) {
+var $author$project$NameDictWorker$parseNameDictEntry = function (e) {
 	return A2($elm$parser$Parser$run, $author$project$NameDictWorker$entryParser, e);
 };
 var $elm$core$Set$remove = F2(
@@ -4909,6 +5074,7 @@ var $elm_community$string_extra$String$Extra$rightOfBack = F2(
 					$elm$core$List$reverse(
 						A2($elm$core$String$indexes, pattern, string)))));
 	});
+var $elm$core$Basics$round = _Basics_round;
 var $author$project$NameDictWorker$saveToIndexedDb = _Platform_outgoingPort('saveToIndexedDb', $elm$core$Basics$identity);
 var $rluiten$stringdistance$StringDistance$maxl = F2(
 	function (xs, ys) {
@@ -4965,6 +5131,30 @@ var $rluiten$stringdistance$StringDistance$sift3Distance = F2(
 			}
 		}
 	});
+var $elm$core$Dict$sizeHelp = F2(
+	function (n, dict) {
+		sizeHelp:
+		while (true) {
+			if (dict.$ === -2) {
+				return n;
+			} else {
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$n = A2($elm$core$Dict$sizeHelp, n + 1, right),
+					$temp$dict = left;
+				n = $temp$n;
+				dict = $temp$dict;
+				continue sizeHelp;
+			}
+		}
+	});
+var $elm$core$Dict$size = function (dict) {
+	return A2($elm$core$Dict$sizeHelp, 0, dict);
+};
+var $elm$core$Set$size = function (_v0) {
+	var dict = _v0;
+	return $elm$core$Dict$size(dict);
+};
 var $elm$core$List$sortBy = _List_sortBy;
 var $elm$core$Result$toMaybe = function (result) {
 	if (!result.$) {
@@ -4974,6 +5164,363 @@ var $elm$core$Result$toMaybe = function (result) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $miniBill$elm_codec$Codec$buildObject = function (_v0) {
+	var om = _v0;
+	return {
+		e: om.e,
+		g: function (v) {
+			return $elm$json$Json$Encode$object(
+				om.g(v));
+		}
+	};
+};
+var $miniBill$elm_codec$Codec$ObjectCodec = $elm$core$Basics$identity;
+var $miniBill$elm_codec$Codec$field = F4(
+	function (name, getter, codec, _v0) {
+		var ocodec = _v0;
+		return {
+			e: A3(
+				$elm$json$Json$Decode$map2,
+				F2(
+					function (f, x) {
+						return f(x);
+					}),
+				ocodec.e,
+				A2(
+					$elm$json$Json$Decode$field,
+					name,
+					$miniBill$elm_codec$Codec$decoder(codec))),
+			g: function (v) {
+				return A2(
+					$elm$core$List$cons,
+					_Utils_Tuple2(
+						name,
+						A2(
+							$miniBill$elm_codec$Codec$encoder,
+							codec,
+							getter(v))),
+					ocodec.g(v));
+			}
+		};
+	});
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $miniBill$elm_codec$Codec$int = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$int, $elm$json$Json$Decode$int);
+var $miniBill$elm_codec$Codec$object = function (ctor) {
+	return {
+		e: $elm$json$Json$Decode$succeed(ctor),
+		g: function (_v0) {
+			return _List_Nil;
+		}
+	};
+};
+var $author$project$Common$SearchResultMeta = F2(
+	function (searchString, result) {
+		return {b2: result, b7: searchString};
+	});
+var $miniBill$elm_codec$Codec$composite = F3(
+	function (enc, dec, _v0) {
+		var codec = _v0;
+		return {
+			e: dec(codec.e),
+			g: enc(codec.g)
+		};
+	});
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $miniBill$elm_codec$Codec$list = A2($miniBill$elm_codec$Codec$composite, $elm$json$Json$Encode$list, $elm$json$Json$Decode$list);
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $miniBill$elm_codec$Codec$maybe = function (codec) {
+	return {
+		e: $elm$json$Json$Decode$maybe(
+			$miniBill$elm_codec$Codec$decoder(codec)),
+		g: function (v) {
+			if (v.$ === 1) {
+				return $elm$json$Json$Encode$null;
+			} else {
+				var x = v.a;
+				return A2($miniBill$elm_codec$Codec$encoder, codec, x);
+			}
+		}
+	};
+};
+var $author$project$Common$nameKindCodec = $miniBill$elm_codec$Codec$buildCustom(
+	A3(
+		$miniBill$elm_codec$Codec$variant0,
+		'Unknown',
+		9,
+		A3(
+			$miniBill$elm_codec$Codec$variant0,
+			'Company',
+			8,
+			A3(
+				$miniBill$elm_codec$Codec$variant0,
+				'Product',
+				7,
+				A3(
+					$miniBill$elm_codec$Codec$variant0,
+					'Organisation',
+					6,
+					A3(
+						$miniBill$elm_codec$Codec$variant0,
+						'Station',
+						5,
+						A3(
+							$miniBill$elm_codec$Codec$variant0,
+							'Place',
+							4,
+							A3(
+								$miniBill$elm_codec$Codec$variant0,
+								'Fullname',
+								3,
+								A3(
+									$miniBill$elm_codec$Codec$variant0,
+									'Surname',
+									2,
+									A3(
+										$miniBill$elm_codec$Codec$variant0,
+										'Female',
+										1,
+										A3(
+											$miniBill$elm_codec$Codec$variant0,
+											'Person',
+											0,
+											$miniBill$elm_codec$Codec$custom(
+												function (fPerson) {
+													return function (fFemale) {
+														return function (fSurname) {
+															return function (fFullname) {
+																return function (fPlace) {
+																	return function (fStation) {
+																		return function (fOrganisation) {
+																			return function (fProduct) {
+																				return function (fCompany) {
+																					return function (fUnknown) {
+																						return function (value) {
+																							switch (value) {
+																								case 0:
+																									return fPerson;
+																								case 1:
+																									return fFemale;
+																								case 2:
+																									return fSurname;
+																								case 3:
+																									return fFullname;
+																								case 4:
+																									return fPlace;
+																								case 5:
+																									return fStation;
+																								case 6:
+																									return fOrganisation;
+																								case 7:
+																									return fProduct;
+																								case 8:
+																									return fCompany;
+																								default:
+																									return fUnknown;
+																							}
+																						};
+																					};
+																				};
+																			};
+																		};
+																	};
+																};
+															};
+														};
+													};
+												}))))))))))));
+var $author$project$Common$nameDictEntryCodec = $miniBill$elm_codec$Codec$buildObject(
+	A4(
+		$miniBill$elm_codec$Codec$field,
+		'abr',
+		function ($) {
+			return $.a4;
+		},
+		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
+		A4(
+			$miniBill$elm_codec$Codec$field,
+			'meaning',
+			function ($) {
+				return $.bG;
+			},
+			$miniBill$elm_codec$Codec$string,
+			A4(
+				$miniBill$elm_codec$Codec$field,
+				'kind',
+				function ($) {
+					return $.bB;
+				},
+				$miniBill$elm_codec$Codec$list($author$project$Common$nameKindCodec),
+				A4(
+					$miniBill$elm_codec$Codec$field,
+					'reading',
+					function ($) {
+						return $.bY;
+					},
+					$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
+					A4(
+						$miniBill$elm_codec$Codec$field,
+						'key',
+						function ($) {
+							return $.bA;
+						},
+						$miniBill$elm_codec$Codec$string,
+						$miniBill$elm_codec$Codec$object($author$project$Common$NameDictEntry)))))));
+var $author$project$Common$searchResultCodec = $miniBill$elm_codec$Codec$buildCustom(
+	A4(
+		$miniBill$elm_codec$Codec$variant1,
+		'NameDictResult',
+		$elm$core$Basics$identity,
+		$miniBill$elm_codec$Codec$list($author$project$Common$nameDictEntryCodec),
+		$miniBill$elm_codec$Codec$custom(
+			F2(
+				function (fNameDictResult, value) {
+					var xs = value;
+					return fNameDictResult(xs);
+				}))));
+var $author$project$Common$searchResultMetaCodec = $miniBill$elm_codec$Codec$buildObject(
+	A4(
+		$miniBill$elm_codec$Codec$field,
+		'result',
+		function ($) {
+			return $.b2;
+		},
+		$author$project$Common$searchResultCodec,
+		A4(
+			$miniBill$elm_codec$Codec$field,
+			'searchString',
+			function ($) {
+				return $.b7;
+			},
+			$miniBill$elm_codec$Codec$string,
+			$miniBill$elm_codec$Codec$object($author$project$Common$SearchResultMeta))));
+var $author$project$Common$Failure = 3;
+var $author$project$Common$Initial = 0;
+var $author$project$Common$statusCodec = $miniBill$elm_codec$Codec$buildCustom(
+	A3(
+		$miniBill$elm_codec$Codec$variant0,
+		'Failure',
+		3,
+		A3(
+			$miniBill$elm_codec$Codec$variant0,
+			'Success',
+			2,
+			A3(
+				$miniBill$elm_codec$Codec$variant0,
+				'Pending',
+				1,
+				A3(
+					$miniBill$elm_codec$Codec$variant0,
+					'Initial',
+					0,
+					$miniBill$elm_codec$Codec$custom(
+						F5(
+							function (fInitial, fPending, fSuccess, fFailure, value) {
+								switch (value) {
+									case 0:
+										return fInitial;
+									case 1:
+										return fPending;
+									case 2:
+										return fSuccess;
+									default:
+										return fFailure;
+								}
+							})))))));
+var $miniBill$elm_codec$Codec$variant2 = F4(
+	function (name, ctor, m1, m2) {
+		return A3(
+			$miniBill$elm_codec$Codec$variant,
+			name,
+			F3(
+				function (c, v1, v2) {
+					return c(
+						_List_fromArray(
+							[
+								A2($miniBill$elm_codec$Codec$encoder, m1, v1),
+								A2($miniBill$elm_codec$Codec$encoder, m2, v2)
+							]));
+				}),
+			A3(
+				$elm$json$Json$Decode$map2,
+				ctor,
+				A2(
+					$elm$json$Json$Decode$index,
+					0,
+					$miniBill$elm_codec$Codec$decoder(m1)),
+				A2(
+					$elm$json$Json$Decode$index,
+					1,
+					$miniBill$elm_codec$Codec$decoder(m2))));
+	});
+var $author$project$Common$workerCodec = $miniBill$elm_codec$Codec$buildCustom(
+	A3(
+		$miniBill$elm_codec$Codec$variant0,
+		'NameDictWorker',
+		0,
+		$miniBill$elm_codec$Codec$custom(
+			F2(
+				function (fNameDictWorker, value) {
+					return fNameDictWorker;
+				}))));
+var $author$project$Common$workerMsgCodec = $miniBill$elm_codec$Codec$buildCustom(
+	A4(
+		$miniBill$elm_codec$Codec$variant1,
+		'SearchResultMsg',
+		$author$project$Common$SearchResultMsg,
+		$author$project$Common$searchResultMetaCodec,
+		A5(
+			$miniBill$elm_codec$Codec$variant2,
+			'LoadingStatusMsg',
+			$author$project$Common$LoadingStatusMsg,
+			$author$project$Common$workerCodec,
+			$miniBill$elm_codec$Codec$buildObject(
+				A4(
+					$miniBill$elm_codec$Codec$field,
+					'status',
+					function ($) {
+						return $.cc;
+					},
+					$author$project$Common$statusCodec,
+					A4(
+						$miniBill$elm_codec$Codec$field,
+						'message',
+						function ($) {
+							return $.bH;
+						},
+						$miniBill$elm_codec$Codec$string,
+						A4(
+							$miniBill$elm_codec$Codec$field,
+							'progress',
+							function ($) {
+								return $.bV;
+							},
+							$miniBill$elm_codec$Codec$int,
+							$miniBill$elm_codec$Codec$object(
+								F3(
+									function (p, m, s) {
+										return {bH: m, bV: p, cc: s};
+									})))))),
+			$miniBill$elm_codec$Codec$custom(
+				F3(
+					function (fLoadingStatusMsg, fSearchResultMsg, value) {
+						if (!value.$) {
+							var w = value.a;
+							var s = value.b;
+							return A2(fLoadingStatusMsg, w, s);
+						} else {
+							var m = value.a;
+							return fSearchResultMsg(m);
+						}
+					})))));
 var $author$project$NameDictWorker$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -4985,17 +5532,17 @@ var $author$project$NameDictWorker$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{aE: 'indexedDb is ready'}),
+							{aF: 'indexedDb is ready'}),
 						$elm$core$Platform$Cmd$batch(
 							A2(
 								$elm$core$List$map,
 								$author$project$NameDictWorker$loadFromIndexedDb,
-								$elm$core$Set$toList(model.T))));
+								$elm$core$Set$toList(model.U))));
 				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{aE: 'indexedDb error'}),
+							{aF: 'indexedDb error'}),
 						$elm$core$Platform$Cmd$none);
 				}
 			case 1:
@@ -5004,7 +5551,7 @@ var $author$project$NameDictWorker$update = F2(
 					_Utils_update(
 						model,
 						{
-							T: $elm$core$Set$fromList(
+							U: $elm$core$Set$fromList(
 								A2($elm$core$List$map, $author$project$NameDictWorker$dataPath, ids))
 						}),
 					$elm$core$Platform$Cmd$batch(
@@ -5017,7 +5564,7 @@ var $author$project$NameDictWorker$update = F2(
 				var res = msg.b;
 				if (!res.$) {
 					var str = res.a;
-					var requested = A2($elm$core$Set$remove, path, model.T);
+					var requested = A2($elm$core$Set$remove, path, model.U);
 					var maxLineLength = A3(
 						$elm$core$List$foldr,
 						F2(
@@ -5027,31 +5574,47 @@ var $author$project$NameDictWorker$update = F2(
 									$elm$core$String$length(s),
 									acc);
 							}),
-						model.P,
+						model.R,
 						$elm$core$String$lines(str));
 					var filename = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', path);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								aG: 'Loaded ' + (filename + ' from network'),
-								P: maxLineLength,
-								E: _Utils_ap(
-									model.E,
+								R: maxLineLength,
+								G: _Utils_ap(
+									model.G,
 									A2($elm$core$String$cons, '\n', str)),
-								T: requested
+								U: requested
 							}),
-						$author$project$NameDictWorker$saveToIndexedDb(
-							$elm$json$Json$Encode$object(
-								_List_fromArray(
-									[
-										_Utils_Tuple2(
-										'filename',
-										$elm$json$Json$Encode$string(path)),
-										_Utils_Tuple2(
-										'content',
-										$elm$json$Json$Encode$string(str))
-									]))));
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									$author$project$NameDictWorker$saveToIndexedDb(
+									$elm$json$Json$Encode$object(
+										_List_fromArray(
+											[
+												_Utils_Tuple2(
+												'filename',
+												$elm$json$Json$Encode$string(path)),
+												_Utils_Tuple2(
+												'content',
+												$elm$json$Json$Encode$string(str))
+											]))),
+									$author$project$NameDictWorker$outbound(
+									A2(
+										$miniBill$elm_codec$Codec$encoder,
+										$author$project$Common$workerMsgCodec,
+										A2(
+											$author$project$Common$LoadingStatusMsg,
+											0,
+											{
+												bH: 'Loaded ' + (filename + ' from network'),
+												bV: $elm$core$Basics$round(
+													(100 * ($author$project$NameDictWorker$nbrFiles - $elm$core$Set$size(requested))) / $author$project$NameDictWorker$nbrFiles),
+												cc: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
+											})))
+								])));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -5065,7 +5628,7 @@ var $author$project$NameDictWorker$update = F2(
 							F2(
 								function (f, c) {
 									return $author$project$NameDictWorker$IndexedDbData(
-										{bf: c, bk: f});
+										{be: c, bj: f});
 								}),
 							A2($elm$json$Json$Decode$field, 'filename', $elm$json$Json$Decode$string),
 							A2($elm$json$Json$Decode$field, 'content', $elm$json$Json$Decode$string)),
@@ -5077,9 +5640,9 @@ var $author$project$NameDictWorker$update = F2(
 				var _v3 = A2($elm$json$Json$Decode$decodeValue, dataFromIndexedDbSecoder, value);
 				if (!_v3.$) {
 					if (!_v3.a.$) {
-						var filename = _v3.a.a.bk;
-						var content = _v3.a.a.bf;
-						var requested = A2($elm$core$Set$remove, filename, model.T);
+						var filename = _v3.a.a.bj;
+						var content = _v3.a.a.be;
+						var requested = A2($elm$core$Set$remove, filename, model.U);
 						var maxLineLength = A3(
 							$elm$core$List$foldr,
 							F2(
@@ -5089,21 +5652,32 @@ var $author$project$NameDictWorker$update = F2(
 										$elm$core$String$length(s),
 										acc);
 								}),
-							model.P,
+							model.R,
 							$elm$core$String$lines(content));
 						var filename_ = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', filename);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									aG: 'Loaded ' + (filename_ + ' from local backup'),
-									P: maxLineLength,
-									E: _Utils_ap(
-										model.E,
+									R: maxLineLength,
+									G: _Utils_ap(
+										model.G,
 										A2($elm$core$String$cons, '\n', content)),
-									T: requested
+									U: requested
 								}),
-							$elm$core$Platform$Cmd$none);
+							$author$project$NameDictWorker$outbound(
+								A2(
+									$miniBill$elm_codec$Codec$encoder,
+									$author$project$Common$workerMsgCodec,
+									A2(
+										$author$project$Common$LoadingStatusMsg,
+										0,
+										{
+											bH: 'Loaded ' + (filename_ + ' from local backup'),
+											bV: $elm$core$Basics$round(
+												(100 * ($author$project$NameDictWorker$nbrFiles - $elm$core$Set$size(requested))) / $author$project$NameDictWorker$nbrFiles),
+											cc: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
+										}))));
 					} else {
 						var path = _v3.a.a;
 						return _Utils_Tuple2(
@@ -5118,19 +5692,19 @@ var $author$project$NameDictWorker$update = F2(
 				var searchResult = A2(
 					$elm$core$List$sortBy,
 					function (e) {
-						return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.aU, s);
+						return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.bA, s);
 					},
 					A2(
 						$elm$core$List$filter,
 						function (e) {
-							return A2($elm$core$String$contains, s, e.aU);
+							return A2($elm$core$String$contains, s, e.bA);
 						},
 						A2(
 							$elm$core$List$filterMap,
 							$elm$core$Basics$identity,
 							A2(
 								$elm$core$List$map,
-								A2($elm$core$Basics$composeR, $author$project$NameDictWorker$parseEntry, $elm$core$Result$toMaybe),
+								A2($elm$core$Basics$composeR, $author$project$NameDictWorker$parseNameDictEntry, $elm$core$Result$toMaybe),
 								$elm$core$Set$toList(
 									$elm$core$Set$fromList(
 										A2(
@@ -5149,31 +5723,34 @@ var $author$project$NameDictWorker$update = F2(
 													A2(
 														$elm$core$List$map,
 														function (n) {
-															return A3($elm$core$String$slice, n - model.P, n + model.P, model.E);
+															return A3($elm$core$String$slice, n - model.R, n + model.R, model.G);
 														},
-														A2($elm$core$String$indexes, s, model.E)))))))))));
+														A2($elm$core$String$indexes, s, model.G)))))))))));
 				var getMatch = function (n) {
 					var rigthStr = A2(
 						$elm_community$string_extra$String$Extra$leftOf,
 						'\n',
-						A2($elm$core$String$dropLeft, n, model.E));
+						A2($elm$core$String$dropLeft, n, model.G));
 					var leftStr = A2(
 						$elm_community$string_extra$String$Extra$rightOfBack,
 						'\n',
-						A2($elm$core$String$left, n, model.E));
+						A2($elm$core$String$left, n, model.G));
 					return _Utils_ap(leftStr, rigthStr);
 				};
 				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{a_: searchResult}),
-					$elm$core$Platform$Cmd$none);
+					model,
+					$author$project$NameDictWorker$outbound(
+						A2(
+							$miniBill$elm_codec$Codec$encoder,
+							$author$project$Common$workerMsgCodec,
+							$author$project$Common$SearchResultMsg(
+								{b2: searchResult, b7: s}))));
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$NameDictWorker$main = $elm$core$Platform$worker(
-	{dc: $author$project$NameDictWorker$init, dZ: $author$project$NameDictWorker$subscriptions, eh: $author$project$NameDictWorker$update});
+	{dj: $author$project$NameDictWorker$init, d1: $author$project$NameDictWorker$subscriptions, el: $author$project$NameDictWorker$update});
 _Platform_export({'NameDictWorker':{'init':$author$project$NameDictWorker$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
