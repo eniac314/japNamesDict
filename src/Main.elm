@@ -1,6 +1,7 @@
 port module Main exposing (..)
 
 import Browser
+import Browser.Dom exposing (getElement, setViewport)
 import Browser.Events exposing (onAnimationFrame)
 import Codec exposing (decoder, encoder)
 import Common exposing (..)
@@ -66,6 +67,8 @@ type Msg
     = SearchInput String
     | SetTimeStamp Time.Posix
     | Tick Time.Posix
+    | ScrollTo String
+    | ShowMore Worker
     | GotServiceWorkerMsg String
     | ProcessLoadingStatus
         Worker
@@ -118,6 +121,10 @@ nbrFiles =
     50
 
 
+dashboardHeight =
+    120
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -140,13 +147,60 @@ update msg model =
             case model.lastInputTimestamp of
                 Just t1 ->
                     if Time.posixToMillis t - Time.posixToMillis t1 > 300 then
-                        update Search { model | lastInputTimestamp = Nothing }
+                        case Maybe.map String.toList model.searchInput of
+                            --Just (c :: []) ->
+                            --    if List.member c kanji then
+                            --        update Search { model | lastInputTimestamp = Nothing }
+                            --    else
+                            --        ( model, Cmd.none )
+                            Just (c :: cs) ->
+                                if List.member c kanji then
+                                    update Search { model | lastInputTimestamp = Nothing }
+
+                                else if List.all Char.isAlphaNum cs && (List.length cs > 3) then
+                                    update Search { model | lastInputTimestamp = Nothing }
+
+                                else if List.length cs > 1 then
+                                    update Search { model | lastInputTimestamp = Nothing }
+
+                                else
+                                    ( model, Cmd.none )
+
+                            _ ->
+                                ( model, Cmd.none )
 
                     else
                         ( model, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        ScrollTo id ->
+            ( model, scrollTo id )
+
+        ShowMore w ->
+            case w of
+                NameDictWorker ->
+                    let
+                        x =
+                            model.nameDictSearchResult
+                    in
+                    ( { model
+                        | nameDictSearchResult = { x | showing = x.showing + 15 }
+                      }
+                    , Cmd.none
+                    )
+
+                DictWorker ->
+                    let
+                        x =
+                            model.dictSearchResult
+                    in
+                    ( { model
+                        | dictSearchResult = { x | showing = x.showing + 15 }
+                      }
+                    , Cmd.none
+                    )
 
         GotServiceWorkerMsg message ->
             ( { model | serviceWorkerMessages = message :: model.serviceWorkerMessages }
@@ -186,20 +240,45 @@ update msg model =
 
         ProcessSearchResult { searchString, result } ->
             if Just searchString == model.searchInput then
+                let
+                    wcs =
+                        model.workersState
+                in
                 case result of
                     NameDictResult xs ->
-                        ( { model | nameDictSearchResult = { res = xs, showing = 15 } }, Cmd.none )
+                        ( { model
+                            | nameDictSearchResult = { res = xs, showing = 15 }
+                            , workersState = { wcs | nameDict = WorkerSearching Success }
+                          }
+                        , Cmd.none
+                        )
 
                     DictResult xs ->
-                        ( { model | dictSearchResult = { res = xs, showing = 15 } }, Cmd.none )
+                        ( { model
+                            | dictSearchResult = { res = xs, showing = 15 }
+                            , workersState = { wcs | dict = WorkerSearching Success }
+                          }
+                        , Cmd.none
+                        )
 
             else
-                ( model, Cmd.none )
+                let
+                    resetWorkerState =
+                        { dict = WorkerSearching Initial
+                        , nameDict = WorkerSearching Initial
+                        }
+                in
+                update Search { model | workersState = resetWorkerState }
 
         Search ->
-            case model.searchInput of
-                Just s ->
-                    ( model
+            case ( model.searchInput, canSearch model ) of
+                ( Just s, True ) ->
+                    ( { model
+                        | workersState =
+                            { nameDict = WorkerSearching Pending
+                            , dict = WorkerSearching Pending
+                            }
+                      }
                     , Cmd.batch
                         [ Codec.encoder workerCmdCodec (SearchCmd s)
                             |> toNameDict
@@ -208,11 +287,20 @@ update msg model =
                         ]
                     )
 
-                Nothing ->
+                _ ->
                     ( model, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
+
+
+canSearch model =
+    (model.workersState.nameDict
+        /= WorkerSearching Pending
+    )
+        && (model.workersState.dict
+                /= WorkerSearching Pending
+           )
 
 
 subscriptions model =
@@ -236,8 +324,6 @@ subscriptions model =
                     _ ->
                         NoOp
             )
-
-        --, onAnimationFrame Tick
         ]
 
 
@@ -245,11 +331,16 @@ view : Model -> Browser.Document Msg
 view model =
     { title = ""
     , body =
-        [ layout []
+        [ layout
+            (case model.appState of
+                Loading s ->
+                    []
+
+                Ready ->
+                    [ inFront (searchDashboardview model) ]
+            )
             (column
-                [ padding 15
-                , spacing 15
-                , width fill
+                [ width fill
                 , centerX
                 ]
                 [ case model.appState of
@@ -257,7 +348,7 @@ view model =
                         loadingView model s
 
                     Ready ->
-                        searchView model
+                        searchResultView model
                 ]
             )
         ]
@@ -283,45 +374,101 @@ loadingView model status =
                     ( 0, "" )
     in
     column
-        [ spacing 15 ]
+        [ spacing 15
+        , padding 15
+        , width fill
+        ]
         [ nameDictProgress
             |> progressBar
             |> el [ centerX ]
-        , el [ Font.size 14 ] (text <| nameDictMessage)
+        , el [ Font.size 14, centerX ] (text <| nameDictMessage)
         , dictProgress
             |> progressBar
             |> el [ centerX ]
-        , el [ Font.size 14 ] (text <| dictMessage)
+        , el [ Font.size 14, centerX ] (text <| dictMessage)
         , column
-            [ Font.size 12 ]
+            [ Font.size 12, centerX ]
             (List.map text model.serviceWorkerMessages
                 |> List.reverse
             )
-
-        --, if status == Failure then
-        --    Input.button
-        --        []
-        --        { onPress = Just GetData
-        --        , label = text <| "reload data"
-        --        }
-        --else
-        --  Element.none
         ]
 
 
-searchView model =
+searchDashboardview model =
     let
-        nameDictResults =
-            List.take model.nameDictSearchResult.showing model.nameDictSearchResult.res
+        nbrMatchesNameDict =
+            List.length model.nameDictSearchResult.res
 
-        dictResults =
-            List.take model.dictSearchResult.showing model.dictSearchResult.res
+        nbrMatchesDict =
+            List.length model.dictSearchResult.res
+
+        wcs =
+            model.workersState
+
+        nameDictSearchStatus =
+            case wcs.nameDict of
+                WorkerSearching s ->
+                    s
+
+                WorkerLoading s ->
+                    s.status
+
+        dictSearchStatus =
+            case wcs.dict of
+                WorkerSearching s ->
+                    s
+
+                WorkerLoading s ->
+                    s.status
+
+        searchStatusBox s =
+            el
+                [ width (px 20)
+                , height (px 20)
+                , Border.rounded 10
+                , Background.color <|
+                    case s of
+                        Pending ->
+                            rgb255 255 127 0
+
+                        Failure ->
+                            rgb255 224 38 50
+
+                        _ ->
+                            rgb255 38 224 44
+                ]
+                Element.none
     in
     column
-        [ spacing 15
-        , width fill
+        [ width fill
+        , height (px dashboardHeight)
+        , spacing 15
+        , padding 15
+        , Background.color (rgb255 255 255 255)
         ]
         [ row
+            [ width fill
+            , spacing 15
+            , Font.size 12
+            ]
+            [ row
+                [ spacing 10
+                , Events.onClick (ScrollTo "nameDict")
+                ]
+                [ el [] (text "人名地名辞典")
+                , searchStatusBox nameDictSearchStatus
+                , text <| String.fromInt nbrMatchesNameDict
+                ]
+            , row
+                [ spacing 10
+                , Events.onClick (ScrollTo "japDict")
+                ]
+                [ el [] (text "和英辞典")
+                , searchStatusBox dictSearchStatus
+                , text <| String.fromInt nbrMatchesDict
+                ]
+            ]
+        , row
             [ spacing 15
             , width fill
             ]
@@ -338,12 +485,48 @@ searchView model =
                 , label = text <| "search"
                 }
             ]
+        ]
+
+
+searchResultView model =
+    let
+        nameDictResults =
+            List.take model.nameDictSearchResult.showing model.nameDictSearchResult.res
+
+        dictResults =
+            List.take model.dictSearchResult.showing model.dictSearchResult.res
+
+        showMoreView w =
+            row
+                [ padding 10
+                , width fill
+                ]
+                [ el
+                    [ centerX
+                    , Font.size 14
+                    , Events.onClick (ShowMore w)
+                    ]
+                    (text "Show more")
+                ]
+    in
+    column
+        [ width fill
+        ]
+        [ el [ width fill, height (px dashboardHeight) ] Element.none
         , column
-            [ width fill ]
-            (List.indexedMap (Lazy.lazy2 nameEntryView) nameDictResults)
+            [ width fill
+            , htmlAttribute <| HtmlAttr.id "nameDict"
+            ]
+            (List.indexedMap (Lazy.lazy2 nameEntryView) nameDictResults
+                ++ [ showMoreView NameDictWorker ]
+            )
         , column
-            [ width fill ]
-            (List.indexedMap (Lazy.lazy2 dictEntryView) dictResults)
+            [ width fill
+            , htmlAttribute <| HtmlAttr.id "japDict"
+            ]
+            (List.indexedMap (Lazy.lazy2 dictEntryView) dictResults
+                ++ [ showMoreView DictWorker ]
+            )
         ]
 
 
@@ -373,7 +556,9 @@ dictEntryView n e =
                         Element.none
                 )
             ]
-        , column [ Font.size 15 ] (List.map text e.meanings)
+        , column
+            [ Font.size 15 ]
+            (List.map (\m -> paragraph [] [ text m ]) e.meanings)
         ]
 
 
@@ -508,3 +693,17 @@ progressBar n =
 strCons : String -> String -> String
 strCons tail head =
     head ++ tail
+
+
+scrollTo : String -> Cmd Msg
+scrollTo destId =
+    getElement destId
+        |> Task.andThen
+            (\el ->
+                setViewport
+                    0
+                    (el.element.y
+                        - dashboardHeight
+                    )
+            )
+        |> Task.attempt (\_ -> NoOp)

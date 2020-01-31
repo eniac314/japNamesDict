@@ -2570,6 +2570,107 @@ function _Http_track(router, xhr, tracker)
 	});
 }
 
+// CREATE
+
+var _Regex_never = /.^/;
+
+var _Regex_fromStringWith = F2(function(options, string)
+{
+	var flags = 'g';
+	if (options.dx) { flags += 'm'; }
+	if (options.cW) { flags += 'i'; }
+
+	try
+	{
+		return $elm$core$Maybe$Just(new RegExp(string, flags));
+	}
+	catch(error)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+});
+
+
+// USE
+
+var _Regex_contains = F2(function(re, string)
+{
+	return string.match(re) !== null;
+});
+
+
+var _Regex_findAtMost = F3(function(n, re, str)
+{
+	var out = [];
+	var number = 0;
+	var string = str;
+	var lastIndex = re.lastIndex;
+	var prevLastIndex = -1;
+	var result;
+	while (number++ < n && (result = re.exec(string)))
+	{
+		if (prevLastIndex == re.lastIndex) break;
+		var i = result.length - 1;
+		var subs = new Array(i);
+		while (i > 0)
+		{
+			var submatch = result[i];
+			subs[--i] = submatch
+				? $elm$core$Maybe$Just(submatch)
+				: $elm$core$Maybe$Nothing;
+		}
+		out.push(A4($elm$regex$Regex$Match, result[0], result.index, number, _List_fromArray(subs)));
+		prevLastIndex = re.lastIndex;
+	}
+	re.lastIndex = lastIndex;
+	return _List_fromArray(out);
+});
+
+
+var _Regex_replaceAtMost = F4(function(n, re, replacer, string)
+{
+	var count = 0;
+	function jsReplacer(match)
+	{
+		if (count++ >= n)
+		{
+			return match;
+		}
+		var i = arguments.length - 3;
+		var submatches = new Array(i);
+		while (i > 0)
+		{
+			var submatch = arguments[i];
+			submatches[--i] = submatch
+				? $elm$core$Maybe$Just(submatch)
+				: $elm$core$Maybe$Nothing;
+		}
+		return replacer(A4($elm$regex$Regex$Match, match, arguments[arguments.length - 2], count, _List_fromArray(submatches)));
+	}
+	return string.replace(re, jsReplacer);
+});
+
+var _Regex_splitAtMost = F3(function(n, re, str)
+{
+	var string = str;
+	var out = [];
+	var start = re.lastIndex;
+	var restoreLastIndex = re.lastIndex;
+	while (n--)
+	{
+		var result = re.exec(string);
+		if (!result) break;
+		out.push(string.slice(start, result.index));
+		start = re.lastIndex;
+	}
+	out.push(string.slice(start));
+	re.lastIndex = restoreLastIndex;
+	return _List_fromArray(out);
+});
+
+var _Regex_infinity = Infinity;
+
+
 
 
 // STRINGS
@@ -3409,7 +3510,7 @@ var $author$project$NameDictWorker$init = function (flags) {
 	return _Utils_Tuple2(
 		{
 			aF: 'loading indexedDb...',
-			Q: 0,
+			J: 0,
 			T: '',
 			U: $elm$core$Set$fromList(
 				A2($elm$core$List$map, $author$project$NameDictWorker$dataPath, ids))
@@ -3632,6 +3733,40 @@ var $author$project$Common$SearchResultMsg = function (a) {
 	return {$: 1, a: a};
 };
 var $author$project$Common$Success = 2;
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
@@ -3639,6 +3774,15 @@ var $elm$core$Basics$composeR = F3(
 			f(x));
 	});
 var $elm$core$String$contains = _String_contains;
+var $elm$core$String$slice = _String_slice;
+var $elm$core$String$dropLeft = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3(
+			$elm$core$String$slice,
+			n,
+			$elm$core$String$length(string),
+			string);
+	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -4350,19 +4494,102 @@ var $author$project$NameDictWorker$getData = function (path) {
 			en: path
 		});
 };
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $elm$core$String$indexes = _String_indexes;
+var $elm$core$String$left = F2(
+	function (n, string) {
+		return (n < 1) ? '' : A3($elm$core$String$slice, 0, n, string);
+	});
+var $elm$regex$Regex$Match = F4(
+	function (match, index, number, submatches) {
+		return {dj: index, dt: match, dz: number, d1: submatches};
+	});
+var $elm$regex$Regex$findAtMost = _Regex_findAtMost;
+var $elm_community$string_extra$String$Extra$firstResultHelp = F2(
+	function (_default, list) {
+		firstResultHelp:
+		while (true) {
+			if (!list.b) {
+				return _default;
+			} else {
+				if (!list.a.$) {
+					var a = list.a.a;
+					return a;
+				} else {
+					var _v1 = list.a;
+					var rest = list.b;
+					var $temp$default = _default,
+						$temp$list = rest;
+					_default = $temp$default;
+					list = $temp$list;
+					continue firstResultHelp;
+				}
+			}
+		}
+	});
+var $elm_community$string_extra$String$Extra$firstResult = function (list) {
+	return A2($elm_community$string_extra$String$Extra$firstResultHelp, '', list);
+};
+var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
+var $elm$regex$Regex$fromString = function (string) {
+	return A2(
+		$elm$regex$Regex$fromStringWith,
+		{cW: false, dx: false},
+		string);
+};
+var $elm$regex$Regex$never = _Regex_never;
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $elm_community$string_extra$String$Extra$regexFromString = A2(
+	$elm$core$Basics$composeR,
+	$elm$regex$Regex$fromString,
+	$elm$core$Maybe$withDefault($elm$regex$Regex$never));
+var $elm$regex$Regex$replace = _Regex_replaceAtMost(_Regex_infinity);
+var $elm_community$string_extra$String$Extra$regexEscape = A2(
+	$elm$regex$Regex$replace,
+	$elm_community$string_extra$String$Extra$regexFromString('[-/\\^$*+?.()|[\\]{}]'),
+	function (_v0) {
+		var match = _v0.dt;
+		return '\\' + match;
+	});
+var $elm_community$string_extra$String$Extra$leftOf = F2(
+	function (pattern, string) {
+		return A2(
+			$elm$core$String$join,
+			'',
+			A2(
+				$elm$core$List$map,
+				A2(
+					$elm$core$Basics$composeR,
+					function ($) {
+						return $.d1;
+					},
+					$elm_community$string_extra$String$Extra$firstResult),
+				A3(
+					$elm$regex$Regex$findAtMost,
+					1,
+					$elm_community$string_extra$String$Extra$regexFromString(
+						'^(.*?)' + $elm_community$string_extra$String$Extra$regexEscape(pattern)),
+					string)));
+	});
 var $elm$core$String$lines = _String_lines;
 var $author$project$NameDictWorker$loadFromIndexedDb = _Platform_outgoingPort('loadFromIndexedDb', $elm$json$Json$Encode$string);
 var $elm$json$Json$Decode$map2 = _Json_map2;
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$NameDictWorker$outbound = _Platform_outgoingPort('outbound', $elm$core$Basics$identity);
 var $author$project$Common$NameDictEntry = F5(
@@ -4447,7 +4674,6 @@ var $elm$core$Basics$always = F2(
 	function (a, _v0) {
 		return a;
 	});
-var $elm$core$String$slice = _String_slice;
 var $elm$parser$Parser$Advanced$mapChompedString = F2(
 	function (func, _v0) {
 		var parse = _v0;
@@ -4594,7 +4820,6 @@ var $elm$core$String$isEmpty = function (string) {
 	return string === '';
 };
 var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
-var $elm$core$Basics$not = _Basics_not;
 var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var str = _v0.a;
 	var expecting = _v0.b;
@@ -4859,14 +5084,15 @@ var $elm$core$Set$remove = F2(
 		var dict = _v0;
 		return A2($elm$core$Dict$remove, key, dict);
 	});
-var $elm$core$String$dropLeft = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3(
-			$elm$core$String$slice,
-			n,
-			$elm$core$String$length(string),
-			string);
-	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
 		if (!maybe.$) {
@@ -4875,15 +5101,6 @@ var $elm$core$Maybe$map = F2(
 				f(value));
 		} else {
 			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
 		}
 	});
 var $elm_community$string_extra$String$Extra$rightOfBack = F2(
@@ -4986,6 +5203,7 @@ var $elm$core$Set$size = function (_v0) {
 	return $elm$core$Dict$size(dict);
 };
 var $elm$core$List$sortBy = _List_sortBy;
+var $elm$core$String$toLower = _String_toLower;
 var $elm$core$Result$toMaybe = function (result) {
 	if (!result.$) {
 		var v = result.a;
@@ -4994,6 +5212,58 @@ var $elm$core$Result$toMaybe = function (result) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $elm$core$Dict$member = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$get, key, dict);
+		if (!_v0.$) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+var $elm$core$Set$member = F2(
+	function (key, _v0) {
+		var dict = _v0;
+		return A2($elm$core$Dict$member, key, dict);
+	});
+var $elm_community$list_extra$List$Extra$uniqueHelp = F4(
+	function (f, existing, remaining, accumulator) {
+		uniqueHelp:
+		while (true) {
+			if (!remaining.b) {
+				return $elm$core$List$reverse(accumulator);
+			} else {
+				var first = remaining.a;
+				var rest = remaining.b;
+				var computedFirst = f(first);
+				if (A2($elm$core$Set$member, computedFirst, existing)) {
+					var $temp$f = f,
+						$temp$existing = existing,
+						$temp$remaining = rest,
+						$temp$accumulator = accumulator;
+					f = $temp$f;
+					existing = $temp$existing;
+					remaining = $temp$remaining;
+					accumulator = $temp$accumulator;
+					continue uniqueHelp;
+				} else {
+					var $temp$f = f,
+						$temp$existing = A2($elm$core$Set$insert, computedFirst, existing),
+						$temp$remaining = rest,
+						$temp$accumulator = A2($elm$core$List$cons, first, accumulator);
+					f = $temp$f;
+					existing = $temp$existing;
+					remaining = $temp$remaining;
+					accumulator = $temp$accumulator;
+					continue uniqueHelp;
+				}
+			}
+		}
+	});
+var $elm_community$list_extra$List$Extra$unique = function (list) {
+	return A4($elm_community$list_extra$List$Extra$uniqueHelp, $elm$core$Basics$identity, $elm$core$Set$empty, list, _List_Nil);
+};
+var $elm$core$String$words = _String_words;
 var $miniBill$elm_codec$Codec$buildObject = function (_v0) {
 	var om = _v0;
 	return {
@@ -5461,14 +5731,14 @@ var $author$project$NameDictWorker$update = F2(
 									$elm$core$String$length(s),
 									acc);
 							}),
-						model.Q,
+						model.J,
 						$elm$core$String$lines(str));
 					var filename = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', path);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								Q: maxLineLength,
+								J: maxLineLength,
 								T: _Utils_ap(
 									model.T,
 									A2($elm$core$String$cons, '\n', str)),
@@ -5539,14 +5809,14 @@ var $author$project$NameDictWorker$update = F2(
 										$elm$core$String$length(s),
 										acc);
 								}),
-							model.Q,
+							model.J,
 							$elm$core$String$lines(content));
 						var filename_ = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', filename);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									Q: maxLineLength,
+									J: maxLineLength,
 									T: _Utils_ap(
 										model.T,
 										A2($elm$core$String$cons, '\n', content)),
@@ -5576,43 +5846,53 @@ var $author$project$NameDictWorker$update = F2(
 				}
 			case 4:
 				var s = msg.a;
+				var getMatch = F2(
+					function (n, s_) {
+						var rigthStr = A2(
+							$elm_community$string_extra$String$Extra$leftOf,
+							'\n',
+							A2($elm$core$String$dropLeft, n, s_));
+						var leftStr = A2(
+							$elm_community$string_extra$String$Extra$rightOfBack,
+							'\n',
+							A2($elm$core$String$left, n, s_));
+						return _Utils_ap(leftStr, rigthStr);
+					});
 				var searchResult = A2(
 					$elm$core$List$sortBy,
 					function (e) {
 						return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.aG, s);
 					},
-					A2(
-						$elm$core$List$filter,
+					(A2(
+						$elm$core$List$all,
+						$elm$core$Char$isAlphaNum,
+						$elm$core$String$toList(s)) ? $elm$core$List$filter(
+						function (e) {
+							return A2(
+								$elm$core$List$member,
+								$elm$core$String$toLower(s),
+								$elm$core$String$words(
+									$elm$core$String$toLower(e.bH)));
+						}) : $elm$core$List$filter(
 						function (e) {
 							return A2($elm$core$String$contains, s, e.aG);
-						},
+						}))(
 						A2(
 							$elm$core$List$filterMap,
 							$elm$core$Basics$identity,
 							A2(
 								$elm$core$List$map,
 								A2($elm$core$Basics$composeR, $author$project$NameDictWorker$parseNameDictEntry, $elm$core$Result$toMaybe),
-								$elm$core$Set$toList(
-									$elm$core$Set$fromList(
+								$elm_community$list_extra$List$Extra$unique(
+									A2(
+										$elm$core$List$map,
+										getMatch(model.J),
 										A2(
 											$elm$core$List$map,
-											A2(
-												$elm$core$Basics$composeR,
-												$elm$core$List$head,
-												$elm$core$Maybe$withDefault('')),
-											A2(
-												$elm$core$List$map,
-												$elm$core$List$filter(
-													$elm$core$String$contains(s)),
-												A2(
-													$elm$core$List$map,
-													$elm$core$String$lines,
-													A2(
-														$elm$core$List$map,
-														function (n) {
-															return A3($elm$core$String$slice, n - model.Q, n + model.Q, model.T);
-														},
-														A2($elm$core$String$indexes, s, model.T)))))))))));
+											function (n) {
+												return A3($elm$core$String$slice, n - model.J, n + model.J, model.T);
+											},
+											A2($elm$core$String$indexes, s, model.T))))))));
 				return _Utils_Tuple2(
 					model,
 					$author$project$NameDictWorker$outbound(

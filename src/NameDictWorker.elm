@@ -5,6 +5,7 @@ import Common exposing (..)
 import Http exposing (..)
 import Json.Decode as D
 import Json.Encode as E
+import List.Extra exposing (unique)
 import Parser exposing (..)
 import Set exposing (..)
 import String.Extra exposing (leftOf, rightOfBack)
@@ -211,17 +212,35 @@ update msg model =
 
         Search s ->
             let
+                getMatch n s_ =
+                    let
+                        rigthStr =
+                            String.dropLeft n s_
+                                |> leftOf "\n"
+
+                        leftStr =
+                            String.left n s_
+                                |> rightOfBack "\n"
+                    in
+                    leftStr ++ rigthStr
+
                 searchResult =
                     String.indexes s model.rawData
                         |> List.map (\n -> String.slice (n - model.maxLineLength) (n + model.maxLineLength) model.rawData)
-                        |> List.map String.lines
-                        |> List.map (List.filter (String.contains s))
-                        |> List.map (List.head >> Maybe.withDefault "")
-                        |> Set.fromList
-                        |> Set.toList
+                        |> List.map (getMatch model.maxLineLength)
+                        |> List.Extra.unique
                         |> List.map (parseNameDictEntry >> Result.toMaybe)
                         |> List.filterMap identity
-                        |> List.filter (\e -> String.contains s e.key)
+                        |> (if List.all Char.isAlphaNum (String.toList s) then
+                                List.filter
+                                    (\e ->
+                                        List.member (String.toLower s)
+                                            (String.words <| String.toLower e.meaning)
+                                    )
+
+                            else
+                                List.filter (\e -> String.contains s e.key)
+                           )
                         |> List.sortBy (\e -> sift3Distance e.key s)
             in
             ( model

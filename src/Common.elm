@@ -318,3 +318,26 @@ dictEntryCodec =
         |> Codec.field "reading" .reading (Codec.maybe Codec.string)
         |> Codec.field "meanings" .meanings (Codec.list Codec.string)
         |> Codec.buildObject
+
+
+
+-------------------------------------------------------------------------------
+
+
+hiragana =
+    List.range 0x3040 0x309F
+        |> List.map Char.fromCode
+
+
+katakana =
+    List.range 0x30A0 0x30FF
+        |> List.map Char.fromCode
+
+
+kana =
+    hiragana ++ katakana
+
+
+kanji =
+    List.range 0x4E00 0x9FBF
+        |> List.map Char.fromCode

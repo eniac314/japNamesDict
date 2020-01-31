@@ -2570,6 +2570,107 @@ function _Http_track(router, xhr, tracker)
 	});
 }
 
+// CREATE
+
+var _Regex_never = /.^/;
+
+var _Regex_fromStringWith = F2(function(options, string)
+{
+	var flags = 'g';
+	if (options.dx) { flags += 'm'; }
+	if (options.cW) { flags += 'i'; }
+
+	try
+	{
+		return $elm$core$Maybe$Just(new RegExp(string, flags));
+	}
+	catch(error)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+});
+
+
+// USE
+
+var _Regex_contains = F2(function(re, string)
+{
+	return string.match(re) !== null;
+});
+
+
+var _Regex_findAtMost = F3(function(n, re, str)
+{
+	var out = [];
+	var number = 0;
+	var string = str;
+	var lastIndex = re.lastIndex;
+	var prevLastIndex = -1;
+	var result;
+	while (number++ < n && (result = re.exec(string)))
+	{
+		if (prevLastIndex == re.lastIndex) break;
+		var i = result.length - 1;
+		var subs = new Array(i);
+		while (i > 0)
+		{
+			var submatch = result[i];
+			subs[--i] = submatch
+				? $elm$core$Maybe$Just(submatch)
+				: $elm$core$Maybe$Nothing;
+		}
+		out.push(A4($elm$regex$Regex$Match, result[0], result.index, number, _List_fromArray(subs)));
+		prevLastIndex = re.lastIndex;
+	}
+	re.lastIndex = lastIndex;
+	return _List_fromArray(out);
+});
+
+
+var _Regex_replaceAtMost = F4(function(n, re, replacer, string)
+{
+	var count = 0;
+	function jsReplacer(match)
+	{
+		if (count++ >= n)
+		{
+			return match;
+		}
+		var i = arguments.length - 3;
+		var submatches = new Array(i);
+		while (i > 0)
+		{
+			var submatch = arguments[i];
+			submatches[--i] = submatch
+				? $elm$core$Maybe$Just(submatch)
+				: $elm$core$Maybe$Nothing;
+		}
+		return replacer(A4($elm$regex$Regex$Match, match, arguments[arguments.length - 2], count, _List_fromArray(submatches)));
+	}
+	return string.replace(re, jsReplacer);
+});
+
+var _Regex_splitAtMost = F3(function(n, re, str)
+{
+	var string = str;
+	var out = [];
+	var start = re.lastIndex;
+	var restoreLastIndex = re.lastIndex;
+	while (n--)
+	{
+		var result = re.exec(string);
+		if (!result) break;
+		out.push(string.slice(start, result.index));
+		start = re.lastIndex;
+	}
+	out.push(string.slice(start));
+	re.lastIndex = restoreLastIndex;
+	return _List_fromArray(out);
+});
+
+var _Regex_infinity = Infinity;
+
+
 
 
 // STRINGS
@@ -3409,7 +3510,7 @@ var $author$project$DictWorker$init = function (flags) {
 	return _Utils_Tuple2(
 		{
 			aF: 'loading indexedDb...',
-			Q: 0,
+			J: 0,
 			T: '',
 			U: $elm$core$Set$fromList(
 				A2($elm$core$List$map, $author$project$DictWorker$dataPath, ids))
@@ -3632,13 +3733,72 @@ var $author$project$Common$SearchResultMsg = function (a) {
 	return {$: 1, a: a};
 };
 var $author$project$Common$Success = 2;
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
 			f(x));
 	});
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
 var $elm$core$String$contains = _String_contains;
+var $elm$core$String$slice = _String_slice;
+var $elm$core$String$dropLeft = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3(
+			$elm$core$String$slice,
+			n,
+			$elm$core$String$length(string),
+			string);
+	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -4350,80 +4510,113 @@ var $author$project$DictWorker$getData = function (path) {
 			en: path
 		});
 };
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $elm$core$String$indexes = _String_indexes;
+var $elm$core$String$left = F2(
+	function (n, string) {
+		return (n < 1) ? '' : A3($elm$core$String$slice, 0, n, string);
+	});
+var $elm$regex$Regex$Match = F4(
+	function (match, index, number, submatches) {
+		return {dj: index, dt: match, dz: number, d1: submatches};
+	});
+var $elm$regex$Regex$findAtMost = _Regex_findAtMost;
+var $elm_community$string_extra$String$Extra$firstResultHelp = F2(
+	function (_default, list) {
+		firstResultHelp:
+		while (true) {
+			if (!list.b) {
+				return _default;
+			} else {
+				if (!list.a.$) {
+					var a = list.a.a;
+					return a;
+				} else {
+					var _v1 = list.a;
+					var rest = list.b;
+					var $temp$default = _default,
+						$temp$list = rest;
+					_default = $temp$default;
+					list = $temp$list;
+					continue firstResultHelp;
+				}
+			}
+		}
+	});
+var $elm_community$string_extra$String$Extra$firstResult = function (list) {
+	return A2($elm_community$string_extra$String$Extra$firstResultHelp, '', list);
+};
+var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
+var $elm$regex$Regex$fromString = function (string) {
+	return A2(
+		$elm$regex$Regex$fromStringWith,
+		{cW: false, dx: false},
+		string);
+};
+var $elm$regex$Regex$never = _Regex_never;
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $elm_community$string_extra$String$Extra$regexFromString = A2(
+	$elm$core$Basics$composeR,
+	$elm$regex$Regex$fromString,
+	$elm$core$Maybe$withDefault($elm$regex$Regex$never));
+var $elm$regex$Regex$replace = _Regex_replaceAtMost(_Regex_infinity);
+var $elm_community$string_extra$String$Extra$regexEscape = A2(
+	$elm$regex$Regex$replace,
+	$elm_community$string_extra$String$Extra$regexFromString('[-/\\^$*+?.()|[\\]{}]'),
+	function (_v0) {
+		var match = _v0.dt;
+		return '\\' + match;
+	});
+var $elm_community$string_extra$String$Extra$leftOf = F2(
+	function (pattern, string) {
+		return A2(
+			$elm$core$String$join,
+			'',
+			A2(
+				$elm$core$List$map,
+				A2(
+					$elm$core$Basics$composeR,
+					function ($) {
+						return $.d1;
+					},
+					$elm_community$string_extra$String$Extra$firstResult),
+				A3(
+					$elm$regex$Regex$findAtMost,
+					1,
+					$elm_community$string_extra$String$Extra$regexFromString(
+						'^(.*?)' + $elm_community$string_extra$String$Extra$regexEscape(pattern)),
+					string)));
+	});
 var $elm$core$String$lines = _String_lines;
 var $author$project$DictWorker$loadFromIndexedDb = _Platform_outgoingPort('loadFromIndexedDb', $elm$json$Json$Encode$string);
 var $elm$json$Json$Decode$map2 = _Json_map2;
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$DictWorker$outbound = _Platform_outgoingPort('outbound', $elm$core$Basics$identity);
 var $author$project$Common$DictEntry = F3(
 	function (key, reading, meanings) {
 		return {aG: key, bI: meanings, aJ: reading};
 	});
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
-var $elm$parser$Parser$Advanced$Bad = F2(
-	function (a, b) {
-		return {$: 1, a: a, b: b};
-	});
+var $elm$parser$Parser$Advanced$Parser = $elm$core$Basics$identity;
 var $elm$parser$Parser$Advanced$Good = F3(
 	function (a, b, c) {
 		return {$: 0, a: a, b: b, c: c};
 	});
-var $elm$parser$Parser$Advanced$Parser = $elm$core$Basics$identity;
-var $elm$parser$Parser$Advanced$map2 = F3(
-	function (func, _v0, _v1) {
-		var parseA = _v0;
-		var parseB = _v1;
-		return function (s0) {
-			var _v2 = parseA(s0);
-			if (_v2.$ === 1) {
-				var p = _v2.a;
-				var x = _v2.b;
-				return A2($elm$parser$Parser$Advanced$Bad, p, x);
-			} else {
-				var p1 = _v2.a;
-				var a = _v2.b;
-				var s1 = _v2.c;
-				var _v3 = parseB(s1);
-				if (_v3.$ === 1) {
-					var p2 = _v3.a;
-					var x = _v3.b;
-					return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
-				} else {
-					var p2 = _v3.a;
-					var b = _v3.b;
-					var s2 = _v3.c;
-					return A3(
-						$elm$parser$Parser$Advanced$Good,
-						p1 || p2,
-						A2(func, a, b),
-						s2);
-				}
-			}
-		};
-	});
-var $elm$parser$Parser$Advanced$ignorer = F2(
-	function (keepParser, ignoreParser) {
-		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
-	});
-var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
-var $elm$parser$Parser$Advanced$keeper = F2(
-	function (parseFunc, parseArg) {
-		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
-	});
-var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
 var $elm$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
 var $elm$core$Basics$negate = function (n) {
 	return -n;
@@ -4474,7 +4667,14 @@ var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
-var $elm$core$String$slice = _String_slice;
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $elm$parser$Parser$Advanced$Bad = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
 var $elm$parser$Parser$Advanced$mapChompedString = F2(
 	function (func, _v0) {
 		var parse = _v0;
@@ -4503,6 +4703,48 @@ var $elm$parser$Parser$Advanced$getChompedString = function (parser) {
 	return A2($elm$parser$Parser$Advanced$mapChompedString, $elm$core$Basics$always, parser);
 };
 var $elm$parser$Parser$getChompedString = $elm$parser$Parser$Advanced$getChompedString;
+var $elm$parser$Parser$Advanced$map2 = F3(
+	function (func, _v0, _v1) {
+		var parseA = _v0;
+		var parseB = _v1;
+		return function (s0) {
+			var _v2 = parseA(s0);
+			if (_v2.$ === 1) {
+				var p = _v2.a;
+				var x = _v2.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p, x);
+			} else {
+				var p1 = _v2.a;
+				var a = _v2.b;
+				var s1 = _v2.c;
+				var _v3 = parseB(s1);
+				if (_v3.$ === 1) {
+					var p2 = _v3.a;
+					var x = _v3.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
+				} else {
+					var p2 = _v3.a;
+					var b = _v3.b;
+					var s2 = _v3.c;
+					return A3(
+						$elm$parser$Parser$Advanced$Good,
+						p1 || p2,
+						A2(func, a, b),
+						s2);
+				}
+			}
+		};
+	});
+var $elm$parser$Parser$Advanced$ignorer = F2(
+	function (keepParser, ignoreParser) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
+	});
+var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
+var $elm$parser$Parser$Advanced$keeper = F2(
+	function (parseFunc, parseArg) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
+	});
+var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $elm$parser$Parser$Advanced$spaces = $elm$parser$Parser$Advanced$chompWhile(
 	function (c) {
@@ -4515,6 +4757,281 @@ var $elm$parser$Parser$Advanced$succeed = function (a) {
 	};
 };
 var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
+var $author$project$DictWorker$meaningParser = A2(
+	$elm$parser$Parser$keeper,
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($elm$core$Basics$identity),
+		$elm$parser$Parser$spaces),
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$getChompedString(
+			A2(
+				$elm$parser$Parser$ignorer,
+				$elm$parser$Parser$succeed(0),
+				$elm$parser$Parser$chompWhile(
+					function (c) {
+						return c !== '/';
+					}))),
+		$elm$parser$Parser$spaces));
+var $elm$parser$Parser$ExpectingSymbol = function (a) {
+	return {$: 8, a: a};
+};
+var $elm$parser$Parser$Advanced$Token = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$AddRight = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$DeadEnd = F4(
+	function (row, col, problem, contextStack) {
+		return {bf: col, c0: contextStack, bU: problem, b5: row};
+	});
+var $elm$parser$Parser$Advanced$Empty = {$: 0};
+var $elm$parser$Parser$Advanced$fromState = F2(
+	function (s, x) {
+		return A2(
+			$elm$parser$Parser$Advanced$AddRight,
+			$elm$parser$Parser$Advanced$Empty,
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.b5, s.bf, x, s.d));
+	});
+var $elm$core$String$isEmpty = function (string) {
+	return string === '';
+};
+var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
+var $elm$parser$Parser$Advanced$token = function (_v0) {
+	var str = _v0.a;
+	var expecting = _v0.b;
+	var progress = !$elm$core$String$isEmpty(str);
+	return function (s) {
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.b5, s.bf, s.a);
+		var newOffset = _v1.a;
+		var newRow = _v1.b;
+		var newCol = _v1.c;
+		return _Utils_eq(newOffset, -1) ? A2(
+			$elm$parser$Parser$Advanced$Bad,
+			false,
+			A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
+			$elm$parser$Parser$Advanced$Good,
+			progress,
+			0,
+			{bf: newCol, d: s.d, f: s.f, b: newOffset, b5: newRow, a: s.a});
+	};
+};
+var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
+var $elm$parser$Parser$symbol = function (str) {
+	return $elm$parser$Parser$Advanced$symbol(
+		A2(
+			$elm$parser$Parser$Advanced$Token,
+			str,
+			$elm$parser$Parser$ExpectingSymbol(str)));
+};
+var $elm$parser$Parser$Expecting = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$parser$Parser$toToken = function (str) {
+	return A2(
+		$elm$parser$Parser$Advanced$Token,
+		str,
+		$elm$parser$Parser$Expecting(str));
+};
+var $elm$parser$Parser$token = function (str) {
+	return $elm$parser$Parser$Advanced$token(
+		$elm$parser$Parser$toToken(str));
+};
+var $author$project$DictWorker$meaningNbrParser = function (n) {
+	return A2(
+		$elm$parser$Parser$ignorer,
+		A2(
+			$elm$parser$Parser$ignorer,
+			A2(
+				$elm$parser$Parser$ignorer,
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed(0),
+					$elm$parser$Parser$spaces),
+				$elm$parser$Parser$symbol('(')),
+			$elm$parser$Parser$token(
+				$elm$core$String$fromInt(n))),
+		$elm$parser$Parser$symbol(')'));
+};
+var $author$project$DictWorker$nbrMeaningParser = function (n) {
+	return A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				$elm$parser$Parser$succeed(
+					F3(
+						function (l, nbr, r) {
+							return l + (' ' + (nbr + (' ' + r)));
+						})),
+				$elm$parser$Parser$getChompedString(
+					A2(
+						$elm$parser$Parser$ignorer,
+						A2(
+							$elm$parser$Parser$ignorer,
+							A2(
+								$elm$parser$Parser$ignorer,
+								$elm$parser$Parser$succeed($elm$core$Basics$identity),
+								$elm$parser$Parser$symbol('(')),
+							$elm$parser$Parser$getChompedString(
+								A2(
+									$elm$parser$Parser$ignorer,
+									$elm$parser$Parser$succeed(0),
+									$elm$parser$Parser$chompWhile(
+										function (c) {
+											return $elm$core$Char$isAlphaNum(c) || ((c === ',') || (c === '-'));
+										})))),
+						$elm$parser$Parser$symbol(')')))),
+			$elm$parser$Parser$getChompedString(
+				$author$project$DictWorker$meaningNbrParser(n))),
+		$author$project$DictWorker$meaningParser);
+};
+var $elm$parser$Parser$DeadEnd = F3(
+	function (row, col, problem) {
+		return {bf: col, bU: problem, b5: row};
+	});
+var $elm$parser$Parser$problemToDeadEnd = function (p) {
+	return A3($elm$parser$Parser$DeadEnd, p.b5, p.bf, p.bU);
+};
+var $elm$parser$Parser$Advanced$bagToList = F2(
+	function (bag, list) {
+		bagToList:
+		while (true) {
+			switch (bag.$) {
+				case 0:
+					return list;
+				case 1:
+					var bag1 = bag.a;
+					var x = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$core$List$cons, x, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+				default:
+					var bag1 = bag.a;
+					var bag2 = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$parser$Parser$Advanced$bagToList, bag2, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$run = F2(
+	function (_v0, src) {
+		var parse = _v0;
+		var _v1 = parse(
+			{bf: 1, d: _List_Nil, f: 1, b: 0, b5: 1, a: src});
+		if (!_v1.$) {
+			var value = _v1.b;
+			return $elm$core$Result$Ok(value);
+		} else {
+			var bag = _v1.b;
+			return $elm$core$Result$Err(
+				A2($elm$parser$Parser$Advanced$bagToList, bag, _List_Nil));
+		}
+	});
+var $elm$parser$Parser$run = F2(
+	function (parser, source) {
+		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
+		if (!_v0.$) {
+			var a = _v0.a;
+			return $elm$core$Result$Ok(a);
+		} else {
+			var problems = _v0.a;
+			return $elm$core$Result$Err(
+				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
+		}
+	});
+var $author$project$DictWorker$groupMeanings = function (xs) {
+	var _v0 = A3(
+		$elm$core$List$foldl,
+		F2(
+			function (x, _v2) {
+				var _v3 = _v2.a;
+				var n = _v3.a;
+				var currentMeaning = _v3.b;
+				var res = _v2.b;
+				var isNumbered_ = _v2.c;
+				var _v4 = _Utils_Tuple2(
+					A2(
+						$elm$parser$Parser$run,
+						$author$project$DictWorker$nbrMeaningParser(n),
+						x),
+					currentMeaning);
+				if (!_v4.a.$) {
+					if (_v4.b === '') {
+						var valid = _v4.a.a;
+						return _Utils_Tuple3(
+							_Utils_Tuple2(n + 1, valid),
+							res,
+							true);
+					} else {
+						var valid = _v4.a.a;
+						var rs = _v4.b;
+						return _Utils_Tuple3(
+							_Utils_Tuple2(n + 1, valid),
+							_Utils_ap(
+								res,
+								_List_fromArray(
+									[currentMeaning])),
+							true);
+					}
+				} else {
+					var _v5 = _Utils_Tuple2(
+						A2($elm$parser$Parser$run, $author$project$DictWorker$meaningParser, x),
+						currentMeaning);
+					if (!_v5.a.$) {
+						if (_v5.b === '') {
+							var valid = _v5.a.a;
+							return _Utils_Tuple3(
+								_Utils_Tuple2(n, ''),
+								_Utils_ap(
+									res,
+									_List_fromArray(
+										[valid])),
+								isNumbered_);
+						} else {
+							var valid = _v5.a.a;
+							var rs = _v5.b;
+							return _Utils_Tuple3(
+								_Utils_Tuple2(n, rs + (', ' + valid)),
+								res,
+								isNumbered_);
+						}
+					} else {
+						return _Utils_Tuple3(
+							_Utils_Tuple2(n, currentMeaning),
+							res,
+							isNumbered_);
+					}
+				}
+			}),
+		_Utils_Tuple3(
+			_Utils_Tuple2(1, ''),
+			_List_Nil,
+			false),
+		xs);
+	var _v1 = _v0.a;
+	var last = _v1.b;
+	var rest = _v0.b;
+	var isNumbered = _v0.c;
+	var result = (last === '') ? rest : _Utils_ap(
+		rest,
+		_List_fromArray(
+			[last]));
+	return isNumbered ? result : _List_fromArray(
+		[
+			A2($elm$core$String$join, ', ', result)
+		]);
+};
 var $author$project$DictWorker$keyParser = A2(
 	$elm$parser$Parser$keeper,
 	A2(
@@ -4532,6 +5049,28 @@ var $author$project$DictWorker$keyParser = A2(
 						return (c !== ' ') && ((c !== '/') && ((c !== '[') && (c !== ']')));
 					}))),
 		$elm$parser$Parser$spaces));
+var $elm$parser$Parser$Advanced$map = F2(
+	function (func, _v0) {
+		var parse = _v0;
+		return function (s0) {
+			var _v1 = parse(s0);
+			if (!_v1.$) {
+				var p = _v1.a;
+				var a = _v1.b;
+				var s1 = _v1.c;
+				return A3(
+					$elm$parser$Parser$Advanced$Good,
+					p,
+					func(a),
+					s1);
+			} else {
+				var p = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p, x);
+			}
+		};
+	});
+var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
 var $elm$parser$Parser$Advanced$backtrackable = function (_v0) {
 	var parse = _v0;
 	return function (s0) {
@@ -4547,7 +5086,6 @@ var $elm$parser$Parser$Advanced$backtrackable = function (_v0) {
 	};
 };
 var $elm$parser$Parser$backtrackable = $elm$parser$Parser$Advanced$backtrackable;
-var $elm$parser$Parser$Advanced$Empty = {$: 0};
 var $elm$parser$Parser$Advanced$Append = F2(
 	function (a, b) {
 		return {$: 2, a: a, b: b};
@@ -4590,60 +5128,6 @@ var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
 	};
 };
 var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
-var $elm$parser$Parser$ExpectingSymbol = function (a) {
-	return {$: 8, a: a};
-};
-var $elm$parser$Parser$Advanced$Token = F2(
-	function (a, b) {
-		return {$: 0, a: a, b: b};
-	});
-var $elm$parser$Parser$Advanced$AddRight = F2(
-	function (a, b) {
-		return {$: 1, a: a, b: b};
-	});
-var $elm$parser$Parser$Advanced$DeadEnd = F4(
-	function (row, col, problem, contextStack) {
-		return {bf: col, c0: contextStack, bU: problem, b5: row};
-	});
-var $elm$parser$Parser$Advanced$fromState = F2(
-	function (s, x) {
-		return A2(
-			$elm$parser$Parser$Advanced$AddRight,
-			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.b5, s.bf, x, s.d));
-	});
-var $elm$core$String$isEmpty = function (string) {
-	return string === '';
-};
-var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
-var $elm$core$Basics$not = _Basics_not;
-var $elm$parser$Parser$Advanced$token = function (_v0) {
-	var str = _v0.a;
-	var expecting = _v0.b;
-	var progress = !$elm$core$String$isEmpty(str);
-	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.b5, s.bf, s.a);
-		var newOffset = _v1.a;
-		var newRow = _v1.b;
-		var newCol = _v1.c;
-		return _Utils_eq(newOffset, -1) ? A2(
-			$elm$parser$Parser$Advanced$Bad,
-			false,
-			A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
-			$elm$parser$Parser$Advanced$Good,
-			progress,
-			0,
-			{bf: newCol, d: s.d, f: s.f, b: newOffset, b5: newRow, a: s.a});
-	};
-};
-var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
-var $elm$parser$Parser$symbol = function (str) {
-	return $elm$parser$Parser$Advanced$symbol(
-		A2(
-			$elm$parser$Parser$Advanced$Token,
-			str,
-			$elm$parser$Parser$ExpectingSymbol(str)));
-};
 var $author$project$DictWorker$readingParser = $elm$parser$Parser$oneOf(
 	_List_fromArray(
 		[
@@ -4718,28 +5202,6 @@ var $elm$parser$Parser$Advanced$loop = F2(
 			return A4($elm$parser$Parser$Advanced$loopHelp, false, state, callback, s);
 		};
 	});
-var $elm$parser$Parser$Advanced$map = F2(
-	function (func, _v0) {
-		var parse = _v0;
-		return function (s0) {
-			var _v1 = parse(s0);
-			if (!_v1.$) {
-				var p = _v1.a;
-				var a = _v1.b;
-				var s1 = _v1.c;
-				return A3(
-					$elm$parser$Parser$Advanced$Good,
-					p,
-					func(a),
-					s1);
-			} else {
-				var p = _v1.a;
-				var x = _v1.b;
-				return A2($elm$parser$Parser$Advanced$Bad, p, x);
-			}
-		};
-	});
-var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
 var $elm$parser$Parser$Advanced$Done = function (a) {
 	return {$: 1, a: a};
 };
@@ -4767,23 +5229,6 @@ var $elm$parser$Parser$loop = F2(
 					callback(s));
 			});
 	});
-var $author$project$DictWorker$meaningParser = A2(
-	$elm$parser$Parser$keeper,
-	A2(
-		$elm$parser$Parser$ignorer,
-		$elm$parser$Parser$succeed($elm$core$Basics$identity),
-		$elm$parser$Parser$spaces),
-	A2(
-		$elm$parser$Parser$ignorer,
-		$elm$parser$Parser$getChompedString(
-			A2(
-				$elm$parser$Parser$ignorer,
-				$elm$parser$Parser$succeed(0),
-				$elm$parser$Parser$chompWhile(
-					function (c) {
-						return c !== '/';
-					}))),
-		$elm$parser$Parser$spaces));
 var $author$project$DictWorker$synonymsParser = function () {
 	var go = function (xs) {
 		return $elm$parser$Parser$oneOf(
@@ -4813,77 +5258,27 @@ var $author$project$DictWorker$synonymsParser = function () {
 	return A2($elm$parser$Parser$loop, _List_Nil, go);
 }();
 var $author$project$DictWorker$entryParser = A2(
-	$elm$parser$Parser$keeper,
+	$elm$parser$Parser$map,
+	function (e) {
+		return _Utils_update(
+			e,
+			{
+				bI: $author$project$DictWorker$groupMeanings(e.bI)
+			});
+	},
 	A2(
 		$elm$parser$Parser$keeper,
 		A2(
 			$elm$parser$Parser$keeper,
-			$elm$parser$Parser$succeed($author$project$Common$DictEntry),
-			$author$project$DictWorker$keyParser),
-		A2(
-			$elm$parser$Parser$ignorer,
-			$author$project$DictWorker$readingParser,
-			$elm$parser$Parser$symbol('/'))),
-	$author$project$DictWorker$synonymsParser);
-var $elm$parser$Parser$DeadEnd = F3(
-	function (row, col, problem) {
-		return {bf: col, bU: problem, b5: row};
-	});
-var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.b5, p.bf, p.bU);
-};
-var $elm$parser$Parser$Advanced$bagToList = F2(
-	function (bag, list) {
-		bagToList:
-		while (true) {
-			switch (bag.$) {
-				case 0:
-					return list;
-				case 1:
-					var bag1 = bag.a;
-					var x = bag.b;
-					var $temp$bag = bag1,
-						$temp$list = A2($elm$core$List$cons, x, list);
-					bag = $temp$bag;
-					list = $temp$list;
-					continue bagToList;
-				default:
-					var bag1 = bag.a;
-					var bag2 = bag.b;
-					var $temp$bag = bag1,
-						$temp$list = A2($elm$parser$Parser$Advanced$bagToList, bag2, list);
-					bag = $temp$bag;
-					list = $temp$list;
-					continue bagToList;
-			}
-		}
-	});
-var $elm$parser$Parser$Advanced$run = F2(
-	function (_v0, src) {
-		var parse = _v0;
-		var _v1 = parse(
-			{bf: 1, d: _List_Nil, f: 1, b: 0, b5: 1, a: src});
-		if (!_v1.$) {
-			var value = _v1.b;
-			return $elm$core$Result$Ok(value);
-		} else {
-			var bag = _v1.b;
-			return $elm$core$Result$Err(
-				A2($elm$parser$Parser$Advanced$bagToList, bag, _List_Nil));
-		}
-	});
-var $elm$parser$Parser$run = F2(
-	function (parser, source) {
-		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
-		if (!_v0.$) {
-			var a = _v0.a;
-			return $elm$core$Result$Ok(a);
-		} else {
-			var problems = _v0.a;
-			return $elm$core$Result$Err(
-				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
-		}
-	});
+			A2(
+				$elm$parser$Parser$keeper,
+				$elm$parser$Parser$succeed($author$project$Common$DictEntry),
+				$author$project$DictWorker$keyParser),
+			A2(
+				$elm$parser$Parser$ignorer,
+				$author$project$DictWorker$readingParser,
+				$elm$parser$Parser$symbol('/'))),
+		$author$project$DictWorker$synonymsParser));
 var $author$project$DictWorker$parseDictEntry = function (e) {
 	return A2($elm$parser$Parser$run, $author$project$DictWorker$entryParser, e);
 };
@@ -4892,14 +5287,15 @@ var $elm$core$Set$remove = F2(
 		var dict = _v0;
 		return A2($elm$core$Dict$remove, key, dict);
 	});
-var $elm$core$String$dropLeft = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3(
-			$elm$core$String$slice,
-			n,
-			$elm$core$String$length(string),
-			string);
-	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
 		if (!maybe.$) {
@@ -4908,15 +5304,6 @@ var $elm$core$Maybe$map = F2(
 				f(value));
 		} else {
 			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
 		}
 	});
 var $elm_community$string_extra$String$Extra$rightOfBack = F2(
@@ -5019,6 +5406,7 @@ var $elm$core$Set$size = function (_v0) {
 	return $elm$core$Dict$size(dict);
 };
 var $elm$core$List$sortBy = _List_sortBy;
+var $elm$core$String$toLower = _String_toLower;
 var $elm$core$Result$toMaybe = function (result) {
 	if (!result.$) {
 		var v = result.a;
@@ -5027,6 +5415,58 @@ var $elm$core$Result$toMaybe = function (result) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $elm$core$Dict$member = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$get, key, dict);
+		if (!_v0.$) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+var $elm$core$Set$member = F2(
+	function (key, _v0) {
+		var dict = _v0;
+		return A2($elm$core$Dict$member, key, dict);
+	});
+var $elm_community$list_extra$List$Extra$uniqueHelp = F4(
+	function (f, existing, remaining, accumulator) {
+		uniqueHelp:
+		while (true) {
+			if (!remaining.b) {
+				return $elm$core$List$reverse(accumulator);
+			} else {
+				var first = remaining.a;
+				var rest = remaining.b;
+				var computedFirst = f(first);
+				if (A2($elm$core$Set$member, computedFirst, existing)) {
+					var $temp$f = f,
+						$temp$existing = existing,
+						$temp$remaining = rest,
+						$temp$accumulator = accumulator;
+					f = $temp$f;
+					existing = $temp$existing;
+					remaining = $temp$remaining;
+					accumulator = $temp$accumulator;
+					continue uniqueHelp;
+				} else {
+					var $temp$f = f,
+						$temp$existing = A2($elm$core$Set$insert, computedFirst, existing),
+						$temp$remaining = rest,
+						$temp$accumulator = A2($elm$core$List$cons, first, accumulator);
+					f = $temp$f;
+					existing = $temp$existing;
+					remaining = $temp$remaining;
+					accumulator = $temp$accumulator;
+					continue uniqueHelp;
+				}
+			}
+		}
+	});
+var $elm_community$list_extra$List$Extra$unique = function (list) {
+	return A4($elm_community$list_extra$List$Extra$uniqueHelp, $elm$core$Basics$identity, $elm$core$Set$empty, list, _List_Nil);
+};
+var $elm$core$String$words = _String_words;
 var $miniBill$elm_codec$Codec$buildObject = function (_v0) {
 	var om = _v0;
 	return {
@@ -5505,14 +5945,14 @@ var $author$project$DictWorker$update = F2(
 									$elm$core$String$length(s),
 									acc);
 							}),
-						model.Q,
+						model.J,
 						$elm$core$String$lines(str));
 					var filename = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', path);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								Q: maxLineLength,
+								J: maxLineLength,
 								T: _Utils_ap(
 									model.T,
 									A2($elm$core$String$cons, '\n', str)),
@@ -5583,14 +6023,14 @@ var $author$project$DictWorker$update = F2(
 										$elm$core$String$length(s),
 										acc);
 								}),
-							model.Q,
+							model.J,
 							$elm$core$String$lines(content));
 						var filename_ = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', filename);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									Q: maxLineLength,
+									J: maxLineLength,
 									T: _Utils_ap(
 										model.T,
 										A2($elm$core$String$cons, '\n', content)),
@@ -5620,43 +6060,55 @@ var $author$project$DictWorker$update = F2(
 				}
 			case 4:
 				var s = msg.a;
+				var getMatch = F2(
+					function (n, s_) {
+						var rigthStr = A2(
+							$elm_community$string_extra$String$Extra$leftOf,
+							'\n',
+							A2($elm$core$String$dropLeft, n, s_));
+						var leftStr = A2(
+							$elm_community$string_extra$String$Extra$rightOfBack,
+							'\n',
+							A2($elm$core$String$left, n, s_));
+						return _Utils_ap(leftStr, rigthStr);
+					});
 				var searchResult = A2(
 					$elm$core$List$sortBy,
 					function (e) {
 						return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.aG, s);
 					},
-					A2(
-						$elm$core$List$filter,
+					(A2(
+						$elm$core$List$all,
+						$elm$core$Char$isAlphaNum,
+						$elm$core$String$toList(s)) ? $elm$core$List$filter(
+						function (e) {
+							return A2(
+								$elm$core$List$member,
+								$elm$core$String$toLower(s),
+								A2(
+									$elm$core$List$concatMap,
+									A2($elm$core$Basics$composeL, $elm$core$String$words, $elm$core$String$toLower),
+									e.bI));
+						}) : $elm$core$List$filter(
 						function (e) {
 							return A2($elm$core$String$contains, s, e.aG);
-						},
+						}))(
 						A2(
 							$elm$core$List$filterMap,
 							$elm$core$Basics$identity,
 							A2(
 								$elm$core$List$map,
 								A2($elm$core$Basics$composeR, $author$project$DictWorker$parseDictEntry, $elm$core$Result$toMaybe),
-								$elm$core$Set$toList(
-									$elm$core$Set$fromList(
+								$elm_community$list_extra$List$Extra$unique(
+									A2(
+										$elm$core$List$map,
+										getMatch(model.J),
 										A2(
 											$elm$core$List$map,
-											A2(
-												$elm$core$Basics$composeR,
-												$elm$core$List$head,
-												$elm$core$Maybe$withDefault('')),
-											A2(
-												$elm$core$List$map,
-												$elm$core$List$filter(
-													$elm$core$String$contains(s)),
-												A2(
-													$elm$core$List$map,
-													$elm$core$String$lines,
-													A2(
-														$elm$core$List$map,
-														function (n) {
-															return A3($elm$core$String$slice, n - model.Q, n + model.Q, model.T);
-														},
-														A2($elm$core$String$indexes, s, model.T)))))))))));
+											function (n) {
+												return A3($elm$core$String$slice, n - model.J, n + model.J, model.T);
+											},
+											A2($elm$core$String$indexes, s, model.T))))))));
 				return _Utils_Tuple2(
 					model,
 					$author$project$DictWorker$outbound(

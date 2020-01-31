@@ -5,6 +5,7 @@ import Common exposing (..)
 import Http exposing (..)
 import Json.Decode as D
 import Json.Encode as E
+import List.Extra exposing (unique)
 import Parser exposing (..)
 import Set exposing (..)
 import String.Extra exposing (leftOf, rightOfBack)
@@ -211,17 +212,35 @@ update msg model =
 
         Search s ->
             let
+                getMatch n s_ =
+                    let
+                        rigthStr =
+                            String.dropLeft n s_
+                                |> leftOf "\n"
+
+                        leftStr =
+                            String.left n s_
+                                |> rightOfBack "\n"
+                    in
+                    leftStr ++ rigthStr
+
                 searchResult =
                     String.indexes s model.rawData
                         |> List.map (\n -> String.slice (n - model.maxLineLength) (n + model.maxLineLength) model.rawData)
-                        |> List.map String.lines
-                        |> List.map (List.filter (String.contains s))
-                        |> List.map (List.head >> Maybe.withDefault "")
-                        |> Set.fromList
-                        |> Set.toList
+                        |> List.map (getMatch model.maxLineLength)
+                        |> List.Extra.unique
                         |> List.map (parseDictEntry >> Result.toMaybe)
                         |> List.filterMap identity
-                        |> List.filter (\e -> String.contains s e.key)
+                        |> (if List.all Char.isAlphaNum (String.toList s) then
+                                List.filter
+                                    (\e ->
+                                        List.member (String.toLower s)
+                                            (List.concatMap (String.words << String.toLower) e.meanings)
+                                    )
+
+                            else
+                                List.filter (\e -> String.contains s e.key)
+                           )
                         |> List.sortBy (\e -> sift3Distance e.key s)
             in
             ( model
@@ -286,6 +305,8 @@ entryParser =
         |= readingParser
         |. symbol "/"
         |= synonymsParser
+        |> Parser.map
+            (\e -> { e | meanings = groupMeanings e.meanings })
 
 
 keyParser =
@@ -402,3 +423,71 @@ meaningParser =
                     |. chompWhile (\c -> c /= '/')
            )
         |. spaces
+
+
+
+---------------------
+
+
+meaningNbrParser n =
+    succeed ()
+        |. spaces
+        |. symbol "("
+        |. token (String.fromInt n)
+        |. symbol ")"
+
+
+nbrMeaningParser n =
+    succeed (\l nbr r -> l ++ " " ++ nbr ++ " " ++ r)
+        |= getChompedString
+            (succeed
+                identity
+                |. symbol "("
+                |. (getChompedString <|
+                        succeed ()
+                            |. chompWhile (\c -> Char.isAlphaNum c || c == ',' || c == '-')
+                   )
+                |. symbol ")"
+            )
+        |= getChompedString (meaningNbrParser n)
+        |= meaningParser
+
+
+groupMeanings xs =
+    let
+        ( ( _, last ), rest, isNumbered ) =
+            List.foldl
+                (\x ( ( n, currentMeaning ), res, isNumbered_ ) ->
+                    case ( Parser.run (nbrMeaningParser n) x, currentMeaning ) of
+                        ( Ok valid, "" ) ->
+                            ( ( n + 1, valid ), res, True )
+
+                        ( Ok valid, rs ) ->
+                            ( ( n + 1, valid ), res ++ [ currentMeaning ], True )
+
+                        ( Err _, _ ) ->
+                            case ( Parser.run meaningParser x, currentMeaning ) of
+                                ( Ok valid, "" ) ->
+                                    ( ( n, "" ), res ++ [ valid ], isNumbered_ )
+
+                                ( Ok valid, rs ) ->
+                                    ( ( n, rs ++ ", " ++ valid ), res, isNumbered_ )
+
+                                _ ->
+                                    ( ( n, currentMeaning ), res, isNumbered_ )
+                )
+                ( ( 1, "" ), [], False )
+                xs
+
+        result =
+            if last == "" then
+                rest
+
+            else
+                rest ++ [ last ]
+    in
+    if isNumbered then
+        result
+
+    else
+        [ String.join ", " result ]

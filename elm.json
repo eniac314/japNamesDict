@@ -13,6 +13,7 @@
             "elm/json": "1.1.2",
             "elm/parser": "1.1.0",
             "elm/time": "1.0.0",
+            "elm-community/list-extra": "8.2.3",
             "elm-community/string-extra": "4.0.1",
             "mdgriffith/elm-ui": "1.1.5",
             "miniBill/elm-codec": "1.2.0",
