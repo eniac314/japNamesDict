@@ -31,6 +31,9 @@ port toNameDict : E.Value -> Cmd msg
 port toDict : E.Value -> Cmd msg
 
 
+port toKanjiDict : E.Value -> Cmd msg
+
+
 port fromDicts : (D.Value -> msg) -> Sub msg
 
 
@@ -41,7 +44,8 @@ type alias Model =
     { searchInput : Maybe String
     , nameDictSearchResult : { res : List NameDictEntry, showing : Int }
     , dictSearchResult : { res : List DictEntry, showing : Int }
-    , workersState : { nameDict : WorkerState, dict : WorkerState }
+    , kanjiDictSearchResult : { res : List KanjiDictEntry, showing : Int }
+    , workersState : { nameDict : WorkerState, dict : WorkerState, kanjiDict : WorkerState }
     , appState : AppState
     , lastInputTimestamp : Maybe Time.Posix
     , useAutoSearch : Bool
@@ -96,16 +100,14 @@ main =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    let
-        ids =
-            List.range 0 (nbrFiles - 1)
-    in
     ( { searchInput = Nothing
       , nameDictSearchResult = { res = [], showing = 15 }
       , dictSearchResult = { res = [], showing = 15 }
+      , kanjiDictSearchResult = { res = [], showing = 15 }
       , workersState =
             { nameDict = WorkerLoading { progress = 0, message = "", status = Initial }
             , dict = WorkerLoading { progress = 0, message = "", status = Initial }
+            , kanjiDict = WorkerLoading { progress = 0, message = "", status = Initial }
             }
       , appState = Loading Initial
       , lastInputTimestamp = Nothing
@@ -115,10 +117,6 @@ init flags =
     , Cmd.batch
         []
     )
-
-
-nbrFiles =
-    50
 
 
 dashboardHeight =
@@ -148,11 +146,6 @@ update msg model =
                 Just t1 ->
                     if Time.posixToMillis t - Time.posixToMillis t1 > 300 then
                         case Maybe.map String.toList model.searchInput of
-                            --Just (c :: []) ->
-                            --    if List.member c kanji then
-                            --        update Search { model | lastInputTimestamp = Nothing }
-                            --    else
-                            --        ( model, Cmd.none )
                             Just (c :: cs) ->
                                 if List.member c kanji then
                                     update Search { model | lastInputTimestamp = Nothing }
@@ -164,10 +157,10 @@ update msg model =
                                     update Search { model | lastInputTimestamp = Nothing }
 
                                 else
-                                    ( model, Cmd.none )
+                                    ( { model | lastInputTimestamp = Nothing }, Cmd.none )
 
                             _ ->
-                                ( model, Cmd.none )
+                                ( { model | lastInputTimestamp = Nothing }, Cmd.none )
 
                     else
                         ( model, Cmd.none )
@@ -202,6 +195,17 @@ update msg model =
                     , Cmd.none
                     )
 
+                KanjiDictWorker ->
+                    let
+                        x =
+                            model.kanjiDictSearchResult
+                    in
+                    ( { model
+                        | kanjiDictSearchResult = { x | showing = x.showing + 15 }
+                      }
+                    , Cmd.none
+                    )
+
         GotServiceWorkerMsg message ->
             ( { model | serviceWorkerMessages = message :: model.serviceWorkerMessages }
             , Cmd.none
@@ -219,13 +223,16 @@ update msg model =
 
                         DictWorker ->
                             { cws | dict = WorkerLoading s }
+
+                        KanjiDictWorker ->
+                            { cws | kanjiDict = WorkerLoading s }
             in
             ( { model
                 | appState =
-                    case ( workersState.nameDict, workersState.dict ) of
-                        ( WorkerLoading st, WorkerLoading st_ ) ->
-                            case ( st.status, st_.status ) of
-                                ( Success, Success ) ->
+                    case ( workersState.nameDict, workersState.dict, workersState.dict ) of
+                        ( WorkerLoading st1, WorkerLoading st2, WorkerLoading st3 ) ->
+                            case ( st1.status, st2.status, st3.status ) of
+                                ( Success, Success, Success ) ->
                                     Ready
 
                                 _ ->
@@ -261,11 +268,20 @@ update msg model =
                         , Cmd.none
                         )
 
+                    KanjiDictResult xs ->
+                        ( { model
+                            | kanjiDictSearchResult = { res = xs, showing = 15 }
+                            , workersState = { wcs | kanjiDict = WorkerSearching Success }
+                          }
+                        , Cmd.none
+                        )
+
             else
                 let
                     resetWorkerState =
                         { dict = WorkerSearching Initial
                         , nameDict = WorkerSearching Initial
+                        , kanjiDict = WorkerSearching Initial
                         }
                 in
                 update Search { model | workersState = resetWorkerState }
@@ -277,6 +293,7 @@ update msg model =
                         | workersState =
                             { nameDict = WorkerSearching Pending
                             , dict = WorkerSearching Pending
+                            , kanjiDict = WorkerSearching Pending
                             }
                       }
                     , Cmd.batch
@@ -284,6 +301,8 @@ update msg model =
                             |> toNameDict
                         , Codec.encoder workerCmdCodec (SearchCmd s)
                             |> toDict
+                        , Codec.encoder workerCmdCodec (SearchCmd s)
+                            |> toKanjiDict
                         ]
                     )
 
@@ -299,6 +318,9 @@ canSearch model =
         /= WorkerSearching Pending
     )
         && (model.workersState.dict
+                /= WorkerSearching Pending
+           )
+        && (model.workersState.kanjiDict
                 /= WorkerSearching Pending
            )
 
@@ -372,6 +394,14 @@ loadingView model status =
 
                 _ ->
                     ( 0, "" )
+
+        ( kanjiDictProgress, kanjiDictMessage ) =
+            case model.workersState.kanjiDict of
+                WorkerLoading s ->
+                    ( s.progress, s.message )
+
+                _ ->
+                    ( 0, "" )
     in
     column
         [ spacing 15
@@ -386,6 +416,10 @@ loadingView model status =
             |> progressBar
             |> el [ centerX ]
         , el [ Font.size 14, centerX ] (text <| dictMessage)
+        , kanjiDictProgress
+            |> progressBar
+            |> el [ centerX ]
+        , el [ Font.size 14, centerX ] (text <| kanjiDictMessage)
         , column
             [ Font.size 12, centerX ]
             (List.map text model.serviceWorkerMessages
@@ -401,6 +435,9 @@ searchDashboardview model =
 
         nbrMatchesDict =
             List.length model.dictSearchResult.res
+
+        nbrMatchesKanjiDict =
+            List.length model.kanjiDictSearchResult.res
 
         wcs =
             model.workersState
@@ -421,6 +458,14 @@ searchDashboardview model =
                 WorkerLoading s ->
                     s.status
 
+        kanjiDictSearchStatus =
+            case wcs.kanjiDict of
+                WorkerSearching s ->
+                    s
+
+                WorkerLoading s ->
+                    s.status
+
         searchStatusBox s =
             el
                 [ width (px 20)
@@ -435,7 +480,7 @@ searchDashboardview model =
                             rgb255 224 38 50
 
                         _ ->
-                            rgb255 38 224 44
+                            rgba255 147 202 118 1
                 ]
                 Element.none
     in
@@ -467,6 +512,14 @@ searchDashboardview model =
                 , searchStatusBox dictSearchStatus
                 , text <| String.fromInt nbrMatchesDict
                 ]
+            , row
+                [ spacing 10
+                , Events.onClick (ScrollTo "kanjiDict")
+                ]
+                [ el [] (text "漢字辞典")
+                , searchStatusBox kanjiDictSearchStatus
+                , text <| String.fromInt nbrMatchesKanjiDict
+                ]
             ]
         , row
             [ spacing 15
@@ -496,18 +549,25 @@ searchResultView model =
         dictResults =
             List.take model.dictSearchResult.showing model.dictSearchResult.res
 
-        showMoreView w =
-            row
-                [ padding 10
-                , width fill
-                ]
-                [ el
-                    [ centerX
-                    , Font.size 14
-                    , Events.onClick (ShowMore w)
+        kanjiDictResults =
+            List.take model.kanjiDictSearchResult.showing model.kanjiDictSearchResult.res
+
+        showMoreView res w =
+            if (res.showing >= List.length res.res) || (List.length res.res == 0) then
+                Element.none
+
+            else
+                row
+                    [ padding 10
+                    , width fill
                     ]
-                    (text "Show more")
-                ]
+                    [ el
+                        [ centerX
+                        , Font.size 14
+                        , Events.onClick (ShowMore w)
+                        ]
+                        (text "Show more")
+                    ]
     in
     column
         [ width fill
@@ -518,14 +578,21 @@ searchResultView model =
             , htmlAttribute <| HtmlAttr.id "nameDict"
             ]
             (List.indexedMap (Lazy.lazy2 nameEntryView) nameDictResults
-                ++ [ showMoreView NameDictWorker ]
+                ++ [ showMoreView model.nameDictSearchResult NameDictWorker ]
             )
         , column
             [ width fill
             , htmlAttribute <| HtmlAttr.id "japDict"
             ]
             (List.indexedMap (Lazy.lazy2 dictEntryView) dictResults
-                ++ [ showMoreView DictWorker ]
+                ++ [ showMoreView model.dictSearchResult DictWorker ]
+            )
+        , column
+            [ width fill
+            , htmlAttribute <| HtmlAttr.id "kanjiDict"
+            ]
+            (List.indexedMap (Lazy.lazy2 kanjiDictEntryView) kanjiDictResults
+                ++ [ showMoreView model.kanjiDictSearchResult KanjiDictWorker ]
             )
         ]
 
@@ -538,10 +605,10 @@ dictEntryView n e =
         , padding 10
         , Background.color
             (if modBy 2 n == 0 then
-                rgba255 187 110 217 0.6
+                rgba255 253 222 165 1
 
              else
-                rgba255 215 77 215 0.6
+                rgba255 252 226 196 1
             )
         ]
         [ wrappedRow
@@ -570,10 +637,10 @@ nameEntryView n e =
         , padding 10
         , Background.color
             (if modBy 2 n == 0 then
-                rgba255 187 210 217 0.6
+                rgba255 221 220 214 1
 
              else
-                rgba255 215 177 215 0.6
+                rgba255 192 198 201 1
             )
         ]
         [ wrappedRow
@@ -600,6 +667,90 @@ nameEntryView n e =
 
             Nothing ->
                 Element.none
+        ]
+
+
+
+--type alias KanjiDictEntry =
+--    { key : String
+--    , meta : KanjiMeta
+--    , onYomi : List String
+--    , kunYomi : List String
+--    , nanori : List String
+--    , meanings : List String
+--    }
+--type alias KanjiMeta =
+--    { radical : Maybe Int
+--    , grade : Maybe Int
+--    , strokes : Maybe Int
+--    , frequency : Maybe Int
+--    , classicNelson : Maybe Int
+--    , newNelson : Maybe Int
+--    , halpern : Maybe Int
+--    , henshall : Maybe Int
+--    , skip : Maybe ( Int, Int, Int )
+--    , pinyin : Maybe ( String, Int )
+--    , kanjiKentei : Maybe Int
+--    }
+
+
+kanjiDictEntryView : Int -> KanjiDictEntry -> Element Msg
+kanjiDictEntryView n e =
+    let
+        kunYomiView k =
+            case String.split "." k of
+                rad :: declension :: [] ->
+                    row
+                        [ Font.size 16, Font.bold ]
+                        [ el [] (text rad)
+                        , el [ Font.color (rgb255 127 127 127) ] (text declension)
+                        ]
+
+                _ ->
+                    el [ Font.size 16, Font.bold ] (text k)
+
+        onYomiView o =
+            el [ Font.size 14 ] (text o)
+    in
+    column
+        [ width fill
+        , spacing 10
+        , padding 10
+        , Background.color
+            (if modBy 2 n == 0 then
+                rgba255 186 220 173 1
+
+             else
+                rgba255 147 202 118 1
+            )
+        ]
+        [ wrappedRow
+            [ width fill
+            , spacing 15
+            ]
+            [ column
+                [ padding 15 ]
+                [ row
+                    [ spacing 20 ]
+                    [ el
+                        [ Font.size 45
+                        ]
+                        (text e.key)
+                    , column
+                        [ spacing 15
+                        , width (minimum 100 fill)
+                        ]
+                        [ wrappedRow
+                            [ spacing 15 ]
+                            (List.map onYomiView e.kunYomi)
+                        , wrappedRow
+                            [ spacing 15 ]
+                            (List.map kunYomiView e.onYomi)
+                        ]
+                    ]
+                ]
+            , paragraph [ Font.size 14 ] [ text (String.join ", " e.meanings) ]
+            ]
         ]
 
 

@@ -57,18 +57,28 @@
       app.ports.fromDicts.send(e.data);
     }, false);
 
+    var kanjiDictWorker = new Worker('/js/kanjiDictWorkerLoader.js');
+
+    app.ports.toDict.subscribe(function(s){
+       kanjiDictWorker.postMessage(s);
+    });
+
+    kanjiDictWorker.addEventListener('message', function(e) {
+      app.ports.fromDicts.send(e.data);
+    }, false);
 
 
-    // if ('BroadcastChannel' in window){
-    //     console.log("BroadcastChannel available")
-    //     const channel = new BroadcastChannel('sw-messages');
-    //     channel.addEventListener('message', function(event) {
-    //         app.ports.serviceWorkerMessage.send(event.data);
-    //     });
-    // }
-    // navigator.serviceWorker.controller.postMessage(message.value);
 
-    // navigator.serviceWorker.register('serviceWorker.js');
+    if ('BroadcastChannel' in window){
+        console.log("BroadcastChannel available")
+        const channel = new BroadcastChannel('sw-messages');
+        channel.addEventListener('message', function(event) {
+            app.ports.serviceWorkerMessage.send(event.data);
+        });
+    }
+    navigator.serviceWorker.controller.postMessage(message.value);
+
+    navigator.serviceWorker.register('serviceWorker.js');
 
     </script>
 </body>

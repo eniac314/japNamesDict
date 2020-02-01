@@ -18,6 +18,8 @@ var urlsToCache = [
             "/js/nameDictWorkerLoader.js",
             "/js/dictWorker.js",
             "/js/dictWorkerLoader.js",
+            "/js/kanjiDictWorker.js",
+            "/js/kanjiDictWorkerLoader.js",
             "/favicon.ico",
             "/manifest.json"
         ];

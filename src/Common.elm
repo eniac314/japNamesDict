@@ -1,25 +1,31 @@
 module Common exposing (..)
 
 import Codec exposing (..)
+import Parser exposing (..)
 
 
 type Worker
     = NameDictWorker
     | DictWorker
+    | KanjiDictWorker
 
 
 workerCodec =
     Codec.custom
-        (\fNameDictWorker fDictWorker value ->
+        (\fNameDictWorker fDictWorker fKanjiDictWorker value ->
             case value of
                 NameDictWorker ->
                     fNameDictWorker
 
                 DictWorker ->
                     fDictWorker
+
+                KanjiDictWorker ->
+                    fKanjiDictWorker
         )
         |> Codec.variant0 "NameDictWorker" NameDictWorker
         |> Codec.variant0 "DictWorker" DictWorker
+        |> Codec.variant0 "KanjiDictWorker" KanjiDictWorker
         |> Codec.buildCustom
 
 
@@ -72,20 +78,25 @@ searchResultMetaCodec =
 type SearchResult
     = NameDictResult (List NameDictEntry)
     | DictResult (List DictEntry)
+    | KanjiDictResult (List KanjiDictEntry)
 
 
 searchResultCodec =
     Codec.custom
-        (\fNameDictResult fDictResult value ->
+        (\fNameDictResult fDictResult fKanjiDictResult value ->
             case value of
                 NameDictResult xs ->
                     fNameDictResult xs
 
                 DictResult xs ->
                     fDictResult xs
+
+                KanjiDictResult xs ->
+                    fKanjiDictResult xs
         )
         |> Codec.variant1 "NameDictResult" NameDictResult (Codec.list nameDictEntryCodec)
         |> Codec.variant1 "DictResult" DictResult (Codec.list dictEntryCodec)
+        |> Codec.variant1 "KanjiDictResult" KanjiDictResult (Codec.list kanjiDictEntryCodec)
         |> Codec.buildCustom
 
 
@@ -341,3 +352,76 @@ kana =
 kanji =
     List.range 0x4E00 0x9FBF
         |> List.map Char.fromCode
+
+
+
+-------------------------------------------------------------------------------
+
+
+type alias KanjiDictEntry =
+    { key : String
+    , meta : KanjiMeta
+    , onYomi : List String
+    , kunYomi : List String
+    , nanori : List String
+    , meanings : List String
+    }
+
+
+kanjiDictEntryCodec : Codec KanjiDictEntry
+kanjiDictEntryCodec =
+    Codec.object KanjiDictEntry
+        |> Codec.field "key" .key Codec.string
+        |> Codec.field "meta" .meta kanjiMetaCodec
+        |> Codec.field "onYomi" .onYomi (Codec.list Codec.string)
+        |> Codec.field "kunYomi" .kunYomi (Codec.list Codec.string)
+        |> Codec.field "nanori" .nanori (Codec.list Codec.string)
+        |> Codec.field "meanings" .meanings (Codec.list Codec.string)
+        |> Codec.buildObject
+
+
+type alias KanjiMeta =
+    { radical : Maybe Int
+    , grade : Maybe Int
+    , strokes : Maybe Int
+    , frequency : Maybe Int
+    , classicNelson : Maybe Int
+    , newNelson : Maybe Int
+    , halpern : Maybe Int
+    , henshall : Maybe Int
+    , skip : Maybe ( Int, Int, Int )
+    , pinyin : Maybe ( String, Int )
+    , kanjiKentei : Maybe Int
+    }
+
+
+kanjiMetaCodec : Codec KanjiMeta
+kanjiMetaCodec =
+    Codec.object KanjiMeta
+        |> Codec.field "radical" .radical (Codec.maybe Codec.int)
+        |> Codec.field "grade" .grade (Codec.maybe Codec.int)
+        |> Codec.field "strokes" .strokes (Codec.maybe Codec.int)
+        |> Codec.field "frequency" .frequency (Codec.maybe Codec.int)
+        |> Codec.field "classicNelson" .classicNelson (Codec.maybe Codec.int)
+        |> Codec.field "newNelson" .newNelson (Codec.maybe Codec.int)
+        |> Codec.field "halpern" .halpern (Codec.maybe Codec.int)
+        |> Codec.field "henshall" .henshall (Codec.maybe Codec.int)
+        |> Codec.field "skip" .skip (Codec.maybe (Codec.triple Codec.int Codec.int Codec.int))
+        |> Codec.field "pinyin" .pinyin (Codec.maybe (Codec.tuple Codec.string Codec.int))
+        |> Codec.field "kanjiKentei" .kanjiKentei (Codec.maybe Codec.int)
+        |> Codec.buildObject
+
+
+defaultMeta =
+    { radical = Nothing
+    , grade = Nothing
+    , strokes = Nothing
+    , frequency = Nothing
+    , classicNelson = Nothing
+    , newNelson = Nothing
+    , halpern = Nothing
+    , henshall = Nothing
+    , skip = Nothing
+    , pinyin = Nothing
+    , kanjiKentei = Nothing
+    }
