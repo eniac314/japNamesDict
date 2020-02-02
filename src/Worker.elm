@@ -142,14 +142,17 @@ update msg model =
 
                 Err _ ->
                     ( model
-                    , { progress = round <| 100 * toFloat (model.nbrFiles - Set.size model.toRequest) / toFloat model.nbrFiles
-                      , message = "Network Error: " ++ path
-                      , status =
-                            Pending
-                      }
-                        |> LoadingStatusMsg (getWorker model.pathbase)
-                        |> Codec.encoder workerMsgCodec
-                        |> outbound
+                    , Cmd.batch
+                        [ { progress = round <| 100 * toFloat (model.nbrFiles - Set.size model.toRequest) / toFloat model.nbrFiles
+                          , message = "Network Error: " ++ path
+                          , status =
+                                Pending
+                          }
+                            |> LoadingStatusMsg (getWorker model.pathbase)
+                            |> Codec.encoder workerMsgCodec
+                            |> outbound
+                        , getData path
+                        ]
                     )
 
         Search s ->

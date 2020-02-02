@@ -6916,19 +6916,24 @@ var $author$project$Worker$update = F2(
 				} else {
 					return _Utils_Tuple2(
 						model,
-						$author$project$Worker$outbound(
-							A2(
-								$miniBill$elm_codec$Codec$encoder,
-								$author$project$Common$workerMsgCodec,
-								A2(
-									$author$project$Common$LoadingStatusMsg,
-									$author$project$Worker$getWorker(model.z),
-									{
-										co: 'Network Error: ' + path,
-										cH: $elm$core$Basics$round(
-											(100 * (model.L - $elm$core$Set$size(model.aC))) / model.L),
-										cZ: 1
-									}))));
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									$author$project$Worker$outbound(
+									A2(
+										$miniBill$elm_codec$Codec$encoder,
+										$author$project$Common$workerMsgCodec,
+										A2(
+											$author$project$Common$LoadingStatusMsg,
+											$author$project$Worker$getWorker(model.z),
+											{
+												co: 'Network Error: ' + path,
+												cH: $elm$core$Basics$round(
+													(100 * (model.L - $elm$core$Set$size(model.aC))) / model.L),
+												cZ: 1
+											}))),
+									$author$project$Worker$getData(path)
+								])));
 				}
 			case 2:
 				var s = msg.a;
