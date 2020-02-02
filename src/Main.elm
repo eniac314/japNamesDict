@@ -671,30 +671,6 @@ nameEntryView n e =
         ]
 
 
-
---type alias KanjiDictEntry =
---    { key : String
---    , meta : KanjiMeta
---    , onYomi : List String
---    , kunYomi : List String
---    , nanori : List String
---    , meanings : List String
---    }
---type alias KanjiMeta =
---    { radical : Maybe Int
---    , grade : Maybe Int
---    , strokes : Maybe Int
---    , frequency : Maybe Int
---    , classicNelson : Maybe Int
---    , newNelson : Maybe Int
---    , halpern : Maybe Int
---    , henshall : Maybe Int
---    , skip : Maybe ( Int, Int, Int )
---    , pinyin : Maybe ( String, Int )
---    , kanjiKentei : Maybe Int
---    }
-
-
 kanjiDictEntryView : Int -> KanjiDictEntry -> Element Msg
 kanjiDictEntryView n e =
     let

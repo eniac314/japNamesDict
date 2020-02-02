@@ -69,16 +69,17 @@
 
 
 
-    // if ('BroadcastChannel' in window){
-    //     console.log("BroadcastChannel available")
-    //     const channel = new BroadcastChannel('sw-messages');
-    //     channel.addEventListener('message', function(event) {
-    //         app.ports.serviceWorkerMessage.send(event.data);
-    //     });
-    // }
+    if ('BroadcastChannel' in window){
+        console.log("BroadcastChannel available")
+        const channel = new BroadcastChannel('sw-messages');
+        channel.addEventListener('message', function(event) {
+            app.ports.serviceWorkerMessage.send(event.data);
+        });
+    }
+    navigator.serviceWorker.register('serviceWorker.js');
+    
     // navigator.serviceWorker.controller.postMessage(message.value);
 
-    // navigator.serviceWorker.register('serviceWorker.js');
 
     </script>
 </body>

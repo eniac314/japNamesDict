@@ -80,87 +80,6 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
 
 
 
-var _List_Nil = { $: 0 };
-var _List_Nil_UNUSED = { $: '[]' };
-
-function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
-function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
-
-
-var _List_cons = F2(_List_Cons);
-
-function _List_fromArray(arr)
-{
-	var out = _List_Nil;
-	for (var i = arr.length; i--; )
-	{
-		out = _List_Cons(arr[i], out);
-	}
-	return out;
-}
-
-function _List_toArray(xs)
-{
-	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		out.push(xs.a);
-	}
-	return out;
-}
-
-var _List_map2 = F3(function(f, xs, ys)
-{
-	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
-	{
-		arr.push(A2(f, xs.a, ys.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map3 = F4(function(f, xs, ys, zs)
-{
-	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A3(f, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map4 = F5(function(f, ws, xs, ys, zs)
-{
-	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
-{
-	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
-	{
-		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
-	}
-	return _List_fromArray(arr);
-});
-
-var _List_sortBy = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		return _Utils_cmp(f(a), f(b));
-	}));
-});
-
-var _List_sortWith = F2(function(f, xs)
-{
-	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
-		var ord = A2(f, a, b);
-		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
-	}));
-});
-
-
-
 var _JsArray_empty = [];
 
 function _JsArray_singleton(value)
@@ -600,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.bd.aq === region.bv.aq)
+	if (region.bD.aH === region.bX.aH)
 	{
-		return 'on line ' + region.bd.aq;
+		return 'on line ' + region.bD.aH;
 	}
-	return 'on lines ' + region.bd.aq + ' through ' + region.bv.aq;
+	return 'on lines ' + region.bD.aH + ' through ' + region.bX.aH;
 }
 
 
@@ -790,6 +709,147 @@ function _Utils_ap(xs, ys)
 	}
 	return root;
 }
+
+
+
+var _List_Nil = { $: 0 };
+var _List_Nil_UNUSED = { $: '[]' };
+
+function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
+function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
+
+
+var _List_cons = F2(_List_Cons);
+
+function _List_fromArray(arr)
+{
+	var out = _List_Nil;
+	for (var i = arr.length; i--; )
+	{
+		out = _List_Cons(arr[i], out);
+	}
+	return out;
+}
+
+function _List_toArray(xs)
+{
+	for (var out = []; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		out.push(xs.a);
+	}
+	return out;
+}
+
+var _List_map2 = F3(function(f, xs, ys)
+{
+	for (var arr = []; xs.b && ys.b; xs = xs.b, ys = ys.b) // WHILE_CONSES
+	{
+		arr.push(A2(f, xs.a, ys.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map3 = F4(function(f, xs, ys, zs)
+{
+	for (var arr = []; xs.b && ys.b && zs.b; xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A3(f, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map4 = F5(function(f, ws, xs, ys, zs)
+{
+	for (var arr = []; ws.b && xs.b && ys.b && zs.b; ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A4(f, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_map5 = F6(function(f, vs, ws, xs, ys, zs)
+{
+	for (var arr = []; vs.b && ws.b && xs.b && ys.b && zs.b; vs = vs.b, ws = ws.b, xs = xs.b, ys = ys.b, zs = zs.b) // WHILE_CONSES
+	{
+		arr.push(A5(f, vs.a, ws.a, xs.a, ys.a, zs.a));
+	}
+	return _List_fromArray(arr);
+});
+
+var _List_sortBy = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		return _Utils_cmp(f(a), f(b));
+	}));
+});
+
+var _List_sortWith = F2(function(f, xs)
+{
+	return _List_fromArray(_List_toArray(xs).sort(function(a, b) {
+		var ord = A2(f, a, b);
+		return ord === $elm$core$Basics$EQ ? 0 : ord === $elm$core$Basics$LT ? -1 : 1;
+	}));
+});
+
+
+
+// MATH
+
+var _Basics_add = F2(function(a, b) { return a + b; });
+var _Basics_sub = F2(function(a, b) { return a - b; });
+var _Basics_mul = F2(function(a, b) { return a * b; });
+var _Basics_fdiv = F2(function(a, b) { return a / b; });
+var _Basics_idiv = F2(function(a, b) { return (a / b) | 0; });
+var _Basics_pow = F2(Math.pow);
+
+var _Basics_remainderBy = F2(function(b, a) { return a % b; });
+
+// https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
+var _Basics_modBy = F2(function(modulus, x)
+{
+	var answer = x % modulus;
+	return modulus === 0
+		? _Debug_crash(11)
+		:
+	((answer > 0 && modulus < 0) || (answer < 0 && modulus > 0))
+		? answer + modulus
+		: answer;
+});
+
+
+// TRIGONOMETRY
+
+var _Basics_pi = Math.PI;
+var _Basics_e = Math.E;
+var _Basics_cos = Math.cos;
+var _Basics_sin = Math.sin;
+var _Basics_tan = Math.tan;
+var _Basics_acos = Math.acos;
+var _Basics_asin = Math.asin;
+var _Basics_atan = Math.atan;
+var _Basics_atan2 = F2(Math.atan2);
+
+
+// MORE MATH
+
+function _Basics_toFloat(x) { return x; }
+function _Basics_truncate(n) { return n | 0; }
+function _Basics_isInfinite(n) { return n === Infinity || n === -Infinity; }
+
+var _Basics_ceiling = Math.ceil;
+var _Basics_floor = Math.floor;
+var _Basics_round = Math.round;
+var _Basics_sqrt = Math.sqrt;
+var _Basics_log = Math.log;
+var _Basics_isNaN = isNaN;
+
+
+// BOOLEANS
+
+function _Basics_not(bool) { return !bool; }
+var _Basics_and = F2(function(a, b) { return a && b; });
+var _Basics_or  = F2(function(a, b) { return a || b; });
+var _Basics_xor = F2(function(a, b) { return a !== b; });
 
 
 
@@ -1102,103 +1162,6 @@ function _String_fromList(chars)
 	return _List_toArray(chars).join('');
 }
 
-
-
-
-var _Bitwise_and = F2(function(a, b)
-{
-	return a & b;
-});
-
-var _Bitwise_or = F2(function(a, b)
-{
-	return a | b;
-});
-
-var _Bitwise_xor = F2(function(a, b)
-{
-	return a ^ b;
-});
-
-function _Bitwise_complement(a)
-{
-	return ~a;
-};
-
-var _Bitwise_shiftLeftBy = F2(function(offset, a)
-{
-	return a << offset;
-});
-
-var _Bitwise_shiftRightBy = F2(function(offset, a)
-{
-	return a >> offset;
-});
-
-var _Bitwise_shiftRightZfBy = F2(function(offset, a)
-{
-	return a >>> offset;
-});
-
-
-
-// MATH
-
-var _Basics_add = F2(function(a, b) { return a + b; });
-var _Basics_sub = F2(function(a, b) { return a - b; });
-var _Basics_mul = F2(function(a, b) { return a * b; });
-var _Basics_fdiv = F2(function(a, b) { return a / b; });
-var _Basics_idiv = F2(function(a, b) { return (a / b) | 0; });
-var _Basics_pow = F2(Math.pow);
-
-var _Basics_remainderBy = F2(function(b, a) { return a % b; });
-
-// https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
-var _Basics_modBy = F2(function(modulus, x)
-{
-	var answer = x % modulus;
-	return modulus === 0
-		? _Debug_crash(11)
-		:
-	((answer > 0 && modulus < 0) || (answer < 0 && modulus > 0))
-		? answer + modulus
-		: answer;
-});
-
-
-// TRIGONOMETRY
-
-var _Basics_pi = Math.PI;
-var _Basics_e = Math.E;
-var _Basics_cos = Math.cos;
-var _Basics_sin = Math.sin;
-var _Basics_tan = Math.tan;
-var _Basics_acos = Math.acos;
-var _Basics_asin = Math.asin;
-var _Basics_atan = Math.atan;
-var _Basics_atan2 = F2(Math.atan2);
-
-
-// MORE MATH
-
-function _Basics_toFloat(x) { return x; }
-function _Basics_truncate(n) { return n | 0; }
-function _Basics_isInfinite(n) { return n === Infinity || n === -Infinity; }
-
-var _Basics_ceiling = Math.ceil;
-var _Basics_floor = Math.floor;
-var _Basics_round = Math.round;
-var _Basics_sqrt = Math.sqrt;
-var _Basics_log = Math.log;
-var _Basics_isNaN = isNaN;
-
-
-// BOOLEANS
-
-function _Basics_not(bool) { return !bool; }
-var _Basics_and = F2(function(a, b) { return a && b; });
-var _Basics_or  = F2(function(a, b) { return a || b; });
-var _Basics_xor = F2(function(a, b) { return a !== b; });
 
 
 
@@ -1894,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dA,
-		impl.eC,
-		impl.ei,
+		impl.d8,
+		impl.fd,
+		impl.eU,
 		function() { return function() {} }
 	);
 });
@@ -2396,49 +2359,40 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 
 
 
-function _Time_now(millisToPosix)
+var _Bitwise_and = F2(function(a, b)
 {
-	return _Scheduler_binding(function(callback)
-	{
-		callback(_Scheduler_succeed(millisToPosix(Date.now())));
-	});
-}
-
-var _Time_setInterval = F2(function(interval, task)
-{
-	return _Scheduler_binding(function(callback)
-	{
-		var id = setInterval(function() { _Scheduler_rawSpawn(task); }, interval);
-		return function() { clearInterval(id); };
-	});
+	return a & b;
 });
 
-function _Time_here()
+var _Bitwise_or = F2(function(a, b)
 {
-	return _Scheduler_binding(function(callback)
-	{
-		callback(_Scheduler_succeed(
-			A2($elm$time$Time$customZone, -(new Date().getTimezoneOffset()), _List_Nil)
-		));
-	});
-}
+	return a | b;
+});
 
-
-function _Time_getZoneName()
+var _Bitwise_xor = F2(function(a, b)
 {
-	return _Scheduler_binding(function(callback)
-	{
-		try
-		{
-			var name = $elm$time$Time$Name(Intl.DateTimeFormat().resolvedOptions().timeZone);
-		}
-		catch (e)
-		{
-			var name = $elm$time$Time$Offset(new Date().getTimezoneOffset());
-		}
-		callback(_Scheduler_succeed(name));
-	});
-}
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
 
 
 
@@ -2449,25 +2403,25 @@ var _Http_toTask = F3(function(router, toTask, request)
 	return _Scheduler_binding(function(callback)
 	{
 		function done(response) {
-			callback(toTask(request.dm.a(response)));
+			callback(toTask(request.dU.a(response)));
 		}
 
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
-		xhr.addEventListener('load', function() { done(_Http_toResponse(request.dm.b, xhr)); });
-		$elm$core$Maybe$isJust(request.cx) && _Http_track(router, xhr, request.cx.a);
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.dU.b, xhr)); });
+		$elm$core$Maybe$isJust(request.c1) && _Http_track(router, xhr, request.c1.a);
 
 		try {
-			xhr.open(request.dK, request.eD, true);
+			xhr.open(request.ei, request.fe, true);
 		} catch (e) {
-			return done($elm$http$Http$BadUrl_(request.eD));
+			return done($elm$http$Http$BadUrl_(request.fe));
 		}
 
 		_Http_configureRequest(xhr, request);
 
-		request.c1.a && xhr.setRequestHeader('Content-Type', request.c1.a);
-		xhr.send(request.c1.b);
+		request.dx.a && xhr.setRequestHeader('Content-Type', request.dx.a);
+		xhr.send(request.dx.b);
 
 		return function() { xhr.c = true; xhr.abort(); };
 	});
@@ -2478,13 +2432,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.bE; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.b3; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.ex.a || 0;
-	xhr.responseType = request.dm.d;
-	xhr.withCredentials = request.cV;
+	xhr.timeout = request.e8.a || 0;
+	xhr.responseType = request.dU.d;
+	xhr.withCredentials = request.dp;
 }
 
 
@@ -2505,10 +2459,10 @@ function _Http_toResponse(toBody, xhr)
 function _Http_toMetadata(xhr)
 {
 	return {
-		eD: xhr.responseURL,
-		eb: xhr.status,
-		ec: xhr.statusText,
-		bE: _Http_parseHeaders(xhr.getAllResponseHeaders())
+		fe: xhr.responseURL,
+		eN: xhr.status,
+		eO: xhr.statusText,
+		b3: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
 
@@ -2603,15 +2557,15 @@ function _Http_track(router, xhr, tracker)
 	xhr.upload.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Sending({
-			d4: event.loaded,
-			cr: event.total
+			eF: event.loaded,
+			cX: event.total
 		}))));
 	});
 	xhr.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Receiving({
-			dY: event.loaded,
-			cr: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
+			ew: event.loaded,
+			cX: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
 		}))));
 	});
 }
@@ -2623,8 +2577,8 @@ var _Regex_never = /.^/;
 var _Regex_fromStringWith = F2(function(options, string)
 {
 	var flags = 'g';
-	if (options.dN) { flags += 'm'; }
-	if (options.da) { flags += 'i'; }
+	if (options.el) { flags += 'm'; }
+	if (options.dG) { flags += 'i'; }
 
 	try
 	{
@@ -2845,8 +2799,6 @@ var _Parser_findSubString = F5(function(smallString, offset, row, col, bigString
 
 	return _Utils_Tuple3(newOffset, row, col);
 });
-var $elm$core$Basics$EQ = 1;
-var $elm$core$Basics$LT = 0;
 var $elm$core$List$cons = _List_cons;
 var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var $elm$core$Array$foldr = F3(
@@ -2924,278 +2876,9 @@ var $elm$core$Set$toList = function (_v0) {
 	var dict = _v0;
 	return $elm$core$Dict$keys(dict);
 };
+var $elm$core$Basics$EQ = 1;
 var $elm$core$Basics$GT = 2;
-var $elm$core$Basics$False = 1;
-var $elm$core$Basics$apR = F2(
-	function (x, f) {
-		return f(x);
-	});
-var $elm$core$Basics$append = _Utils_append;
-var $elm$core$Maybe$Just = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$core$Maybe$Nothing = {$: 1};
-var $elm$core$String$fromInt = _String_fromNumber;
-var $elm$core$String$cons = _String_cons;
-var $elm$core$String$fromChar = function (_char) {
-	return A2($elm$core$String$cons, _char, '');
-};
-var $elm$core$String$length = _String_length;
-var $elm$core$Bitwise$and = _Bitwise_and;
-var $elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
-var $elm$core$Basics$eq = _Utils_equal;
-var $elm$core$Basics$le = _Utils_le;
-var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
-var $elm$core$String$repeatHelp = F3(
-	function (n, chunk, result) {
-		return (n <= 0) ? result : A3(
-			$elm$core$String$repeatHelp,
-			n >> 1,
-			_Utils_ap(chunk, chunk),
-			(!(n & 1)) ? result : _Utils_ap(result, chunk));
-	});
-var $elm$core$String$repeat = F2(
-	function (n, chunk) {
-		return A3($elm$core$String$repeatHelp, n, chunk, '');
-	});
-var $elm$core$Basics$sub = _Basics_sub;
-var $elm$core$String$padLeft = F3(
-	function (n, _char, string) {
-		return _Utils_ap(
-			A2(
-				$elm$core$String$repeat,
-				n - $elm$core$String$length(string),
-				$elm$core$String$fromChar(_char)),
-			string);
-	});
-var $author$project$KanjiDictWorker$dataPath = function (id) {
-	return '/data/kanji' + (A3(
-		$elm$core$String$padLeft,
-		2,
-		'0',
-		$elm$core$String$fromInt(id)) + '.dat');
-};
-var $elm$core$Basics$identity = function (x) {
-	return x;
-};
-var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $elm$core$Set$empty = $elm$core$Dict$empty;
-var $elm$core$List$foldl = F3(
-	function (func, acc, list) {
-		foldl:
-		while (true) {
-			if (!list.b) {
-				return acc;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				var $temp$func = func,
-					$temp$acc = A2(func, x, acc),
-					$temp$list = xs;
-				func = $temp$func;
-				acc = $temp$acc;
-				list = $temp$list;
-				continue foldl;
-			}
-		}
-	});
-var $elm$core$Dict$Black = 1;
-var $elm$core$Dict$RBNode_elm_builtin = F5(
-	function (a, b, c, d, e) {
-		return {$: -1, a: a, b: b, c: c, d: d, e: e};
-	});
-var $elm$core$Dict$Red = 0;
-var $elm$core$Dict$balance = F5(
-	function (color, key, value, left, right) {
-		if ((right.$ === -1) && (!right.a)) {
-			var _v1 = right.a;
-			var rK = right.b;
-			var rV = right.c;
-			var rLeft = right.d;
-			var rRight = right.e;
-			if ((left.$ === -1) && (!left.a)) {
-				var _v3 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var lLeft = left.d;
-				var lRight = left.e;
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					0,
-					key,
-					value,
-					A5($elm$core$Dict$RBNode_elm_builtin, 1, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rLeft, rRight));
-			} else {
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					color,
-					rK,
-					rV,
-					A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, left, rLeft),
-					rRight);
-			}
-		} else {
-			if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
-				var _v5 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var _v6 = left.d;
-				var _v7 = _v6.a;
-				var llK = _v6.b;
-				var llV = _v6.c;
-				var llLeft = _v6.d;
-				var llRight = _v6.e;
-				var lRight = left.e;
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					0,
-					lK,
-					lV,
-					A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, lRight, right));
-			} else {
-				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
-			}
-		}
-	});
-var $elm$core$Basics$compare = _Utils_compare;
-var $elm$core$Dict$insertHelp = F3(
-	function (key, value, dict) {
-		if (dict.$ === -2) {
-			return A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
-		} else {
-			var nColor = dict.a;
-			var nKey = dict.b;
-			var nValue = dict.c;
-			var nLeft = dict.d;
-			var nRight = dict.e;
-			var _v1 = A2($elm$core$Basics$compare, key, nKey);
-			switch (_v1) {
-				case 0:
-					return A5(
-						$elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						A3($elm$core$Dict$insertHelp, key, value, nLeft),
-						nRight);
-				case 1:
-					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
-				default:
-					return A5(
-						$elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						nLeft,
-						A3($elm$core$Dict$insertHelp, key, value, nRight));
-			}
-		}
-	});
-var $elm$core$Dict$insert = F3(
-	function (key, value, dict) {
-		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === -1) && (!_v0.a)) {
-			var _v1 = _v0.a;
-			var k = _v0.b;
-			var v = _v0.c;
-			var l = _v0.d;
-			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
-		} else {
-			var x = _v0;
-			return x;
-		}
-	});
-var $elm$core$Set$insert = F2(
-	function (key, _v0) {
-		var dict = _v0;
-		return A3($elm$core$Dict$insert, key, 0, dict);
-	});
-var $elm$core$Set$fromList = function (list) {
-	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
-};
-var $elm$core$Basics$add = _Basics_add;
-var $elm$core$Basics$gt = _Utils_gt;
-var $elm$core$List$reverse = function (list) {
-	return A3($elm$core$List$foldl, $elm$core$List$cons, _List_Nil, list);
-};
-var $elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							$elm$core$List$foldl,
-							fn,
-							acc,
-							$elm$core$List$reverse(r4)) : A4($elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var $elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4($elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var $elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						$elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
-var $author$project$KanjiDictWorker$nbrFiles = 30;
+var $elm$core$Basics$LT = 0;
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -3217,9 +2900,17 @@ var $elm$core$Result$Ok = function (a) {
 var $elm$json$Json$Decode$OneOf = function (a) {
 	return {$: 2, a: a};
 };
+var $elm$core$Basics$False = 1;
+var $elm$core$Basics$add = _Basics_add;
+var $elm$core$Maybe$Just = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$core$Maybe$Nothing = {$: 1};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
+var $elm$core$Basics$append = _Utils_append;
 var $elm$json$Json$Encode$encode = _Json_encode;
+var $elm$core$String$fromInt = _String_fromNumber;
 var $elm$core$String$join = F2(
 	function (sep, chunks) {
 		return A2(
@@ -3238,6 +2929,25 @@ var $elm$json$Json$Decode$indent = function (str) {
 		'\n    ',
 		A2($elm$core$String$split, '\n', str));
 };
+var $elm$core$List$foldl = F3(
+	function (func, acc, list) {
+		foldl:
+		while (true) {
+			if (!list.b) {
+				return acc;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				var $temp$func = func,
+					$temp$acc = A2(func, x, acc),
+					$temp$list = xs;
+				func = $temp$func;
+				acc = $temp$acc;
+				list = $temp$list;
+				continue foldl;
+			}
+		}
+	});
 var $elm$core$List$length = function (xs) {
 	return A3(
 		$elm$core$List$foldl,
@@ -3249,6 +2959,8 @@ var $elm$core$List$length = function (xs) {
 		xs);
 };
 var $elm$core$List$map2 = _List_map2;
+var $elm$core$Basics$le = _Utils_le;
+var $elm$core$Basics$sub = _Basics_sub;
 var $elm$core$List$rangeHelp = F3(
 	function (lo, hi, list) {
 		rangeHelp:
@@ -3300,6 +3012,9 @@ var $elm$core$Char$isDigit = function (_char) {
 };
 var $elm$core$Char$isAlphaNum = function (_char) {
 	return $elm$core$Char$isLower(_char) || ($elm$core$Char$isUpper(_char) || $elm$core$Char$isDigit(_char));
+};
+var $elm$core$List$reverse = function (list) {
+	return A3($elm$core$List$foldl, $elm$core$List$cons, _List_Nil, list);
 };
 var $elm$core$String$uncons = _String_uncons;
 var $elm$json$Json$Decode$errorOneOf = F2(
@@ -3425,8 +3140,18 @@ var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
 var $elm$core$Array$Leaf = function (a) {
 	return {$: 1, a: a};
 };
+var $elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
+var $elm$core$Basics$apR = F2(
+	function (x, f) {
+		return f(x);
+	});
+var $elm$core$Basics$eq = _Utils_equal;
 var $elm$core$Basics$floor = _Basics_floor;
 var $elm$core$Elm$JsArray$length = _JsArray_length;
+var $elm$core$Basics$gt = _Utils_gt;
 var $elm$core$Basics$max = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) > 0) ? x : y;
@@ -3480,25 +3205,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.i) {
+		if (!builder.j) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.l),
+				$elm$core$Elm$JsArray$length(builder.n),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.l);
+				builder.n);
 		} else {
-			var treeLen = builder.i * $elm$core$Array$branchFactor;
+			var treeLen = builder.j * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.m) : builder.m;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.i);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.o) : builder.o;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.j);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.l) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.n) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.l);
+				builder.n);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -3511,7 +3236,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{m: nodeList, i: (len / $elm$core$Array$branchFactor) | 0, l: tail});
+					{o: nodeList, j: (len / $elm$core$Array$branchFactor) | 0, n: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -3549,53 +3274,200 @@ var $elm$core$Result$isOk = function (result) {
 		return false;
 	}
 };
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$KanjiDictWorker$init = function (flags) {
-	var ids = A2($elm$core$List$range, 0, $author$project$KanjiDictWorker$nbrFiles - 1);
-	return _Utils_Tuple2(
-		{
-			aG: 'loading indexedDb...',
-			K: 0,
-			U: '',
-			D: $elm$core$Set$fromList(
-				A2($elm$core$List$map, $author$project$KanjiDictWorker$dataPath, ids)),
-			aN: false
-		},
-		$elm$core$Platform$Cmd$none);
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
 };
-var $author$project$KanjiDictWorker$Broadcast = F2(
-	function (a, b) {
-		return {$: 6, a: a, b: b};
+var $elm$core$String$length = _String_length;
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
 	});
-var $author$project$KanjiDictWorker$GetData = {$: 1};
-var $author$project$KanjiDictWorker$GotDataFromIndexedDb = function (a) {
-	return {$: 3, a: a};
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
+	});
+var $author$project$Worker$dataPath = F2(
+	function (basePath, id) {
+		return '/data/' + (basePath + (A3(
+			$elm$core$String$padLeft,
+			2,
+			'0',
+			$elm$core$String$fromInt(id)) + '.dat'));
+	});
+var $elm$core$Basics$identity = function (x) {
+	return x;
 };
-var $author$project$KanjiDictWorker$GotIndexedDbStatus = function (a) {
+var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
+var $elm$core$Set$empty = $elm$core$Dict$empty;
+var $elm$core$Dict$Black = 1;
+var $elm$core$Dict$RBNode_elm_builtin = F5(
+	function (a, b, c, d, e) {
+		return {$: -1, a: a, b: b, c: c, d: d, e: e};
+	});
+var $elm$core$Dict$Red = 0;
+var $elm$core$Dict$balance = F5(
+	function (color, key, value, left, right) {
+		if ((right.$ === -1) && (!right.a)) {
+			var _v1 = right.a;
+			var rK = right.b;
+			var rV = right.c;
+			var rLeft = right.d;
+			var rRight = right.e;
+			if ((left.$ === -1) && (!left.a)) {
+				var _v3 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var lLeft = left.d;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					0,
+					key,
+					value,
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					color,
+					rK,
+					rV,
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, left, rLeft),
+					rRight);
+			}
+		} else {
+			if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
+				var _v5 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var _v6 = left.d;
+				var _v7 = _v6.a;
+				var llK = _v6.b;
+				var llV = _v6.c;
+				var llLeft = _v6.d;
+				var llRight = _v6.e;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					0,
+					lK,
+					lV,
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, lRight, right));
+			} else {
+				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+			}
+		}
+	});
+var $elm$core$Basics$compare = _Utils_compare;
+var $elm$core$Dict$insertHelp = F3(
+	function (key, value, dict) {
+		if (dict.$ === -2) {
+			return A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+		} else {
+			var nColor = dict.a;
+			var nKey = dict.b;
+			var nValue = dict.c;
+			var nLeft = dict.d;
+			var nRight = dict.e;
+			var _v1 = A2($elm$core$Basics$compare, key, nKey);
+			switch (_v1) {
+				case 0:
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						A3($elm$core$Dict$insertHelp, key, value, nLeft),
+						nRight);
+				case 1:
+					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
+				default:
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						nLeft,
+						A3($elm$core$Dict$insertHelp, key, value, nRight));
+			}
+		}
+	});
+var $elm$core$Dict$insert = F3(
+	function (key, value, dict) {
+		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
+		if ((_v0.$ === -1) && (!_v0.a)) {
+			var _v1 = _v0.a;
+			var k = _v0.b;
+			var v = _v0.c;
+			var l = _v0.d;
+			var r = _v0.e;
+			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
+		} else {
+			var x = _v0;
+			return x;
+		}
+	});
+var $elm$core$Set$insert = F2(
+	function (key, _v0) {
+		var dict = _v0;
+		return A3($elm$core$Dict$insert, key, 0, dict);
+	});
+var $elm$core$Set$fromList = function (list) {
+	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
+};
+var $author$project$Worker$GotRemoteData = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
+var $elm$http$Http$BadStatus_ = F2(
+	function (a, b) {
+		return {$: 3, a: a, b: b};
+	});
+var $elm$http$Http$BadUrl_ = function (a) {
 	return {$: 0, a: a};
 };
-var $author$project$KanjiDictWorker$NoOp = {$: 5};
-var $author$project$KanjiDictWorker$Search = function (a) {
-	return {$: 4, a: a};
-};
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$json$Json$Decode$decodeValue = _Json_run;
-var $miniBill$elm_codec$Codec$decoder = function (_v0) {
-	var m = _v0;
-	return m.e;
-};
-var $elm$time$Time$Every = F2(
+var $elm$http$Http$GoodStatus_ = F2(
 	function (a, b) {
-		return {$: 0, a: a, b: b};
+		return {$: 4, a: a, b: b};
 	});
-var $elm$time$Time$State = F2(
-	function (taggers, processes) {
-		return {ca: processes, cv: taggers};
-	});
-var $elm$core$Task$succeed = _Scheduler_succeed;
-var $elm$time$Time$init = $elm$core$Task$succeed(
-	A2($elm$time$Time$State, $elm$core$Dict$empty, $elm$core$Dict$empty));
+var $elm$http$Http$NetworkError_ = {$: 2};
+var $elm$http$Http$Receiving = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$http$Http$Sending = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$http$Http$Timeout_ = {$: 1};
+var $elm$core$Maybe$isJust = function (maybe) {
+	if (!maybe.$) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$core$Dict$get = F2(
 	function (targetKey, dict) {
 		get:
@@ -3627,613 +3499,6 @@ var $elm$core$Dict$get = F2(
 			}
 		}
 	});
-var $elm$time$Time$addMySub = F2(
-	function (_v0, state) {
-		var interval = _v0.a;
-		var tagger = _v0.b;
-		var _v1 = A2($elm$core$Dict$get, interval, state);
-		if (_v1.$ === 1) {
-			return A3(
-				$elm$core$Dict$insert,
-				interval,
-				_List_fromArray(
-					[tagger]),
-				state);
-		} else {
-			var taggers = _v1.a;
-			return A3(
-				$elm$core$Dict$insert,
-				interval,
-				A2($elm$core$List$cons, tagger, taggers),
-				state);
-		}
-	});
-var $elm$core$Task$andThen = _Scheduler_andThen;
-var $elm$core$Process$kill = _Scheduler_kill;
-var $elm$core$Dict$foldl = F3(
-	function (func, acc, dict) {
-		foldl:
-		while (true) {
-			if (dict.$ === -2) {
-				return acc;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var $temp$func = func,
-					$temp$acc = A3(
-					func,
-					key,
-					value,
-					A3($elm$core$Dict$foldl, func, acc, left)),
-					$temp$dict = right;
-				func = $temp$func;
-				acc = $temp$acc;
-				dict = $temp$dict;
-				continue foldl;
-			}
-		}
-	});
-var $elm$core$Dict$merge = F6(
-	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
-		var stepState = F3(
-			function (rKey, rValue, _v0) {
-				stepState:
-				while (true) {
-					var list = _v0.a;
-					var result = _v0.b;
-					if (!list.b) {
-						return _Utils_Tuple2(
-							list,
-							A3(rightStep, rKey, rValue, result));
-					} else {
-						var _v2 = list.a;
-						var lKey = _v2.a;
-						var lValue = _v2.b;
-						var rest = list.b;
-						if (_Utils_cmp(lKey, rKey) < 0) {
-							var $temp$rKey = rKey,
-								$temp$rValue = rValue,
-								$temp$_v0 = _Utils_Tuple2(
-								rest,
-								A3(leftStep, lKey, lValue, result));
-							rKey = $temp$rKey;
-							rValue = $temp$rValue;
-							_v0 = $temp$_v0;
-							continue stepState;
-						} else {
-							if (_Utils_cmp(lKey, rKey) > 0) {
-								return _Utils_Tuple2(
-									list,
-									A3(rightStep, rKey, rValue, result));
-							} else {
-								return _Utils_Tuple2(
-									rest,
-									A4(bothStep, lKey, lValue, rValue, result));
-							}
-						}
-					}
-				}
-			});
-		var _v3 = A3(
-			$elm$core$Dict$foldl,
-			stepState,
-			_Utils_Tuple2(
-				$elm$core$Dict$toList(leftDict),
-				initialResult),
-			rightDict);
-		var leftovers = _v3.a;
-		var intermediateResult = _v3.b;
-		return A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v4, result) {
-					var k = _v4.a;
-					var v = _v4.b;
-					return A3(leftStep, k, v, result);
-				}),
-			intermediateResult,
-			leftovers);
-	});
-var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
-var $elm$time$Time$Name = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$time$Time$Offset = function (a) {
-	return {$: 1, a: a};
-};
-var $elm$time$Time$Zone = F2(
-	function (a, b) {
-		return {$: 0, a: a, b: b};
-	});
-var $elm$time$Time$customZone = $elm$time$Time$Zone;
-var $elm$time$Time$setInterval = _Time_setInterval;
-var $elm$core$Process$spawn = _Scheduler_spawn;
-var $elm$time$Time$spawnHelp = F3(
-	function (router, intervals, processes) {
-		if (!intervals.b) {
-			return $elm$core$Task$succeed(processes);
-		} else {
-			var interval = intervals.a;
-			var rest = intervals.b;
-			var spawnTimer = $elm$core$Process$spawn(
-				A2(
-					$elm$time$Time$setInterval,
-					interval,
-					A2($elm$core$Platform$sendToSelf, router, interval)));
-			var spawnRest = function (id) {
-				return A3(
-					$elm$time$Time$spawnHelp,
-					router,
-					rest,
-					A3($elm$core$Dict$insert, interval, id, processes));
-			};
-			return A2($elm$core$Task$andThen, spawnRest, spawnTimer);
-		}
-	});
-var $elm$time$Time$onEffects = F3(
-	function (router, subs, _v0) {
-		var processes = _v0.ca;
-		var rightStep = F3(
-			function (_v6, id, _v7) {
-				var spawns = _v7.a;
-				var existing = _v7.b;
-				var kills = _v7.c;
-				return _Utils_Tuple3(
-					spawns,
-					existing,
-					A2(
-						$elm$core$Task$andThen,
-						function (_v5) {
-							return kills;
-						},
-						$elm$core$Process$kill(id)));
-			});
-		var newTaggers = A3($elm$core$List$foldl, $elm$time$Time$addMySub, $elm$core$Dict$empty, subs);
-		var leftStep = F3(
-			function (interval, taggers, _v4) {
-				var spawns = _v4.a;
-				var existing = _v4.b;
-				var kills = _v4.c;
-				return _Utils_Tuple3(
-					A2($elm$core$List$cons, interval, spawns),
-					existing,
-					kills);
-			});
-		var bothStep = F4(
-			function (interval, taggers, id, _v3) {
-				var spawns = _v3.a;
-				var existing = _v3.b;
-				var kills = _v3.c;
-				return _Utils_Tuple3(
-					spawns,
-					A3($elm$core$Dict$insert, interval, id, existing),
-					kills);
-			});
-		var _v1 = A6(
-			$elm$core$Dict$merge,
-			leftStep,
-			bothStep,
-			rightStep,
-			newTaggers,
-			processes,
-			_Utils_Tuple3(
-				_List_Nil,
-				$elm$core$Dict$empty,
-				$elm$core$Task$succeed(0)));
-		var spawnList = _v1.a;
-		var existingDict = _v1.b;
-		var killTask = _v1.c;
-		return A2(
-			$elm$core$Task$andThen,
-			function (newProcesses) {
-				return $elm$core$Task$succeed(
-					A2($elm$time$Time$State, newTaggers, newProcesses));
-			},
-			A2(
-				$elm$core$Task$andThen,
-				function (_v2) {
-					return A3($elm$time$Time$spawnHelp, router, spawnList, existingDict);
-				},
-				killTask));
-	});
-var $elm$time$Time$Posix = $elm$core$Basics$identity;
-var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
-var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
-var $elm$core$Platform$sendToApp = _Platform_sendToApp;
-var $elm$core$Task$map2 = F3(
-	function (func, taskA, taskB) {
-		return A2(
-			$elm$core$Task$andThen,
-			function (a) {
-				return A2(
-					$elm$core$Task$andThen,
-					function (b) {
-						return $elm$core$Task$succeed(
-							A2(func, a, b));
-					},
-					taskB);
-			},
-			taskA);
-	});
-var $elm$core$Task$sequence = function (tasks) {
-	return A3(
-		$elm$core$List$foldr,
-		$elm$core$Task$map2($elm$core$List$cons),
-		$elm$core$Task$succeed(_List_Nil),
-		tasks);
-};
-var $elm$time$Time$onSelfMsg = F3(
-	function (router, interval, state) {
-		var _v0 = A2($elm$core$Dict$get, interval, state.cv);
-		if (_v0.$ === 1) {
-			return $elm$core$Task$succeed(state);
-		} else {
-			var taggers = _v0.a;
-			var tellTaggers = function (time) {
-				return $elm$core$Task$sequence(
-					A2(
-						$elm$core$List$map,
-						function (tagger) {
-							return A2(
-								$elm$core$Platform$sendToApp,
-								router,
-								tagger(time));
-						},
-						taggers));
-			};
-			return A2(
-				$elm$core$Task$andThen,
-				function (_v1) {
-					return $elm$core$Task$succeed(state);
-				},
-				A2($elm$core$Task$andThen, tellTaggers, $elm$time$Time$now));
-		}
-	});
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var $elm$time$Time$subMap = F2(
-	function (f, _v0) {
-		var interval = _v0.a;
-		var tagger = _v0.b;
-		return A2(
-			$elm$time$Time$Every,
-			interval,
-			A2($elm$core$Basics$composeL, f, tagger));
-	});
-_Platform_effectManagers['Time'] = _Platform_createManager($elm$time$Time$init, $elm$time$Time$onEffects, $elm$time$Time$onSelfMsg, 0, $elm$time$Time$subMap);
-var $elm$time$Time$subscription = _Platform_leaf('Time');
-var $elm$time$Time$every = F2(
-	function (interval, tagger) {
-		return $elm$time$Time$subscription(
-			A2($elm$time$Time$Every, interval, tagger));
-	});
-var $elm$json$Json$Decode$value = _Json_decodeValue;
-var $author$project$KanjiDictWorker$inbound = _Platform_incomingPort('inbound', $elm$json$Json$Decode$value);
-var $author$project$KanjiDictWorker$indexedDbStatus = _Platform_incomingPort('indexedDbStatus', $elm$json$Json$Decode$value);
-var $author$project$KanjiDictWorker$loadedFromIndexedDb = _Platform_incomingPort('loadedFromIndexedDb', $elm$json$Json$Decode$value);
-var $author$project$Common$LoadAssets = {$: 1};
-var $author$project$Common$SearchCmd = function (a) {
-	return {$: 0, a: a};
-};
-var $miniBill$elm_codec$Codec$Codec = $elm$core$Basics$identity;
-var $elm$json$Json$Decode$andThen = _Json_andThen;
-var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $miniBill$elm_codec$Codec$buildCustom = function (_v0) {
-	var am = _v0;
-	return {
-		e: A2(
-			$elm$json$Json$Decode$andThen,
-			function (tag) {
-				var error = 'tag ' + (tag + 'did not match');
-				return A2(
-					$elm$json$Json$Decode$field,
-					'args',
-					A2(
-						am.e,
-						tag,
-						$elm$json$Json$Decode$fail(error)));
-			},
-			A2($elm$json$Json$Decode$field, 'tag', $elm$json$Json$Decode$string)),
-		g: function (v) {
-			return am.dJ(v);
-		}
-	};
-};
-var $miniBill$elm_codec$Codec$CustomCodec = $elm$core$Basics$identity;
-var $miniBill$elm_codec$Codec$custom = function (match) {
-	return {
-		e: function (_v0) {
-			return $elm$core$Basics$identity;
-		},
-		dJ: match
-	};
-};
-var $miniBill$elm_codec$Codec$build = F2(
-	function (encoder_, decoder_) {
-		return {e: decoder_, g: encoder_};
-	});
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $miniBill$elm_codec$Codec$string = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$string, $elm$json$Json$Decode$string);
-var $elm$json$Json$Decode$succeed = _Json_succeed;
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(0),
-				entries));
-	});
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(0),
-			pairs));
-};
-var $miniBill$elm_codec$Codec$variant = F4(
-	function (name, matchPiece, decoderPiece, _v0) {
-		var am = _v0;
-		var enc = function (v) {
-			return $elm$json$Json$Encode$object(
-				_List_fromArray(
-					[
-						_Utils_Tuple2(
-						'tag',
-						$elm$json$Json$Encode$string(name)),
-						_Utils_Tuple2(
-						'args',
-						A2($elm$json$Json$Encode$list, $elm$core$Basics$identity, v))
-					]));
-		};
-		var decoder_ = F2(
-			function (tag, orElse) {
-				return _Utils_eq(tag, name) ? decoderPiece : A2(am.e, tag, orElse);
-			});
-		return {
-			e: decoder_,
-			dJ: am.dJ(
-				matchPiece(enc))
-		};
-	});
-var $miniBill$elm_codec$Codec$variant0 = F2(
-	function (name, ctor) {
-		return A3(
-			$miniBill$elm_codec$Codec$variant,
-			name,
-			function (c) {
-				return c(_List_Nil);
-			},
-			$elm$json$Json$Decode$succeed(ctor));
-	});
-var $miniBill$elm_codec$Codec$encoder = function (_v0) {
-	var m = _v0;
-	return m.g;
-};
-var $elm$json$Json$Decode$index = _Json_decodeIndex;
-var $elm$json$Json$Decode$map = _Json_map1;
-var $miniBill$elm_codec$Codec$variant1 = F3(
-	function (name, ctor, m1) {
-		return A3(
-			$miniBill$elm_codec$Codec$variant,
-			name,
-			F2(
-				function (c, v) {
-					return c(
-						_List_fromArray(
-							[
-								A2($miniBill$elm_codec$Codec$encoder, m1, v)
-							]));
-				}),
-			A2(
-				$elm$json$Json$Decode$map,
-				ctor,
-				A2(
-					$elm$json$Json$Decode$index,
-					0,
-					$miniBill$elm_codec$Codec$decoder(m1))));
-	});
-var $author$project$Common$workerCmdCodec = $miniBill$elm_codec$Codec$buildCustom(
-	A3(
-		$miniBill$elm_codec$Codec$variant0,
-		'LoadAssets',
-		$author$project$Common$LoadAssets,
-		A4(
-			$miniBill$elm_codec$Codec$variant1,
-			'SearchCmd',
-			$author$project$Common$SearchCmd,
-			$miniBill$elm_codec$Codec$string,
-			$miniBill$elm_codec$Codec$custom(
-				F3(
-					function (fSearchCmd, fLoadAssets, value) {
-						if (!value.$) {
-							var s = value.a;
-							return fSearchCmd(s);
-						} else {
-							return fLoadAssets;
-						}
-					})))));
-var $author$project$KanjiDictWorker$subscriptions = function (model) {
-	return $elm$core$Platform$Sub$batch(
-		_List_fromArray(
-			[
-				$author$project$KanjiDictWorker$loadedFromIndexedDb($author$project$KanjiDictWorker$GotDataFromIndexedDb),
-				$author$project$KanjiDictWorker$indexedDbStatus($author$project$KanjiDictWorker$GotIndexedDbStatus),
-				$author$project$KanjiDictWorker$inbound(
-				function (c) {
-					var _v0 = A2(
-						$elm$json$Json$Decode$decodeValue,
-						$miniBill$elm_codec$Codec$decoder($author$project$Common$workerCmdCodec),
-						c);
-					if (!_v0.$) {
-						if (!_v0.a.$) {
-							var s = _v0.a.a;
-							return $author$project$KanjiDictWorker$Search(s);
-						} else {
-							var _v1 = _v0.a;
-							return $author$project$KanjiDictWorker$GetData;
-						}
-					} else {
-						return $author$project$KanjiDictWorker$NoOp;
-					}
-				}),
-				A2(
-				$elm$time$Time$every,
-				2000,
-				$author$project$KanjiDictWorker$Broadcast('')),
-				A2(
-				$elm$time$Time$every,
-				1000,
-				$author$project$KanjiDictWorker$Broadcast('worker alive'))
-			]));
-};
-var $author$project$KanjiDictWorker$IndexedDbData = function (a) {
-	return {$: 0, a: a};
-};
-var $author$project$Common$KanjiDictResult = function (a) {
-	return {$: 2, a: a};
-};
-var $author$project$Common$KanjiDictWorker = 2;
-var $author$project$Common$LoadingStatusMsg = F2(
-	function (a, b) {
-		return {$: 0, a: a, b: b};
-	});
-var $author$project$KanjiDictWorker$NoData = function (a) {
-	return {$: 1, a: a};
-};
-var $author$project$Common$Pending = 1;
-var $author$project$Common$SearchResultMsg = function (a) {
-	return {$: 1, a: a};
-};
-var $author$project$Common$Success = 2;
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
-var $elm$core$Basics$not = _Basics_not;
-var $elm$core$List$all = F2(
-	function (isOkay, list) {
-		return !A2(
-			$elm$core$List$any,
-			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
-			list);
-	});
-var $elm$json$Json$Decode$bool = _Json_decodeBool;
-var $elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-		}
-	});
-var $elm$core$List$concat = function (lists) {
-	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
-};
-var $elm$core$List$concatMap = F2(
-	function (f, list) {
-		return $elm$core$List$concat(
-			A2($elm$core$List$map, f, list));
-	});
-var $elm$core$String$contains = _String_contains;
-var $elm$core$String$slice = _String_slice;
-var $elm$core$String$dropLeft = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3(
-			$elm$core$String$slice,
-			n,
-			$elm$core$String$length(string),
-			string);
-	});
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
-var $elm$core$List$maybeCons = F3(
-	function (f, mx, xs) {
-		var _v0 = f(mx);
-		if (!_v0.$) {
-			var x = _v0.a;
-			return A2($elm$core$List$cons, x, xs);
-		} else {
-			return xs;
-		}
-	});
-var $elm$core$List$filterMap = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			$elm$core$List$maybeCons(f),
-			_List_Nil,
-			xs);
-	});
-var $author$project$KanjiDictWorker$GotRemoteData = F2(
-	function (a, b) {
-		return {$: 2, a: a, b: b};
-	});
-var $elm$http$Http$BadStatus_ = F2(
-	function (a, b) {
-		return {$: 3, a: a, b: b};
-	});
-var $elm$http$Http$BadUrl_ = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$http$Http$GoodStatus_ = F2(
-	function (a, b) {
-		return {$: 4, a: a, b: b};
-	});
-var $elm$http$Http$NetworkError_ = {$: 2};
-var $elm$http$Http$Receiving = function (a) {
-	return {$: 1, a: a};
-};
-var $elm$http$Http$Sending = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$http$Http$Timeout_ = {$: 1};
-var $elm$core$Maybe$isJust = function (maybe) {
-	if (!maybe.$) {
-		return true;
-	} else {
-		return false;
-	}
-};
 var $elm$core$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
@@ -4656,7 +3921,7 @@ var $elm$http$Http$resolve = F2(
 			case 3:
 				var metadata = response.a;
 				return $elm$core$Result$Err(
-					$elm$http$Http$BadStatus(metadata.eb));
+					$elm$http$Http$BadStatus(metadata.eN));
 			default:
 				var body = response.b;
 				return A2(
@@ -4677,10 +3942,15 @@ var $elm$http$Http$Request = function (a) {
 };
 var $elm$http$Http$State = F2(
 	function (reqs, subs) {
-		return {cf: reqs, cu: subs};
+		return {cL: reqs, c_: subs};
 	});
+var $elm$core$Task$succeed = _Scheduler_succeed;
 var $elm$http$Http$init = $elm$core$Task$succeed(
 	A2($elm$http$Http$State, $elm$core$Dict$empty, _List_Nil));
+var $elm$core$Task$andThen = _Scheduler_andThen;
+var $elm$core$Process$kill = _Scheduler_kill;
+var $elm$core$Platform$sendToApp = _Platform_sendToApp;
+var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$http$Http$updateReqs = F3(
 	function (router, cmds, reqs) {
 		updateReqs:
@@ -4719,7 +3989,7 @@ var $elm$http$Http$updateReqs = F3(
 					return A2(
 						$elm$core$Task$andThen,
 						function (pid) {
-							var _v4 = req.cx;
+							var _v4 = req.c1;
 							if (_v4.$ === 1) {
 								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
@@ -4749,7 +4019,80 @@ var $elm$http$Http$onEffects = F4(
 				return $elm$core$Task$succeed(
 					A2($elm$http$Http$State, reqs, subs));
 			},
-			A3($elm$http$Http$updateReqs, router, cmds, state.cf));
+			A3($elm$http$Http$updateReqs, router, cmds, state.cL));
+	});
+var $elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							$elm$core$List$foldl,
+							fn,
+							acc,
+							$elm$core$List$reverse(r4)) : A4($elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
+			}
+		}
+	});
+var $elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4($elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (!_v0.$) {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
+		} else {
+			return xs;
+		}
+	});
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
 	});
 var $elm$http$Http$maybeSend = F4(
 	function (router, desiredTracker, progress, _v0) {
@@ -4761,6 +4104,28 @@ var $elm$http$Http$maybeSend = F4(
 				router,
 				toMsg(progress))) : $elm$core$Maybe$Nothing;
 	});
+var $elm$core$Task$map2 = F3(
+	function (func, taskA, taskB) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (a) {
+				return A2(
+					$elm$core$Task$andThen,
+					function (b) {
+						return $elm$core$Task$succeed(
+							A2(func, a, b));
+					},
+					taskB);
+			},
+			taskA);
+	});
+var $elm$core$Task$sequence = function (tasks) {
+	return A3(
+		$elm$core$List$foldr,
+		$elm$core$Task$map2($elm$core$List$cons),
+		$elm$core$Task$succeed(_List_Nil),
+		tasks);
+};
 var $elm$http$Http$onSelfMsg = F3(
 	function (router, _v0, state) {
 		var tracker = _v0.a;
@@ -4774,7 +4139,7 @@ var $elm$http$Http$onSelfMsg = F3(
 				A2(
 					$elm$core$List$filterMap,
 					A3($elm$http$Http$maybeSend, router, tracker, progress),
-					state.cu)));
+					state.c_)));
 	});
 var $elm$http$Http$Cancel = function (a) {
 	return {$: 0, a: a};
@@ -4788,14 +4153,14 @@ var $elm$http$Http$cmdMap = F2(
 			var r = cmd.a;
 			return $elm$http$Http$Request(
 				{
-					cV: r.cV,
+					dp: r.dp,
+					dx: r.dx,
+					dU: A2(_Http_mapExpect, func, r.dU),
+					b3: r.b3,
+					ei: r.ei,
+					e8: r.e8,
 					c1: r.c1,
-					dm: A2(_Http_mapExpect, func, r.dm),
-					bE: r.bE,
-					dK: r.dK,
-					ex: r.ex,
-					cx: r.cx,
-					eD: r.eD
+					fe: r.fe
 				});
 		}
 	});
@@ -4818,19 +4183,463 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{cV: false, c1: r.c1, dm: r.dm, bE: r.bE, dK: r.dK, ex: r.ex, cx: r.cx, eD: r.eD}));
+			{dp: false, dx: r.dx, dU: r.dU, b3: r.b3, ei: r.ei, e8: r.e8, c1: r.c1, fe: r.fe}));
 };
 var $elm$http$Http$get = function (r) {
 	return $elm$http$Http$request(
-		{c1: $elm$http$Http$emptyBody, dm: r.dm, bE: _List_Nil, dK: 'GET', ex: $elm$core$Maybe$Nothing, cx: $elm$core$Maybe$Nothing, eD: r.eD});
+		{dx: $elm$http$Http$emptyBody, dU: r.dU, b3: _List_Nil, ei: 'GET', e8: $elm$core$Maybe$Nothing, c1: $elm$core$Maybe$Nothing, fe: r.fe});
 };
-var $author$project$KanjiDictWorker$getData = function (path) {
+var $author$project$Worker$getData = function (path) {
 	return $elm$http$Http$get(
 		{
-			dm: $elm$http$Http$expectString(
-				$author$project$KanjiDictWorker$GotRemoteData(path)),
-			eD: path
+			dU: $elm$http$Http$expectString(
+				$author$project$Worker$GotRemoteData(path)),
+			fe: path
 		});
+};
+var $elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						$elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var $author$project$Worker$nbrConcurentRequest = 5;
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
+	});
+var $author$project$Worker$init = function (flags) {
+	var ids = A2($elm$core$List$range, 0, flags.L - 1);
+	var pendingRequests = A2(
+		$elm$core$List$map,
+		$author$project$Worker$dataPath(flags.F),
+		A2($elm$core$List$take, $author$project$Worker$nbrConcurentRequest, ids));
+	return _Utils_Tuple2(
+		{
+			y: 0,
+			L: flags.L,
+			F: flags.F,
+			aK: $elm$core$Set$fromList(pendingRequests),
+			R: '',
+			aC: $elm$core$Set$fromList(
+				A2(
+					$elm$core$List$map,
+					$author$project$Worker$dataPath(flags.F),
+					ids))
+		},
+		$elm$core$Platform$Cmd$batch(
+			A2($elm$core$List$map, $author$project$Worker$getData, pendingRequests)));
+};
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Worker$GetData = {$: 0};
+var $author$project$Worker$NoOp = {$: 3};
+var $author$project$Worker$Search = function (a) {
+	return {$: 2, a: a};
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $miniBill$elm_codec$Codec$decoder = function (_v0) {
+	var m = _v0;
+	return m.f;
+};
+var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $author$project$Worker$inbound = _Platform_incomingPort('inbound', $elm$json$Json$Decode$value);
+var $author$project$Common$LoadAssets = {$: 1};
+var $author$project$Common$SearchCmd = function (a) {
+	return {$: 0, a: a};
+};
+var $miniBill$elm_codec$Codec$Codec = $elm$core$Basics$identity;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $miniBill$elm_codec$Codec$buildCustom = function (_v0) {
+	var am = _v0;
+	return {
+		f: A2(
+			$elm$json$Json$Decode$andThen,
+			function (tag) {
+				var error = 'tag ' + (tag + 'did not match');
+				return A2(
+					$elm$json$Json$Decode$field,
+					'args',
+					A2(
+						am.f,
+						tag,
+						$elm$json$Json$Decode$fail(error)));
+			},
+			A2($elm$json$Json$Decode$field, 'tag', $elm$json$Json$Decode$string)),
+		h: function (v) {
+			return am.eh(v);
+		}
+	};
+};
+var $miniBill$elm_codec$Codec$CustomCodec = $elm$core$Basics$identity;
+var $miniBill$elm_codec$Codec$custom = function (match) {
+	return {
+		f: function (_v0) {
+			return $elm$core$Basics$identity;
+		},
+		eh: match
+	};
+};
+var $miniBill$elm_codec$Codec$build = F2(
+	function (encoder_, decoder_) {
+		return {f: decoder_, h: encoder_};
+	});
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $miniBill$elm_codec$Codec$string = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$string, $elm$json$Json$Decode$string);
+var $elm$json$Json$Decode$succeed = _Json_succeed;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(0),
+				entries));
+	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(0),
+			pairs));
+};
+var $miniBill$elm_codec$Codec$variant = F4(
+	function (name, matchPiece, decoderPiece, _v0) {
+		var am = _v0;
+		var enc = function (v) {
+			return $elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'tag',
+						$elm$json$Json$Encode$string(name)),
+						_Utils_Tuple2(
+						'args',
+						A2($elm$json$Json$Encode$list, $elm$core$Basics$identity, v))
+					]));
+		};
+		var decoder_ = F2(
+			function (tag, orElse) {
+				return _Utils_eq(tag, name) ? decoderPiece : A2(am.f, tag, orElse);
+			});
+		return {
+			f: decoder_,
+			eh: am.eh(
+				matchPiece(enc))
+		};
+	});
+var $miniBill$elm_codec$Codec$variant0 = F2(
+	function (name, ctor) {
+		return A3(
+			$miniBill$elm_codec$Codec$variant,
+			name,
+			function (c) {
+				return c(_List_Nil);
+			},
+			$elm$json$Json$Decode$succeed(ctor));
+	});
+var $miniBill$elm_codec$Codec$encoder = function (_v0) {
+	var m = _v0;
+	return m.h;
+};
+var $elm$json$Json$Decode$index = _Json_decodeIndex;
+var $elm$json$Json$Decode$map = _Json_map1;
+var $miniBill$elm_codec$Codec$variant1 = F3(
+	function (name, ctor, m1) {
+		return A3(
+			$miniBill$elm_codec$Codec$variant,
+			name,
+			F2(
+				function (c, v) {
+					return c(
+						_List_fromArray(
+							[
+								A2($miniBill$elm_codec$Codec$encoder, m1, v)
+							]));
+				}),
+			A2(
+				$elm$json$Json$Decode$map,
+				ctor,
+				A2(
+					$elm$json$Json$Decode$index,
+					0,
+					$miniBill$elm_codec$Codec$decoder(m1))));
+	});
+var $author$project$Common$workerCmdCodec = $miniBill$elm_codec$Codec$buildCustom(
+	A3(
+		$miniBill$elm_codec$Codec$variant0,
+		'LoadAssets',
+		$author$project$Common$LoadAssets,
+		A4(
+			$miniBill$elm_codec$Codec$variant1,
+			'SearchCmd',
+			$author$project$Common$SearchCmd,
+			$miniBill$elm_codec$Codec$string,
+			$miniBill$elm_codec$Codec$custom(
+				F3(
+					function (fSearchCmd, fLoadAssets, value) {
+						if (!value.$) {
+							var s = value.a;
+							return fSearchCmd(s);
+						} else {
+							return fLoadAssets;
+						}
+					})))));
+var $author$project$Worker$subscriptions = function (model) {
+	return $elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				$author$project$Worker$inbound(
+				function (c) {
+					var _v0 = A2(
+						$elm$json$Json$Decode$decodeValue,
+						$miniBill$elm_codec$Codec$decoder($author$project$Common$workerCmdCodec),
+						c);
+					if (!_v0.$) {
+						if (!_v0.a.$) {
+							var s = _v0.a.a;
+							return $author$project$Worker$Search(s);
+						} else {
+							var _v1 = _v0.a;
+							return $author$project$Worker$GetData;
+						}
+					} else {
+						return $author$project$Worker$NoOp;
+					}
+				})
+			]));
+};
+var $author$project$Common$DictResult = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Common$KanjiDictResult = function (a) {
+	return {$: 2, a: a};
+};
+var $author$project$Common$LoadingStatusMsg = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $author$project$Common$NameDictResult = function (a) {
+	return {$: 0, a: a};
+};
+var $author$project$Common$Pending = 1;
+var $author$project$Common$SearchResultMsg = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Common$Success = 2;
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
+var $elm$core$String$contains = _String_contains;
+var $elm$core$String$slice = _String_slice;
+var $elm$core$String$dropLeft = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3(
+			$elm$core$String$slice,
+			n,
+			$elm$core$String$length(string),
+			string);
+	});
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $author$project$Common$DictWorker = 1;
+var $author$project$Common$KanjiDictWorker = 2;
+var $author$project$Common$NameDictWorker = 0;
+var $author$project$Worker$getWorker = function (basePath) {
+	return (basePath === 'kanji') ? 2 : ((basePath === 'names') ? 0 : 1);
 };
 var $elm$core$String$indexes = _String_indexes;
 var $elm$core$Char$fromCode = _Char_fromCode;
@@ -4844,7 +4653,7 @@ var $elm$core$String$left = F2(
 	});
 var $elm$regex$Regex$Match = F4(
 	function (match, index, number, submatches) {
-		return {dz: index, dJ: match, dP: number, eh: submatches};
+		return {d7: index, eh: match, en: number, eT: submatches};
 	});
 var $elm$regex$Regex$findAtMost = _Regex_findAtMost;
 var $elm_community$string_extra$String$Extra$firstResultHelp = F2(
@@ -4876,7 +4685,7 @@ var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
 var $elm$regex$Regex$fromString = function (string) {
 	return A2(
 		$elm$regex$Regex$fromStringWith,
-		{da: false, dN: false},
+		{dG: false, el: false},
 		string);
 };
 var $elm$regex$Regex$never = _Regex_never;
@@ -4898,7 +4707,7 @@ var $elm_community$string_extra$String$Extra$regexEscape = A2(
 	$elm$regex$Regex$replace,
 	$elm_community$string_extra$String$Extra$regexFromString('[-/\\^$*+?.()|[\\]{}]'),
 	function (_v0) {
-		var match = _v0.dJ;
+		var match = _v0.eh;
 		return '\\' + match;
 	});
 var $elm_community$string_extra$String$Extra$leftOf = F2(
@@ -4911,7 +4720,7 @@ var $elm_community$string_extra$String$Extra$leftOf = F2(
 				A2(
 					$elm$core$Basics$composeR,
 					function ($) {
-						return $.eh;
+						return $.eT;
 					},
 					$elm_community$string_extra$String$Extra$firstResult),
 				A3(
@@ -4922,8 +4731,6 @@ var $elm_community$string_extra$String$Extra$leftOf = F2(
 					string)));
 	});
 var $elm$core$String$lines = _String_lines;
-var $author$project$KanjiDictWorker$loadFromIndexedDb = _Platform_outgoingPort('loadFromIndexedDb', $elm$json$Json$Encode$string);
-var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$core$List$member = F2(
 	function (x, xs) {
 		return A2(
@@ -4933,79 +4740,12 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $author$project$KanjiDictWorker$outbound = _Platform_outgoingPort('outbound', $elm$core$Basics$identity);
-var $author$project$Common$hiragana = A2(
-	$elm$core$List$map,
-	$elm$core$Char$fromCode,
-	A2($elm$core$List$range, 12352, 12447));
-var $elm$core$String$foldr = _String_foldr;
-var $elm$core$String$toList = function (string) {
-	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
-};
-var $elm$core$String$words = _String_words;
-var $author$project$KanjiDictWorker$getKunYomi = function (r) {
-	return A2(
-		$elm$core$List$filter,
-		A2(
-			$elm$core$Basics$composeR,
-			$elm$core$String$toList,
-			$elm$core$List$all(
-				function (c) {
-					return (c === '.') || A2($elm$core$List$member, c, $author$project$Common$hiragana);
-				})),
-		$elm$core$String$words(r));
-};
-var $author$project$Common$katakana = A2(
-	$elm$core$List$map,
-	$elm$core$Char$fromCode,
-	A2($elm$core$List$range, 12448, 12543));
-var $author$project$KanjiDictWorker$getOnYomi = function (r) {
-	return A2(
-		$elm$core$List$filter,
-		A2(
-			$elm$core$Basics$composeR,
-			$elm$core$String$toList,
-			$elm$core$List$all(
-				function (c) {
-					return A2($elm$core$List$member, c, $author$project$Common$katakana);
-				})),
-		$elm$core$String$words(r));
-};
-var $author$project$Common$defaultMeta = {aU: $elm$core$Maybe$Nothing, aV: $elm$core$Maybe$Nothing, aW: $elm$core$Maybe$Nothing, aY: $elm$core$Maybe$Nothing, a0: $elm$core$Maybe$Nothing, a1: $elm$core$Maybe$Nothing, a4: $elm$core$Maybe$Nothing, a6: $elm$core$Maybe$Nothing, a8: $elm$core$Maybe$Nothing, bc: $elm$core$Maybe$Nothing, bf: $elm$core$Maybe$Nothing};
-var $author$project$KanjiDictWorker$PclassicNelson = function (a) {
-	return {$: 4, a: a};
-};
-var $author$project$KanjiDictWorker$Pfrequency = function (a) {
-	return {$: 3, a: a};
-};
-var $author$project$KanjiDictWorker$Pgrade = function (a) {
-	return {$: 1, a: a};
-};
-var $author$project$KanjiDictWorker$Phalpern = function (a) {
-	return {$: 6, a: a};
-};
-var $author$project$KanjiDictWorker$Phenshall = function (a) {
-	return {$: 7, a: a};
-};
-var $author$project$KanjiDictWorker$PkanjiKentei = function (a) {
-	return {$: 10, a: a};
-};
-var $author$project$KanjiDictWorker$PnewNelson = function (a) {
-	return {$: 5, a: a};
-};
-var $author$project$KanjiDictWorker$Ppinyin = function (a) {
-	return {$: 9, a: a};
-};
-var $author$project$KanjiDictWorker$Pradical = function (a) {
-	return {$: 0, a: a};
-};
-var $author$project$KanjiDictWorker$Pskip = function (a) {
-	return {$: 8, a: a};
-};
-var $author$project$KanjiDictWorker$Pstrokes = function (a) {
-	return {$: 2, a: a};
-};
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Worker$outbound = _Platform_outgoingPort('outbound', $elm$core$Basics$identity);
+var $author$project$Common$DictEntry = F3(
+	function (key, reading, meanings) {
+		return {az: key, a0: meanings, a2: reading};
+	});
 var $elm$parser$Parser$Advanced$Parser = $elm$core$Basics$identity;
 var $elm$parser$Parser$Advanced$Good = F3(
 	function (a, b, c) {
@@ -5019,13 +4759,13 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	function (isGood, offset, row, col, s0) {
 		chompWhileHelp:
 		while (true) {
-			var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, offset, s0.a);
+			var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, offset, s0.b);
 			if (_Utils_eq(newOffset, -1)) {
 				return A3(
 					$elm$parser$Parser$Advanced$Good,
-					_Utils_cmp(s0.b, offset) < 0,
+					_Utils_cmp(s0.c, offset) < 0,
 					0,
-					{bs: col, d: s0.d, f: s0.f, b: offset, cl: row, a: s0.a});
+					{bU: col, e: s0.e, g: s0.g, c: offset, cR: row, b: s0.b});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -5057,7 +4797,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.cl, s.bs, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.c, s.cR, s.bU, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -5087,7 +4827,7 @@ var $elm$parser$Parser$Advanced$mapChompedString = F2(
 					p,
 					A2(
 						func,
-						A3($elm$core$String$slice, s0.b, s1.b, s0.a),
+						A3($elm$core$String$slice, s0.c, s1.c, s0.b),
 						a),
 					s1);
 			}
@@ -5134,32 +4874,46 @@ var $elm$parser$Parser$Advanced$ignorer = F2(
 		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
 	});
 var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
-var $elm$parser$Parser$ExpectingInt = {$: 1};
-var $elm$parser$Parser$Advanced$consumeBase = _Parser_consumeBase;
-var $elm$parser$Parser$Advanced$consumeBase16 = _Parser_consumeBase16;
-var $elm$parser$Parser$Advanced$bumpOffset = F2(
-	function (newOffset, s) {
-		return {bs: s.bs + (newOffset - s.b), d: s.d, f: s.f, b: newOffset, cl: s.cl, a: s.a};
+var $elm$parser$Parser$Advanced$keeper = F2(
+	function (parseFunc, parseArg) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
 	});
-var $elm$parser$Parser$Advanced$chompBase10 = _Parser_chompBase10;
-var $elm$parser$Parser$Advanced$isAsciiCode = _Parser_isAsciiCode;
-var $elm$parser$Parser$Advanced$consumeExp = F2(
-	function (offset, src) {
-		if (A3($elm$parser$Parser$Advanced$isAsciiCode, 101, offset, src) || A3($elm$parser$Parser$Advanced$isAsciiCode, 69, offset, src)) {
-			var eOffset = offset + 1;
-			var expOffset = (A3($elm$parser$Parser$Advanced$isAsciiCode, 43, eOffset, src) || A3($elm$parser$Parser$Advanced$isAsciiCode, 45, eOffset, src)) ? (eOffset + 1) : eOffset;
-			var newOffset = A2($elm$parser$Parser$Advanced$chompBase10, expOffset, src);
-			return _Utils_eq(expOffset, newOffset) ? (-newOffset) : newOffset;
-		} else {
-			return offset;
-		}
+var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$parser$Parser$Advanced$spaces = $elm$parser$Parser$Advanced$chompWhile(
+	function (c) {
+		return (c === ' ') || ((c === '\n') || (c === '\r'));
 	});
-var $elm$parser$Parser$Advanced$consumeDotAndExp = F2(
-	function (offset, src) {
-		return A3($elm$parser$Parser$Advanced$isAsciiCode, 46, offset, src) ? A2(
-			$elm$parser$Parser$Advanced$consumeExp,
-			A2($elm$parser$Parser$Advanced$chompBase10, offset + 1, src),
-			src) : A2($elm$parser$Parser$Advanced$consumeExp, offset, src);
+var $elm$parser$Parser$spaces = $elm$parser$Parser$Advanced$spaces;
+var $elm$parser$Parser$Advanced$succeed = function (a) {
+	return function (s) {
+		return A3($elm$parser$Parser$Advanced$Good, false, a, s);
+	};
+};
+var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
+var $author$project$Worker$meaningParser = A2(
+	$elm$parser$Parser$keeper,
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($elm$core$Basics$identity),
+		$elm$parser$Parser$spaces),
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$getChompedString(
+			A2(
+				$elm$parser$Parser$ignorer,
+				$elm$parser$Parser$succeed(0),
+				$elm$parser$Parser$chompWhile(
+					function (c) {
+						return (c !== '/') && (c !== '\n');
+					}))),
+		$elm$parser$Parser$spaces));
+var $elm$parser$Parser$ExpectingSymbol = function (a) {
+	return {$: 8, a: a};
+};
+var $elm$parser$Parser$Advanced$Token = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
 	});
 var $elm$parser$Parser$Advanced$AddRight = F2(
 	function (a, b) {
@@ -5167,7 +4921,7 @@ var $elm$parser$Parser$Advanced$AddRight = F2(
 	});
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {bs: col, dg: contextStack, b8: problem, cl: row};
+		return {bU: col, dM: contextStack, cE: problem, cR: row};
 	});
 var $elm$parser$Parser$Advanced$Empty = {$: 0};
 var $elm$parser$Parser$Advanced$fromState = F2(
@@ -5175,147 +4929,297 @@ var $elm$parser$Parser$Advanced$fromState = F2(
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.cl, s.bs, x, s.d));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.cR, s.bU, x, s.e));
 	});
-var $elm$parser$Parser$Advanced$finalizeInt = F5(
-	function (invalid, handler, startOffset, _v0, s) {
-		var endOffset = _v0.a;
-		var n = _v0.b;
-		if (handler.$ === 1) {
-			var x = handler.a;
-			return A2(
-				$elm$parser$Parser$Advanced$Bad,
-				true,
-				A2($elm$parser$Parser$Advanced$fromState, s, x));
-		} else {
-			var toValue = handler.a;
-			return _Utils_eq(startOffset, endOffset) ? A2(
-				$elm$parser$Parser$Advanced$Bad,
-				_Utils_cmp(s.b, startOffset) < 0,
-				A2($elm$parser$Parser$Advanced$fromState, s, invalid)) : A3(
-				$elm$parser$Parser$Advanced$Good,
-				true,
-				toValue(n),
-				A2($elm$parser$Parser$Advanced$bumpOffset, endOffset, s));
-		}
+var $elm$core$String$isEmpty = function (string) {
+	return string === '';
+};
+var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
+var $elm$parser$Parser$Advanced$token = function (_v0) {
+	var str = _v0.a;
+	var expecting = _v0.b;
+	var progress = !$elm$core$String$isEmpty(str);
+	return function (s) {
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.c, s.cR, s.bU, s.b);
+		var newOffset = _v1.a;
+		var newRow = _v1.b;
+		var newCol = _v1.c;
+		return _Utils_eq(newOffset, -1) ? A2(
+			$elm$parser$Parser$Advanced$Bad,
+			false,
+			A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
+			$elm$parser$Parser$Advanced$Good,
+			progress,
+			0,
+			{bU: newCol, e: s.e, g: s.g, c: newOffset, cR: newRow, b: s.b});
+	};
+};
+var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
+var $elm$parser$Parser$symbol = function (str) {
+	return $elm$parser$Parser$Advanced$symbol(
+		A2(
+			$elm$parser$Parser$Advanced$Token,
+			str,
+			$elm$parser$Parser$ExpectingSymbol(str)));
+};
+var $elm$parser$Parser$Expecting = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$parser$Parser$toToken = function (str) {
+	return A2(
+		$elm$parser$Parser$Advanced$Token,
+		str,
+		$elm$parser$Parser$Expecting(str));
+};
+var $elm$parser$Parser$token = function (str) {
+	return $elm$parser$Parser$Advanced$token(
+		$elm$parser$Parser$toToken(str));
+};
+var $author$project$Worker$meaningNbrParser = function (n) {
+	return A2(
+		$elm$parser$Parser$ignorer,
+		A2(
+			$elm$parser$Parser$ignorer,
+			A2(
+				$elm$parser$Parser$ignorer,
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed(0),
+					$elm$parser$Parser$spaces),
+				$elm$parser$Parser$symbol('(')),
+			$elm$parser$Parser$token(
+				$elm$core$String$fromInt(n))),
+		$elm$parser$Parser$symbol(')'));
+};
+var $author$project$Worker$nbrMeaningParser = function (n) {
+	return A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				$elm$parser$Parser$succeed(
+					F3(
+						function (l, nbr, r) {
+							return l + (' ' + (nbr + (' ' + r)));
+						})),
+				$elm$parser$Parser$getChompedString(
+					A2(
+						$elm$parser$Parser$ignorer,
+						A2(
+							$elm$parser$Parser$ignorer,
+							A2(
+								$elm$parser$Parser$ignorer,
+								$elm$parser$Parser$succeed($elm$core$Basics$identity),
+								$elm$parser$Parser$symbol('(')),
+							$elm$parser$Parser$getChompedString(
+								A2(
+									$elm$parser$Parser$ignorer,
+									$elm$parser$Parser$succeed(0),
+									$elm$parser$Parser$chompWhile(
+										function (c) {
+											return $elm$core$Char$isAlphaNum(c) || ((c === ',') || (c === '-'));
+										})))),
+						$elm$parser$Parser$symbol(')')))),
+			$elm$parser$Parser$getChompedString(
+				$author$project$Worker$meaningNbrParser(n))),
+		$author$project$Worker$meaningParser);
+};
+var $elm$parser$Parser$DeadEnd = F3(
+	function (row, col, problem) {
+		return {bU: col, cE: problem, cR: row};
 	});
-var $elm$parser$Parser$Advanced$fromInfo = F4(
-	function (row, col, x, context) {
-		return A2(
-			$elm$parser$Parser$Advanced$AddRight,
-			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, row, col, x, context));
-	});
-var $elm$core$String$toFloat = _String_toFloat;
-var $elm$parser$Parser$Advanced$finalizeFloat = F6(
-	function (invalid, expecting, intSettings, floatSettings, intPair, s) {
-		var intOffset = intPair.a;
-		var floatOffset = A2($elm$parser$Parser$Advanced$consumeDotAndExp, intOffset, s.a);
-		if (floatOffset < 0) {
-			return A2(
-				$elm$parser$Parser$Advanced$Bad,
-				true,
-				A4($elm$parser$Parser$Advanced$fromInfo, s.cl, s.bs - (floatOffset + s.b), invalid, s.d));
-		} else {
-			if (_Utils_eq(s.b, floatOffset)) {
-				return A2(
-					$elm$parser$Parser$Advanced$Bad,
-					false,
-					A2($elm$parser$Parser$Advanced$fromState, s, expecting));
-			} else {
-				if (_Utils_eq(intOffset, floatOffset)) {
-					return A5($elm$parser$Parser$Advanced$finalizeInt, invalid, intSettings, s.b, intPair, s);
-				} else {
-					if (floatSettings.$ === 1) {
-						var x = floatSettings.a;
-						return A2(
-							$elm$parser$Parser$Advanced$Bad,
-							true,
-							A2($elm$parser$Parser$Advanced$fromState, s, invalid));
-					} else {
-						var toValue = floatSettings.a;
-						var _v1 = $elm$core$String$toFloat(
-							A3($elm$core$String$slice, s.b, floatOffset, s.a));
-						if (_v1.$ === 1) {
-							return A2(
-								$elm$parser$Parser$Advanced$Bad,
-								true,
-								A2($elm$parser$Parser$Advanced$fromState, s, invalid));
-						} else {
-							var n = _v1.a;
-							return A3(
-								$elm$parser$Parser$Advanced$Good,
-								true,
-								toValue(n),
-								A2($elm$parser$Parser$Advanced$bumpOffset, floatOffset, s));
-						}
-					}
-				}
+var $elm$parser$Parser$problemToDeadEnd = function (p) {
+	return A3($elm$parser$Parser$DeadEnd, p.cR, p.bU, p.cE);
+};
+var $elm$parser$Parser$Advanced$bagToList = F2(
+	function (bag, list) {
+		bagToList:
+		while (true) {
+			switch (bag.$) {
+				case 0:
+					return list;
+				case 1:
+					var bag1 = bag.a;
+					var x = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$core$List$cons, x, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+				default:
+					var bag1 = bag.a;
+					var bag2 = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$parser$Parser$Advanced$bagToList, bag2, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
 			}
 		}
 	});
-var $elm$parser$Parser$Advanced$number = function (c) {
-	return function (s) {
-		if (A3($elm$parser$Parser$Advanced$isAsciiCode, 48, s.b, s.a)) {
-			var zeroOffset = s.b + 1;
-			var baseOffset = zeroOffset + 1;
-			return A3($elm$parser$Parser$Advanced$isAsciiCode, 120, zeroOffset, s.a) ? A5(
-				$elm$parser$Parser$Advanced$finalizeInt,
-				c.dG,
-				c.bI,
-				baseOffset,
-				A2($elm$parser$Parser$Advanced$consumeBase16, baseOffset, s.a),
-				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 111, zeroOffset, s.a) ? A5(
-				$elm$parser$Parser$Advanced$finalizeInt,
-				c.dG,
-				c.b$,
-				baseOffset,
-				A3($elm$parser$Parser$Advanced$consumeBase, 8, baseOffset, s.a),
-				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 98, zeroOffset, s.a) ? A5(
-				$elm$parser$Parser$Advanced$finalizeInt,
-				c.dG,
-				c.bn,
-				baseOffset,
-				A3($elm$parser$Parser$Advanced$consumeBase, 2, baseOffset, s.a),
-				s) : A6(
-				$elm$parser$Parser$Advanced$finalizeFloat,
-				c.dG,
-				c.bx,
-				c.bN,
-				c.bz,
-				_Utils_Tuple2(zeroOffset, 0),
-				s)));
+var $elm$parser$Parser$Advanced$run = F2(
+	function (_v0, src) {
+		var parse = _v0;
+		var _v1 = parse(
+			{bU: 1, e: _List_Nil, g: 1, c: 0, cR: 1, b: src});
+		if (!_v1.$) {
+			var value = _v1.b;
+			return $elm$core$Result$Ok(value);
 		} else {
-			return A6(
-				$elm$parser$Parser$Advanced$finalizeFloat,
-				c.dG,
-				c.bx,
-				c.bN,
-				c.bz,
-				A3($elm$parser$Parser$Advanced$consumeBase, 10, s.b, s.a),
-				s);
+			var bag = _v1.b;
+			return $elm$core$Result$Err(
+				A2($elm$parser$Parser$Advanced$bagToList, bag, _List_Nil));
+		}
+	});
+var $elm$parser$Parser$run = F2(
+	function (parser, source) {
+		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
+		if (!_v0.$) {
+			var a = _v0.a;
+			return $elm$core$Result$Ok(a);
+		} else {
+			var problems = _v0.a;
+			return $elm$core$Result$Err(
+				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
+		}
+	});
+var $author$project$Worker$groupMeanings = function (xs) {
+	var _v0 = A3(
+		$elm$core$List$foldl,
+		F2(
+			function (x, _v2) {
+				var _v3 = _v2.a;
+				var n = _v3.a;
+				var currentMeaning = _v3.b;
+				var res = _v2.b;
+				var isNumbered_ = _v2.c;
+				var _v4 = _Utils_Tuple2(
+					A2(
+						$elm$parser$Parser$run,
+						$author$project$Worker$nbrMeaningParser(n),
+						x),
+					currentMeaning);
+				if (!_v4.a.$) {
+					if (_v4.b === '') {
+						var valid = _v4.a.a;
+						return _Utils_Tuple3(
+							_Utils_Tuple2(n + 1, valid),
+							res,
+							true);
+					} else {
+						var valid = _v4.a.a;
+						var rs = _v4.b;
+						return _Utils_Tuple3(
+							_Utils_Tuple2(n + 1, valid),
+							_Utils_ap(
+								res,
+								_List_fromArray(
+									[currentMeaning])),
+							true);
+					}
+				} else {
+					var _v5 = _Utils_Tuple2(
+						A2($elm$parser$Parser$run, $author$project$Worker$meaningParser, x),
+						currentMeaning);
+					if (!_v5.a.$) {
+						if (_v5.b === '') {
+							var valid = _v5.a.a;
+							return _Utils_Tuple3(
+								_Utils_Tuple2(n, ''),
+								_Utils_ap(
+									res,
+									_List_fromArray(
+										[valid])),
+								isNumbered_);
+						} else {
+							var valid = _v5.a.a;
+							var rs = _v5.b;
+							return _Utils_Tuple3(
+								_Utils_Tuple2(n, rs + (', ' + valid)),
+								res,
+								isNumbered_);
+						}
+					} else {
+						return _Utils_Tuple3(
+							_Utils_Tuple2(n, currentMeaning),
+							res,
+							isNumbered_);
+					}
+				}
+			}),
+		_Utils_Tuple3(
+			_Utils_Tuple2(1, ''),
+			_List_Nil,
+			false),
+		xs);
+	var _v1 = _v0.a;
+	var last = _v1.b;
+	var rest = _v0.b;
+	var isNumbered = _v0.c;
+	var result = (last === '') ? rest : _Utils_ap(
+		rest,
+		_List_fromArray(
+			[last]));
+	return isNumbered ? result : _List_fromArray(
+		[
+			A2($elm$core$String$join, ', ', result)
+		]);
+};
+var $author$project$Worker$keyParser = A2(
+	$elm$parser$Parser$keeper,
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed($elm$core$Basics$identity),
+		$elm$parser$Parser$spaces),
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$getChompedString(
+			A2(
+				$elm$parser$Parser$ignorer,
+				$elm$parser$Parser$succeed(0),
+				$elm$parser$Parser$chompWhile(
+					function (c) {
+						return (c !== ' ') && ((c !== '/') && ((c !== '[') && (c !== ']')));
+					}))),
+		$elm$parser$Parser$spaces));
+var $elm$parser$Parser$Advanced$map = F2(
+	function (func, _v0) {
+		var parse = _v0;
+		return function (s0) {
+			var _v1 = parse(s0);
+			if (!_v1.$) {
+				var p = _v1.a;
+				var a = _v1.b;
+				var s1 = _v1.c;
+				return A3(
+					$elm$parser$Parser$Advanced$Good,
+					p,
+					func(a),
+					s1);
+			} else {
+				var p = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p, x);
+			}
+		};
+	});
+var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
+var $elm$parser$Parser$Advanced$backtrackable = function (_v0) {
+	var parse = _v0;
+	return function (s0) {
+		var _v1 = parse(s0);
+		if (_v1.$ === 1) {
+			var x = _v1.b;
+			return A2($elm$parser$Parser$Advanced$Bad, false, x);
+		} else {
+			var a = _v1.b;
+			var s1 = _v1.c;
+			return A3($elm$parser$Parser$Advanced$Good, false, a, s1);
 		}
 	};
 };
-var $elm$parser$Parser$Advanced$int = F2(
-	function (expecting, invalid) {
-		return $elm$parser$Parser$Advanced$number(
-			{
-				bn: $elm$core$Result$Err(invalid),
-				bx: expecting,
-				bz: $elm$core$Result$Err(invalid),
-				bI: $elm$core$Result$Err(invalid),
-				bN: $elm$core$Result$Ok($elm$core$Basics$identity),
-				dG: invalid,
-				b$: $elm$core$Result$Err(invalid)
-			});
-	});
-var $elm$parser$Parser$int = A2($elm$parser$Parser$Advanced$int, $elm$parser$Parser$ExpectingInt, $elm$parser$Parser$ExpectingInt);
-var $elm$parser$Parser$Advanced$keeper = F2(
-	function (parseFunc, parseArg) {
-		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
-	});
-var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
+var $elm$parser$Parser$backtrackable = $elm$parser$Parser$Advanced$backtrackable;
 var $elm$parser$Parser$Advanced$Append = F2(
 	function (a, b) {
 		return {$: 2, a: a, b: b};
@@ -5358,51 +5262,519 @@ var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
 	};
 };
 var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
-var $elm$parser$Parser$Advanced$succeed = function (a) {
-	return function (s) {
-		return A3($elm$parser$Parser$Advanced$Good, false, a, s);
-	};
+var $author$project$Worker$readingParser = $elm$parser$Parser$oneOf(
+	_List_fromArray(
+		[
+			$elm$parser$Parser$backtrackable(
+			A2(
+				$elm$parser$Parser$keeper,
+				A2(
+					$elm$parser$Parser$ignorer,
+					A2(
+						$elm$parser$Parser$ignorer,
+						$elm$parser$Parser$succeed($elm$core$Maybe$Just),
+						$elm$parser$Parser$symbol('[')),
+					$elm$parser$Parser$spaces),
+				A2(
+					$elm$parser$Parser$ignorer,
+					A2(
+						$elm$parser$Parser$ignorer,
+						$elm$parser$Parser$getChompedString(
+							A2(
+								$elm$parser$Parser$ignorer,
+								$elm$parser$Parser$succeed(0),
+								$elm$parser$Parser$chompWhile(
+									function (c) {
+										return c !== ']';
+									}))),
+						$elm$parser$Parser$symbol(']')),
+					$elm$parser$Parser$spaces))),
+			$elm$parser$Parser$succeed($elm$core$Maybe$Nothing)
+		]));
+var $elm$parser$Parser$Done = function (a) {
+	return {$: 1, a: a};
 };
-var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
-var $elm$parser$Parser$ExpectingSymbol = function (a) {
+var $elm$parser$Parser$Loop = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$parser$Parser$Advanced$loopHelp = F4(
+	function (p, state, callback, s0) {
+		loopHelp:
+		while (true) {
+			var _v0 = callback(state);
+			var parse = _v0;
+			var _v1 = parse(s0);
+			if (!_v1.$) {
+				var p1 = _v1.a;
+				var step = _v1.b;
+				var s1 = _v1.c;
+				if (!step.$) {
+					var newState = step.a;
+					var $temp$p = p || p1,
+						$temp$state = newState,
+						$temp$callback = callback,
+						$temp$s0 = s1;
+					p = $temp$p;
+					state = $temp$state;
+					callback = $temp$callback;
+					s0 = $temp$s0;
+					continue loopHelp;
+				} else {
+					var result = step.a;
+					return A3($elm$parser$Parser$Advanced$Good, p || p1, result, s1);
+				}
+			} else {
+				var p1 = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p || p1, x);
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$loop = F2(
+	function (state, callback) {
+		return function (s) {
+			return A4($elm$parser$Parser$Advanced$loopHelp, false, state, callback, s);
+		};
+	});
+var $elm$parser$Parser$Advanced$Done = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$parser$Parser$Advanced$Loop = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$parser$Parser$toAdvancedStep = function (step) {
+	if (!step.$) {
+		var s = step.a;
+		return $elm$parser$Parser$Advanced$Loop(s);
+	} else {
+		var a = step.a;
+		return $elm$parser$Parser$Advanced$Done(a);
+	}
+};
+var $elm$parser$Parser$loop = F2(
+	function (state, callback) {
+		return A2(
+			$elm$parser$Parser$Advanced$loop,
+			state,
+			function (s) {
+				return A2(
+					$elm$parser$Parser$map,
+					$elm$parser$Parser$toAdvancedStep,
+					callback(s));
+			});
+	});
+var $author$project$Worker$synonymsParser = function () {
+	var meaningParser_ = A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$ignorer,
+			$elm$parser$Parser$succeed($elm$core$Basics$identity),
+			$elm$parser$Parser$spaces),
+		A2(
+			$elm$parser$Parser$ignorer,
+			$elm$parser$Parser$getChompedString(
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed(0),
+					$elm$parser$Parser$chompWhile(
+						function (c) {
+							return c !== '/';
+						}))),
+			$elm$parser$Parser$spaces));
+	var go = function (xs) {
+		return $elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					$elm$parser$Parser$backtrackable(
+					A2(
+						$elm$parser$Parser$keeper,
+						$elm$parser$Parser$succeed(
+							function (match) {
+								return $elm$parser$Parser$Loop(
+									A2($elm$core$List$cons, match, xs));
+							}),
+						A2(
+							$elm$parser$Parser$ignorer,
+							meaningParser_,
+							$elm$parser$Parser$symbol('/')))),
+					A2(
+					$elm$parser$Parser$map,
+					function (_v0) {
+						return $elm$parser$Parser$Done(
+							$elm$core$List$reverse(xs));
+					},
+					$elm$parser$Parser$succeed(0))
+				]));
+	};
+	return A2($elm$parser$Parser$loop, _List_Nil, go);
+}();
+var $author$project$Worker$dictEntryParser = A2(
+	$elm$parser$Parser$map,
+	function (e) {
+		return _Utils_update(
+			e,
+			{
+				a0: $author$project$Worker$groupMeanings(e.a0)
+			});
+	},
+	A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				$elm$parser$Parser$succeed($author$project$Common$DictEntry),
+				$author$project$Worker$keyParser),
+			A2(
+				$elm$parser$Parser$ignorer,
+				$author$project$Worker$readingParser,
+				$elm$parser$Parser$symbol('/'))),
+		$author$project$Worker$synonymsParser));
+var $author$project$Worker$parseDictEntry = function (e) {
+	return A2($elm$parser$Parser$run, $author$project$Worker$dictEntryParser, e);
+};
+var $author$project$Common$NameDictEntry = F5(
+	function (key, reading, kind, meaning, abr) {
+		return {bK: abr, az: key, cg: kind, cn: meaning, a2: reading};
+	});
+var $author$project$Worker$abrParser = $elm$parser$Parser$oneOf(
+	_List_fromArray(
+		[
+			$elm$parser$Parser$backtrackable(
+			A2(
+				$elm$parser$Parser$keeper,
+				$elm$parser$Parser$succeed($elm$core$Maybe$Just),
+				A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$getChompedString(
+						A2(
+							$elm$parser$Parser$ignorer,
+							$elm$parser$Parser$succeed(0),
+							$elm$parser$Parser$chompWhile(
+								function (c) {
+									return (c !== '/') && (c !== '\n');
+								}))),
+					$elm$parser$Parser$symbol('/')))),
+			$elm$parser$Parser$succeed($elm$core$Maybe$Nothing)
+		]));
+var $author$project$Common$Company = 9;
+var $author$project$Common$Female = 1;
+var $author$project$Common$Fullname = 3;
+var $author$project$Common$Given = 4;
+var $author$project$Common$Organisation = 7;
+var $author$project$Common$Person = 0;
+var $author$project$Common$Place = 5;
+var $author$project$Common$Product = 8;
+var $author$project$Common$Station = 6;
+var $author$project$Common$Surname = 2;
+var $author$project$Common$Unknown = 10;
+var $author$project$Common$stringToKing = function (s) {
+	switch (s) {
+		case 'o':
+			return 7;
+		case 'pr':
+			return 8;
+		case 'c':
+			return 9;
+		case 'f':
+			return 1;
+		case 'p':
+			return 5;
+		case 'st':
+			return 6;
+		case 'u':
+			return 0;
+		case 'h':
+			return 3;
+		case 's':
+			return 2;
+		case 'g':
+			return 4;
+		default:
+			return 10;
+	}
+};
+var $author$project$Worker$kindParser = A2(
+	$elm$parser$Parser$keeper,
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$succeed(
+			function (res) {
+				return A2(
+					$elm$core$List$map,
+					$author$project$Common$stringToKing,
+					A2($elm$core$String$split, ',', res));
+			}),
+		$elm$parser$Parser$symbol('(')),
+	A2(
+		$elm$parser$Parser$ignorer,
+		$elm$parser$Parser$getChompedString(
+			A2(
+				$elm$parser$Parser$ignorer,
+				$elm$parser$Parser$succeed(0),
+				$elm$parser$Parser$chompWhile(
+					function (c) {
+						return $elm$core$Char$isAlphaNum(c) || (c === ',');
+					}))),
+		$elm$parser$Parser$symbol(')')));
+var $author$project$Worker$entryParser = A2(
+	$elm$parser$Parser$keeper,
+	A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				A2(
+					$elm$parser$Parser$keeper,
+					$elm$parser$Parser$succeed($author$project$Common$NameDictEntry),
+					$author$project$Worker$keyParser),
+				A2(
+					$elm$parser$Parser$ignorer,
+					$author$project$Worker$readingParser,
+					$elm$parser$Parser$symbol('/'))),
+			$author$project$Worker$kindParser),
+		A2(
+			$elm$parser$Parser$ignorer,
+			$author$project$Worker$meaningParser,
+			$elm$parser$Parser$symbol('/'))),
+	$author$project$Worker$abrParser);
+var $author$project$Worker$parseNameDictEntry = function (e) {
+	return A2($elm$parser$Parser$run, $author$project$Worker$entryParser, e);
+};
+var $author$project$Common$hiragana = A2(
+	$elm$core$List$map,
+	$elm$core$Char$fromCode,
+	A2($elm$core$List$range, 12352, 12447));
+var $elm$core$String$foldr = _String_foldr;
+var $elm$core$String$toList = function (string) {
+	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
+};
+var $elm$core$String$words = _String_words;
+var $author$project$Worker$getKunYomi = function (r) {
+	return A2(
+		$elm$core$List$filter,
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$String$toList,
+			$elm$core$List$all(
+				function (c) {
+					return (c === '.') || A2($elm$core$List$member, c, $author$project$Common$hiragana);
+				})),
+		$elm$core$String$words(r));
+};
+var $author$project$Common$katakana = A2(
+	$elm$core$List$map,
+	$elm$core$Char$fromCode,
+	A2($elm$core$List$range, 12448, 12543));
+var $author$project$Worker$getOnYomi = function (r) {
+	return A2(
+		$elm$core$List$filter,
+		A2(
+			$elm$core$Basics$composeR,
+			$elm$core$String$toList,
+			$elm$core$List$all(
+				function (c) {
+					return A2($elm$core$List$member, c, $author$project$Common$katakana);
+				})),
+		$elm$core$String$words(r));
+};
+var $author$project$Common$defaultMeta = {bf: $elm$core$Maybe$Nothing, bi: $elm$core$Maybe$Nothing, bj: $elm$core$Maybe$Nothing, bl: $elm$core$Maybe$Nothing, bp: $elm$core$Maybe$Nothing, bq: $elm$core$Maybe$Nothing, bt: $elm$core$Maybe$Nothing, bv: $elm$core$Maybe$Nothing, bx: $elm$core$Maybe$Nothing, bC: $elm$core$Maybe$Nothing, bF: $elm$core$Maybe$Nothing};
+var $author$project$Worker$PclassicNelson = function (a) {
+	return {$: 4, a: a};
+};
+var $author$project$Worker$Pfrequency = function (a) {
+	return {$: 3, a: a};
+};
+var $author$project$Worker$Pgrade = function (a) {
+	return {$: 1, a: a};
+};
+var $author$project$Worker$Phalpern = function (a) {
+	return {$: 6, a: a};
+};
+var $author$project$Worker$Phenshall = function (a) {
+	return {$: 7, a: a};
+};
+var $author$project$Worker$PkanjiKentei = function (a) {
+	return {$: 10, a: a};
+};
+var $author$project$Worker$PnewNelson = function (a) {
+	return {$: 5, a: a};
+};
+var $author$project$Worker$Ppinyin = function (a) {
+	return {$: 9, a: a};
+};
+var $author$project$Worker$Pradical = function (a) {
+	return {$: 0, a: a};
+};
+var $author$project$Worker$Pskip = function (a) {
 	return {$: 8, a: a};
 };
-var $elm$parser$Parser$Advanced$Token = F2(
-	function (a, b) {
-		return {$: 0, a: a, b: b};
-	});
-var $elm$core$String$isEmpty = function (string) {
-	return string === '';
+var $author$project$Worker$Pstrokes = function (a) {
+	return {$: 2, a: a};
 };
-var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
-var $elm$parser$Parser$Advanced$token = function (_v0) {
-	var str = _v0.a;
-	var expecting = _v0.b;
-	var progress = !$elm$core$String$isEmpty(str);
+var $elm$parser$Parser$ExpectingInt = {$: 1};
+var $elm$parser$Parser$Advanced$consumeBase = _Parser_consumeBase;
+var $elm$parser$Parser$Advanced$consumeBase16 = _Parser_consumeBase16;
+var $elm$parser$Parser$Advanced$bumpOffset = F2(
+	function (newOffset, s) {
+		return {bU: s.bU + (newOffset - s.c), e: s.e, g: s.g, c: newOffset, cR: s.cR, b: s.b};
+	});
+var $elm$parser$Parser$Advanced$chompBase10 = _Parser_chompBase10;
+var $elm$parser$Parser$Advanced$isAsciiCode = _Parser_isAsciiCode;
+var $elm$parser$Parser$Advanced$consumeExp = F2(
+	function (offset, src) {
+		if (A3($elm$parser$Parser$Advanced$isAsciiCode, 101, offset, src) || A3($elm$parser$Parser$Advanced$isAsciiCode, 69, offset, src)) {
+			var eOffset = offset + 1;
+			var expOffset = (A3($elm$parser$Parser$Advanced$isAsciiCode, 43, eOffset, src) || A3($elm$parser$Parser$Advanced$isAsciiCode, 45, eOffset, src)) ? (eOffset + 1) : eOffset;
+			var newOffset = A2($elm$parser$Parser$Advanced$chompBase10, expOffset, src);
+			return _Utils_eq(expOffset, newOffset) ? (-newOffset) : newOffset;
+		} else {
+			return offset;
+		}
+	});
+var $elm$parser$Parser$Advanced$consumeDotAndExp = F2(
+	function (offset, src) {
+		return A3($elm$parser$Parser$Advanced$isAsciiCode, 46, offset, src) ? A2(
+			$elm$parser$Parser$Advanced$consumeExp,
+			A2($elm$parser$Parser$Advanced$chompBase10, offset + 1, src),
+			src) : A2($elm$parser$Parser$Advanced$consumeExp, offset, src);
+	});
+var $elm$parser$Parser$Advanced$finalizeInt = F5(
+	function (invalid, handler, startOffset, _v0, s) {
+		var endOffset = _v0.a;
+		var n = _v0.b;
+		if (handler.$ === 1) {
+			var x = handler.a;
+			return A2(
+				$elm$parser$Parser$Advanced$Bad,
+				true,
+				A2($elm$parser$Parser$Advanced$fromState, s, x));
+		} else {
+			var toValue = handler.a;
+			return _Utils_eq(startOffset, endOffset) ? A2(
+				$elm$parser$Parser$Advanced$Bad,
+				_Utils_cmp(s.c, startOffset) < 0,
+				A2($elm$parser$Parser$Advanced$fromState, s, invalid)) : A3(
+				$elm$parser$Parser$Advanced$Good,
+				true,
+				toValue(n),
+				A2($elm$parser$Parser$Advanced$bumpOffset, endOffset, s));
+		}
+	});
+var $elm$parser$Parser$Advanced$fromInfo = F4(
+	function (row, col, x, context) {
+		return A2(
+			$elm$parser$Parser$Advanced$AddRight,
+			$elm$parser$Parser$Advanced$Empty,
+			A4($elm$parser$Parser$Advanced$DeadEnd, row, col, x, context));
+	});
+var $elm$core$String$toFloat = _String_toFloat;
+var $elm$parser$Parser$Advanced$finalizeFloat = F6(
+	function (invalid, expecting, intSettings, floatSettings, intPair, s) {
+		var intOffset = intPair.a;
+		var floatOffset = A2($elm$parser$Parser$Advanced$consumeDotAndExp, intOffset, s.b);
+		if (floatOffset < 0) {
+			return A2(
+				$elm$parser$Parser$Advanced$Bad,
+				true,
+				A4($elm$parser$Parser$Advanced$fromInfo, s.cR, s.bU - (floatOffset + s.c), invalid, s.e));
+		} else {
+			if (_Utils_eq(s.c, floatOffset)) {
+				return A2(
+					$elm$parser$Parser$Advanced$Bad,
+					false,
+					A2($elm$parser$Parser$Advanced$fromState, s, expecting));
+			} else {
+				if (_Utils_eq(intOffset, floatOffset)) {
+					return A5($elm$parser$Parser$Advanced$finalizeInt, invalid, intSettings, s.c, intPair, s);
+				} else {
+					if (floatSettings.$ === 1) {
+						var x = floatSettings.a;
+						return A2(
+							$elm$parser$Parser$Advanced$Bad,
+							true,
+							A2($elm$parser$Parser$Advanced$fromState, s, invalid));
+					} else {
+						var toValue = floatSettings.a;
+						var _v1 = $elm$core$String$toFloat(
+							A3($elm$core$String$slice, s.c, floatOffset, s.b));
+						if (_v1.$ === 1) {
+							return A2(
+								$elm$parser$Parser$Advanced$Bad,
+								true,
+								A2($elm$parser$Parser$Advanced$fromState, s, invalid));
+						} else {
+							var n = _v1.a;
+							return A3(
+								$elm$parser$Parser$Advanced$Good,
+								true,
+								toValue(n),
+								A2($elm$parser$Parser$Advanced$bumpOffset, floatOffset, s));
+						}
+					}
+				}
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$number = function (c) {
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.cl, s.bs, s.a);
-		var newOffset = _v1.a;
-		var newRow = _v1.b;
-		var newCol = _v1.c;
-		return _Utils_eq(newOffset, -1) ? A2(
-			$elm$parser$Parser$Advanced$Bad,
-			false,
-			A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
-			$elm$parser$Parser$Advanced$Good,
-			progress,
-			0,
-			{bs: newCol, d: s.d, f: s.f, b: newOffset, cl: newRow, a: s.a});
+		if (A3($elm$parser$Parser$Advanced$isAsciiCode, 48, s.c, s.b)) {
+			var zeroOffset = s.c + 1;
+			var baseOffset = zeroOffset + 1;
+			return A3($elm$parser$Parser$Advanced$isAsciiCode, 120, zeroOffset, s.b) ? A5(
+				$elm$parser$Parser$Advanced$finalizeInt,
+				c.ee,
+				c.b7,
+				baseOffset,
+				A2($elm$parser$Parser$Advanced$consumeBase16, baseOffset, s.b),
+				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 111, zeroOffset, s.b) ? A5(
+				$elm$parser$Parser$Advanced$finalizeInt,
+				c.ee,
+				c.cu,
+				baseOffset,
+				A3($elm$parser$Parser$Advanced$consumeBase, 8, baseOffset, s.b),
+				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 98, zeroOffset, s.b) ? A5(
+				$elm$parser$Parser$Advanced$finalizeInt,
+				c.ee,
+				c.bO,
+				baseOffset,
+				A3($elm$parser$Parser$Advanced$consumeBase, 2, baseOffset, s.b),
+				s) : A6(
+				$elm$parser$Parser$Advanced$finalizeFloat,
+				c.ee,
+				c.bZ,
+				c.ce,
+				c.b_,
+				_Utils_Tuple2(zeroOffset, 0),
+				s)));
+		} else {
+			return A6(
+				$elm$parser$Parser$Advanced$finalizeFloat,
+				c.ee,
+				c.bZ,
+				c.ce,
+				c.b_,
+				A3($elm$parser$Parser$Advanced$consumeBase, 10, s.c, s.b),
+				s);
+		}
 	};
 };
-var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
-var $elm$parser$Parser$symbol = function (str) {
-	return $elm$parser$Parser$Advanced$symbol(
-		A2(
-			$elm$parser$Parser$Advanced$Token,
-			str,
-			$elm$parser$Parser$ExpectingSymbol(str)));
-};
-var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
+var $elm$parser$Parser$Advanced$int = F2(
+	function (expecting, invalid) {
+		return $elm$parser$Parser$Advanced$number(
+			{
+				bO: $elm$core$Result$Err(invalid),
+				bZ: expecting,
+				b_: $elm$core$Result$Err(invalid),
+				b7: $elm$core$Result$Err(invalid),
+				ce: $elm$core$Result$Ok($elm$core$Basics$identity),
+				ee: invalid,
+				cu: $elm$core$Result$Err(invalid)
+			});
+	});
+var $elm$parser$Parser$int = A2($elm$parser$Parser$Advanced$int, $elm$parser$Parser$ExpectingInt, $elm$parser$Parser$ExpectingInt);
+var $author$project$Worker$parseMetaKind = $elm$parser$Parser$oneOf(
 	_List_fromArray(
 		[
 			A2(
@@ -5411,7 +5783,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$Pradical(
+						return $author$project$Worker$Pradical(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('B')),
@@ -5422,7 +5794,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$Pgrade(
+						return $author$project$Worker$Pgrade(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('G')),
@@ -5433,7 +5805,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$Pstrokes(
+						return $author$project$Worker$Pstrokes(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('S')),
@@ -5444,7 +5816,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$Pfrequency(
+						return $author$project$Worker$Pfrequency(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('F')),
@@ -5455,7 +5827,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$PclassicNelson(
+						return $author$project$Worker$PclassicNelson(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('N')),
@@ -5466,7 +5838,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$PnewNelson(
+						return $author$project$Worker$PnewNelson(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('V')),
@@ -5477,7 +5849,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$Phalpern(
+						return $author$project$Worker$Phalpern(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('H')),
@@ -5488,7 +5860,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$Phenshall(
+						return $author$project$Worker$Phenshall(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('E')),
@@ -5504,7 +5876,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 						$elm$parser$Parser$succeed(
 							F3(
 								function (a, b, c) {
-									return $author$project$KanjiDictWorker$Pskip(
+									return $author$project$Worker$Pskip(
 										$elm$core$Maybe$Just(
 											_Utils_Tuple3(a, b, c)));
 								})),
@@ -5527,7 +5899,7 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 					$elm$parser$Parser$succeed(
 						F2(
 							function (r, n) {
-								return $author$project$KanjiDictWorker$Ppinyin(
+								return $author$project$Worker$Ppinyin(
 									$elm$core$Maybe$Just(
 										_Utils_Tuple2(r, n)));
 							})),
@@ -5541,134 +5913,75 @@ var $author$project$KanjiDictWorker$parseMetaKind = $elm$parser$Parser$oneOf(
 				$elm$parser$Parser$ignorer,
 				$elm$parser$Parser$succeed(
 					function (r) {
-						return $author$project$KanjiDictWorker$PkanjiKentei(
+						return $author$project$Worker$PkanjiKentei(
 							$elm$core$Maybe$Just(r));
 					}),
 				$elm$parser$Parser$symbol('KK')),
 			$elm$parser$Parser$int)
 		]));
-var $elm$parser$Parser$DeadEnd = F3(
-	function (row, col, problem) {
-		return {bs: col, b8: problem, cl: row};
-	});
-var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.cl, p.bs, p.b8);
-};
-var $elm$parser$Parser$Advanced$bagToList = F2(
-	function (bag, list) {
-		bagToList:
-		while (true) {
-			switch (bag.$) {
-				case 0:
-					return list;
-				case 1:
-					var bag1 = bag.a;
-					var x = bag.b;
-					var $temp$bag = bag1,
-						$temp$list = A2($elm$core$List$cons, x, list);
-					bag = $temp$bag;
-					list = $temp$list;
-					continue bagToList;
-				default:
-					var bag1 = bag.a;
-					var bag2 = bag.b;
-					var $temp$bag = bag1,
-						$temp$list = A2($elm$parser$Parser$Advanced$bagToList, bag2, list);
-					bag = $temp$bag;
-					list = $temp$list;
-					continue bagToList;
-			}
-		}
-	});
-var $elm$parser$Parser$Advanced$run = F2(
-	function (_v0, src) {
-		var parse = _v0;
-		var _v1 = parse(
-			{bs: 1, d: _List_Nil, f: 1, b: 0, cl: 1, a: src});
-		if (!_v1.$) {
-			var value = _v1.b;
-			return $elm$core$Result$Ok(value);
-		} else {
-			var bag = _v1.b;
-			return $elm$core$Result$Err(
-				A2($elm$parser$Parser$Advanced$bagToList, bag, _List_Nil));
-		}
-	});
-var $elm$parser$Parser$run = F2(
-	function (parser, source) {
-		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
-		if (!_v0.$) {
-			var a = _v0.a;
-			return $elm$core$Result$Ok(a);
-		} else {
-			var problems = _v0.a;
-			return $elm$core$Result$Err(
-				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
-		}
-	});
-var $author$project$KanjiDictWorker$parseKanjiMeta = function (met) {
+var $author$project$Worker$parseKanjiMeta = function (met) {
 	return A3(
 		$elm$core$List$foldr,
 		F2(
 			function (e, acc) {
-				var _v0 = A2($elm$parser$Parser$run, $author$project$KanjiDictWorker$parseMetaKind, e);
+				var _v0 = A2($elm$parser$Parser$run, $author$project$Worker$parseMetaKind, e);
 				if (!_v0.$) {
 					switch (_v0.a.$) {
 						case 0:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{a8: res});
+								{bx: res});
 						case 1:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{aW: res});
+								{bj: res});
 						case 2:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{bf: res});
+								{bF: res});
 						case 3:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{aV: res});
+								{bi: res});
 						case 4:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{aU: res});
+								{bf: res});
 						case 5:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{a4: res});
+								{bt: res});
 						case 6:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{aY: res});
+								{bl: res});
 						case 7:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{a0: res});
+								{bp: res});
 						case 8:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{bc: res});
+								{bC: res});
 						case 9:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{a6: res});
+								{bv: res});
 						default:
 							var res = _v0.a.a;
 							return _Utils_update(
 								acc,
-								{a1: res});
+								{bq: res});
 					}
 				} else {
 					return acc;
@@ -5677,7 +5990,7 @@ var $author$project$KanjiDictWorker$parseKanjiMeta = function (met) {
 		$author$project$Common$defaultMeta,
 		$elm$core$String$words(met));
 };
-var $author$project$KanjiDictWorker$readKanjiEntry = function (l) {
+var $author$project$Worker$readKanjiEntry = function (l) {
 	var _v0 = A2($elm$core$String$split, '|', l);
 	if ((((((_v0.b && _v0.b.b) && _v0.b.b.b) && _v0.b.b.b.b) && _v0.b.b.b.b.b) && _v0.b.b.b.b.b.b) && (!_v0.b.b.b.b.b.b.b)) {
 		var k = _v0.a;
@@ -5693,12 +6006,12 @@ var $author$project$KanjiDictWorker$readKanjiEntry = function (l) {
 		var m = _v5.a;
 		return $elm$core$Maybe$Just(
 			{
-				aj: k,
-				bQ: $author$project$KanjiDictWorker$getKunYomi(r),
-				aI: A2($elm$core$String$split, ',', m),
-				bX: $author$project$KanjiDictWorker$parseKanjiMeta(met),
-				bZ: $elm$core$String$words(n),
-				b0: $author$project$KanjiDictWorker$getOnYomi(r)
+				az: k,
+				ch: $author$project$Worker$getKunYomi(r),
+				a0: A2($elm$core$String$split, ',', m),
+				cp: $author$project$Worker$parseKanjiMeta(met),
+				cr: $elm$core$String$words(n),
+				cv: $author$project$Worker$getOnYomi(r)
 			});
 	} else {
 		return $elm$core$Maybe$Nothing;
@@ -5747,7 +6060,6 @@ var $elm_community$string_extra$String$Extra$rightOfBack = F2(
 						A2($elm$core$String$indexes, pattern, string)))));
 	});
 var $elm$core$Basics$round = _Basics_round;
-var $author$project$KanjiDictWorker$saveToIndexedDb = _Platform_outgoingPort('saveToIndexedDb', $elm$core$Basics$identity);
 var $rluiten$stringdistance$StringDistance$maxl = F2(
 	function (xs, ys) {
 		return (_Utils_cmp(
@@ -5825,6 +6137,14 @@ var $elm$core$Set$size = function (_v0) {
 };
 var $elm$core$List$sortBy = _List_sortBy;
 var $elm$core$String$toLower = _String_toLower;
+var $elm$core$Result$toMaybe = function (result) {
+	if (!result.$) {
+		var v = result.a;
+		return $elm$core$Maybe$Just(v);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $elm$core$Dict$member = F2(
 	function (key, dict) {
 		var _v0 = A2($elm$core$Dict$get, key, dict);
@@ -5879,30 +6199,31 @@ var $elm_community$list_extra$List$Extra$unique = function (list) {
 var $miniBill$elm_codec$Codec$buildObject = function (_v0) {
 	var om = _v0;
 	return {
-		e: om.e,
-		g: function (v) {
+		f: om.f,
+		h: function (v) {
 			return $elm$json$Json$Encode$object(
-				om.g(v));
+				om.h(v));
 		}
 	};
 };
 var $miniBill$elm_codec$Codec$ObjectCodec = $elm$core$Basics$identity;
+var $elm$json$Json$Decode$map2 = _Json_map2;
 var $miniBill$elm_codec$Codec$field = F4(
 	function (name, getter, codec, _v0) {
 		var ocodec = _v0;
 		return {
-			e: A3(
+			f: A3(
 				$elm$json$Json$Decode$map2,
 				F2(
 					function (f, x) {
 						return f(x);
 					}),
-				ocodec.e,
+				ocodec.f,
 				A2(
 					$elm$json$Json$Decode$field,
 					name,
 					$miniBill$elm_codec$Codec$decoder(codec))),
-			g: function (v) {
+			h: function (v) {
 				return A2(
 					$elm$core$List$cons,
 					_Utils_Tuple2(
@@ -5911,45 +6232,35 @@ var $miniBill$elm_codec$Codec$field = F4(
 							$miniBill$elm_codec$Codec$encoder,
 							codec,
 							getter(v))),
-					ocodec.g(v));
+					ocodec.h(v));
 			}
 		};
 	});
-var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $miniBill$elm_codec$Codec$int = A2($miniBill$elm_codec$Codec$build, $elm$json$Json$Encode$int, $elm$json$Json$Decode$int);
 var $miniBill$elm_codec$Codec$object = function (ctor) {
 	return {
-		e: $elm$json$Json$Decode$succeed(ctor),
-		g: function (_v0) {
+		f: $elm$json$Json$Decode$succeed(ctor),
+		h: function (_v0) {
 			return _List_Nil;
 		}
 	};
 };
 var $author$project$Common$SearchResultMeta = F2(
 	function (searchString, result) {
-		return {cj: result, co: searchString};
-	});
-var $author$project$Common$DictResult = function (a) {
-	return {$: 1, a: a};
-};
-var $author$project$Common$NameDictResult = function (a) {
-	return {$: 0, a: a};
-};
-var $author$project$Common$DictEntry = F3(
-	function (key, reading, meanings) {
-		return {aj: key, aI: meanings, aK: reading};
+		return {cP: result, cU: searchString};
 	});
 var $miniBill$elm_codec$Codec$composite = F3(
 	function (enc, dec, _v0) {
 		var codec = _v0;
 		return {
-			e: dec(codec.e),
-			g: enc(codec.g)
+			f: dec(codec.f),
+			h: enc(codec.h)
 		};
 	});
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $miniBill$elm_codec$Codec$list = A2($miniBill$elm_codec$Codec$composite, $elm$json$Json$Encode$list, $elm$json$Json$Decode$list);
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$maybe = function (decoder) {
 	return $elm$json$Json$Decode$oneOf(
 		_List_fromArray(
@@ -5961,9 +6272,9 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $miniBill$elm_codec$Codec$maybe = function (codec) {
 	return {
-		e: $elm$json$Json$Decode$maybe(
+		f: $elm$json$Json$Decode$maybe(
 			$miniBill$elm_codec$Codec$decoder(codec)),
-		g: function (v) {
+		h: function (v) {
 			if (v.$ === 1) {
 				return $elm$json$Json$Encode$null;
 			} else {
@@ -5978,27 +6289,27 @@ var $author$project$Common$dictEntryCodec = $miniBill$elm_codec$Codec$buildObjec
 		$miniBill$elm_codec$Codec$field,
 		'meanings',
 		function ($) {
-			return $.aI;
+			return $.a0;
 		},
 		$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'reading',
 			function ($) {
-				return $.aK;
+				return $.a2;
 			},
 			$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
 			A4(
 				$miniBill$elm_codec$Codec$field,
 				'key',
 				function ($) {
-					return $.aj;
+					return $.az;
 				},
 				$miniBill$elm_codec$Codec$string,
 				$miniBill$elm_codec$Codec$object($author$project$Common$DictEntry)))));
 var $author$project$Common$KanjiDictEntry = F6(
 	function (key, meta, onYomi, kunYomi, nanori, meanings) {
-		return {aj: key, bQ: kunYomi, aI: meanings, bX: meta, bZ: nanori, b0: onYomi};
+		return {az: key, ch: kunYomi, a0: meanings, cp: meta, cr: nanori, cv: onYomi};
 	});
 var $author$project$Common$KanjiMeta = function (radical) {
 	return function (grade) {
@@ -6011,7 +6322,7 @@ var $author$project$Common$KanjiMeta = function (radical) {
 								return function (skip) {
 									return function (pinyin) {
 										return function (kanjiKentei) {
-											return {aU: classicNelson, aV: frequency, aW: grade, aY: halpern, a0: henshall, a1: kanjiKentei, a4: newNelson, a6: pinyin, a8: radical, bc: skip, bf: strokes};
+											return {bf: classicNelson, bi: frequency, bj: grade, bl: halpern, bp: henshall, bq: kanjiKentei, bt: newNelson, bv: pinyin, bx: radical, bC: skip, bF: strokes};
 										};
 									};
 								};
@@ -6027,7 +6338,7 @@ var $elm$json$Json$Decode$map3 = _Json_map3;
 var $miniBill$elm_codec$Codec$triple = F3(
 	function (m1, m2, m3) {
 		return {
-			e: A4(
+			f: A4(
 				$elm$json$Json$Decode$map3,
 				F3(
 					function (a, b, c) {
@@ -6045,7 +6356,7 @@ var $miniBill$elm_codec$Codec$triple = F3(
 					$elm$json$Json$Decode$index,
 					2,
 					$miniBill$elm_codec$Codec$decoder(m3))),
-			g: function (_v0) {
+			h: function (_v0) {
 				var v1 = _v0.a;
 				var v2 = _v0.b;
 				var v3 = _v0.c;
@@ -6064,7 +6375,7 @@ var $miniBill$elm_codec$Codec$triple = F3(
 var $miniBill$elm_codec$Codec$tuple = F2(
 	function (m1, m2) {
 		return {
-			e: A3(
+			f: A3(
 				$elm$json$Json$Decode$map2,
 				F2(
 					function (a, b) {
@@ -6078,7 +6389,7 @@ var $miniBill$elm_codec$Codec$tuple = F2(
 					$elm$json$Json$Decode$index,
 					1,
 					$miniBill$elm_codec$Codec$decoder(m2))),
-			g: function (_v0) {
+			h: function (_v0) {
 				var v1 = _v0.a;
 				var v2 = _v0.b;
 				return A2(
@@ -6097,14 +6408,14 @@ var $author$project$Common$kanjiMetaCodec = $miniBill$elm_codec$Codec$buildObjec
 		$miniBill$elm_codec$Codec$field,
 		'kanjiKentei',
 		function ($) {
-			return $.a1;
+			return $.bq;
 		},
 		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'pinyin',
 			function ($) {
-				return $.a6;
+				return $.bv;
 			},
 			$miniBill$elm_codec$Codec$maybe(
 				A2($miniBill$elm_codec$Codec$tuple, $miniBill$elm_codec$Codec$string, $miniBill$elm_codec$Codec$int)),
@@ -6112,7 +6423,7 @@ var $author$project$Common$kanjiMetaCodec = $miniBill$elm_codec$Codec$buildObjec
 				$miniBill$elm_codec$Codec$field,
 				'skip',
 				function ($) {
-					return $.bc;
+					return $.bC;
 				},
 				$miniBill$elm_codec$Codec$maybe(
 					A3($miniBill$elm_codec$Codec$triple, $miniBill$elm_codec$Codec$int, $miniBill$elm_codec$Codec$int, $miniBill$elm_codec$Codec$int)),
@@ -6120,56 +6431,56 @@ var $author$project$Common$kanjiMetaCodec = $miniBill$elm_codec$Codec$buildObjec
 					$miniBill$elm_codec$Codec$field,
 					'henshall',
 					function ($) {
-						return $.a0;
+						return $.bp;
 					},
 					$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'halpern',
 						function ($) {
-							return $.aY;
+							return $.bl;
 						},
 						$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 						A4(
 							$miniBill$elm_codec$Codec$field,
 							'newNelson',
 							function ($) {
-								return $.a4;
+								return $.bt;
 							},
 							$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 							A4(
 								$miniBill$elm_codec$Codec$field,
 								'classicNelson',
 								function ($) {
-									return $.aU;
+									return $.bf;
 								},
 								$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 								A4(
 									$miniBill$elm_codec$Codec$field,
 									'frequency',
 									function ($) {
-										return $.aV;
+										return $.bi;
 									},
 									$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 									A4(
 										$miniBill$elm_codec$Codec$field,
 										'strokes',
 										function ($) {
-											return $.bf;
+											return $.bF;
 										},
 										$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 										A4(
 											$miniBill$elm_codec$Codec$field,
 											'grade',
 											function ($) {
-												return $.aW;
+												return $.bj;
 											},
 											$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 											A4(
 												$miniBill$elm_codec$Codec$field,
 												'radical',
 												function ($) {
-													return $.a8;
+													return $.bx;
 												},
 												$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 												$miniBill$elm_codec$Codec$object($author$project$Common$KanjiMeta)))))))))))));
@@ -6178,60 +6489,45 @@ var $author$project$Common$kanjiDictEntryCodec = $miniBill$elm_codec$Codec$build
 		$miniBill$elm_codec$Codec$field,
 		'meanings',
 		function ($) {
-			return $.aI;
+			return $.a0;
 		},
 		$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'nanori',
 			function ($) {
-				return $.bZ;
+				return $.cr;
 			},
 			$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 			A4(
 				$miniBill$elm_codec$Codec$field,
 				'kunYomi',
 				function ($) {
-					return $.bQ;
+					return $.ch;
 				},
 				$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 				A4(
 					$miniBill$elm_codec$Codec$field,
 					'onYomi',
 					function ($) {
-						return $.b0;
+						return $.cv;
 					},
 					$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'meta',
 						function ($) {
-							return $.bX;
+							return $.cp;
 						},
 						$author$project$Common$kanjiMetaCodec,
 						A4(
 							$miniBill$elm_codec$Codec$field,
 							'key',
 							function ($) {
-								return $.aj;
+								return $.az;
 							},
 							$miniBill$elm_codec$Codec$string,
 							$miniBill$elm_codec$Codec$object($author$project$Common$KanjiDictEntry))))))));
-var $author$project$Common$NameDictEntry = F5(
-	function (key, reading, kind, meaning, abr) {
-		return {bj: abr, aj: key, bP: kind, bV: meaning, aK: reading};
-	});
-var $author$project$Common$Company = 9;
-var $author$project$Common$Female = 1;
-var $author$project$Common$Fullname = 3;
-var $author$project$Common$Given = 4;
-var $author$project$Common$Organisation = 7;
-var $author$project$Common$Person = 0;
-var $author$project$Common$Place = 5;
-var $author$project$Common$Product = 8;
-var $author$project$Common$Station = 6;
-var $author$project$Common$Surname = 2;
-var $author$project$Common$Unknown = 10;
 var $author$project$Common$nameKindCodec = $miniBill$elm_codec$Codec$buildCustom(
 	A3(
 		$miniBill$elm_codec$Codec$variant0,
@@ -6331,35 +6627,35 @@ var $author$project$Common$nameDictEntryCodec = $miniBill$elm_codec$Codec$buildO
 		$miniBill$elm_codec$Codec$field,
 		'abr',
 		function ($) {
-			return $.bj;
+			return $.bK;
 		},
 		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'meaning',
 			function ($) {
-				return $.bV;
+				return $.cn;
 			},
 			$miniBill$elm_codec$Codec$string,
 			A4(
 				$miniBill$elm_codec$Codec$field,
 				'kind',
 				function ($) {
-					return $.bP;
+					return $.cg;
 				},
 				$miniBill$elm_codec$Codec$list($author$project$Common$nameKindCodec),
 				A4(
 					$miniBill$elm_codec$Codec$field,
 					'reading',
 					function ($) {
-						return $.aK;
+						return $.a2;
 					},
 					$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'key',
 						function ($) {
-							return $.aj;
+							return $.az;
 						},
 						$miniBill$elm_codec$Codec$string,
 						$miniBill$elm_codec$Codec$object($author$project$Common$NameDictEntry)))))));
@@ -6399,14 +6695,14 @@ var $author$project$Common$searchResultMetaCodec = $miniBill$elm_codec$Codec$bui
 		$miniBill$elm_codec$Codec$field,
 		'result',
 		function ($) {
-			return $.cj;
+			return $.cP;
 		},
 		$author$project$Common$searchResultCodec,
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'searchString',
 			function ($) {
-				return $.co;
+				return $.cU;
 			},
 			$miniBill$elm_codec$Codec$string,
 			$miniBill$elm_codec$Codec$object($author$project$Common$SearchResultMeta))));
@@ -6469,8 +6765,6 @@ var $miniBill$elm_codec$Codec$variant2 = F4(
 					1,
 					$miniBill$elm_codec$Codec$decoder(m2))));
 	});
-var $author$project$Common$DictWorker = 1;
-var $author$project$Common$NameDictWorker = 0;
 var $author$project$Common$workerCodec = $miniBill$elm_codec$Codec$buildCustom(
 	A3(
 		$miniBill$elm_codec$Codec$variant0,
@@ -6512,27 +6806,27 @@ var $author$project$Common$workerMsgCodec = $miniBill$elm_codec$Codec$buildCusto
 					$miniBill$elm_codec$Codec$field,
 					'status',
 					function ($) {
-						return $.ct;
+						return $.cZ;
 					},
 					$author$project$Common$statusCodec,
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'message',
 						function ($) {
-							return $.bW;
+							return $.co;
 						},
 						$miniBill$elm_codec$Codec$string,
 						A4(
 							$miniBill$elm_codec$Codec$field,
 							'progress',
 							function ($) {
-								return $.cb;
+								return $.cH;
 							},
 							$miniBill$elm_codec$Codec$int,
 							$miniBill$elm_codec$Codec$object(
 								F3(
 									function (p, m, s) {
-										return {bW: m, cb: p, ct: s};
+										return {co: m, cH: p, cZ: s};
 									})))))),
 			$miniBill$elm_codec$Codec$custom(
 				F3(
@@ -6546,50 +6840,42 @@ var $author$project$Common$workerMsgCodec = $miniBill$elm_codec$Codec$buildCusto
 							return fSearchResultMsg(m);
 						}
 					})))));
-var $author$project$KanjiDictWorker$update = F2(
+var $author$project$Worker$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 0:
-				var value = msg.a;
-				var statusDecoder = A2($elm$json$Json$Decode$field, 'indexedDbReady', $elm$json$Json$Decode$bool);
-				var _v1 = A2($elm$json$Json$Decode$decodeValue, statusDecoder, value);
-				if ((!_v1.$) && _v1.a) {
-					return model.aN ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{aG: 'indexedDb is ready', aN: true}),
-						$elm$core$Platform$Cmd$batch(
-							A2(
-								$elm$core$List$map,
-								$author$project$KanjiDictWorker$loadFromIndexedDb,
-								$elm$core$Set$toList(model.D))));
-				} else {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{aG: 'indexedDb error'}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 1:
-				var ids = A2($elm$core$List$range, 0, $author$project$KanjiDictWorker$nbrFiles - 1);
+				var ids = A2($elm$core$List$range, 0, model.L - 1);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							D: $elm$core$Set$fromList(
-								A2($elm$core$List$map, $author$project$KanjiDictWorker$dataPath, ids))
+							aC: $elm$core$Set$fromList(
+								A2(
+									$elm$core$List$map,
+									$author$project$Worker$dataPath(model.F),
+									ids))
 						}),
 					$elm$core$Platform$Cmd$batch(
 						A2(
 							$elm$core$List$map,
-							$author$project$KanjiDictWorker$loadFromIndexedDb,
-							A2($elm$core$List$map, $author$project$KanjiDictWorker$dataPath, ids))));
-			case 2:
+							$author$project$Worker$getData,
+							A2(
+								$elm$core$List$map,
+								$author$project$Worker$dataPath(model.F),
+								ids))));
+			case 1:
 				var path = msg.a;
 				var res = msg.b;
 				if (!res.$) {
 					var str = res.a;
-					var requested = A2($elm$core$Set$remove, path, model.D);
+					var toRequest = A2($elm$core$Set$remove, path, model.aC);
+					var pendingRequests = _Utils_eq(
+						A2($elm$core$Set$remove, path, model.aK),
+						$elm$core$Set$empty) ? $elm$core$Set$fromList(
+						A2(
+							$elm$core$List$take,
+							$author$project$Worker$nbrConcurentRequest,
+							$elm$core$Set$toList(toRequest))) : A2($elm$core$Set$remove, path, model.aK);
 					var maxLineLength = A3(
 						$elm$core$List$foldr,
 						F2(
@@ -6599,251 +6885,282 @@ var $author$project$KanjiDictWorker$update = F2(
 									$elm$core$String$length(s),
 									acc);
 							}),
-						model.K,
+						model.y,
 						$elm$core$String$lines(str));
 					var filename = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', path);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								K: maxLineLength,
-								U: _Utils_ap(
-									model.U,
+								y: maxLineLength,
+								aK: pendingRequests,
+								R: _Utils_ap(
+									model.R,
 									A2($elm$core$String$cons, '\n', str)),
-								D: requested
+								aC: toRequest
 							}),
 						$elm$core$Platform$Cmd$batch(
 							_List_fromArray(
 								[
-									$author$project$KanjiDictWorker$saveToIndexedDb(
-									$elm$json$Json$Encode$object(
-										_List_fromArray(
-											[
-												_Utils_Tuple2(
-												'filename',
-												$elm$json$Json$Encode$string(path)),
-												_Utils_Tuple2(
-												'content',
-												$elm$json$Json$Encode$string(str))
-											]))),
-									$author$project$KanjiDictWorker$outbound(
+									$author$project$Worker$outbound(
 									A2(
 										$miniBill$elm_codec$Codec$encoder,
 										$author$project$Common$workerMsgCodec,
 										A2(
 											$author$project$Common$LoadingStatusMsg,
-											2,
+											$author$project$Worker$getWorker(model.F),
 											{
-												bW: 'Loaded ' + (filename + ' from network'),
-												cb: $elm$core$Basics$round(
-													(100 * ($author$project$KanjiDictWorker$nbrFiles - $elm$core$Set$size(requested))) / $author$project$KanjiDictWorker$nbrFiles),
-												ct: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
-											})))
+												co: 'Loaded ' + (filename + ' from network'),
+												cH: $elm$core$Basics$round(
+													(100 * (model.L - $elm$core$Set$size(toRequest))) / model.L),
+												cZ: _Utils_eq(toRequest, $elm$core$Set$empty) ? 2 : 1
+											}))),
+									_Utils_eq(
+									$elm$core$Set$size(pendingRequests),
+									$author$project$Worker$nbrConcurentRequest) ? $elm$core$Platform$Cmd$batch(
+									A2(
+										$elm$core$List$map,
+										$author$project$Worker$getData,
+										$elm$core$Set$toList(pendingRequests))) : $elm$core$Platform$Cmd$none
 								])));
 				} else {
 					return _Utils_Tuple2(
 						model,
-						$author$project$KanjiDictWorker$outbound(
+						$author$project$Worker$outbound(
 							A2(
 								$miniBill$elm_codec$Codec$encoder,
 								$author$project$Common$workerMsgCodec,
 								A2(
 									$author$project$Common$LoadingStatusMsg,
-									2,
+									$author$project$Worker$getWorker(model.F),
 									{
-										bW: 'Network Error: ' + path,
-										cb: $elm$core$Basics$round(
-											(100 * ($author$project$KanjiDictWorker$nbrFiles - $elm$core$Set$size(model.D))) / $author$project$KanjiDictWorker$nbrFiles),
-										ct: 1
+										co: 'Network Error: ' + path,
+										cH: $elm$core$Basics$round(
+											(100 * (model.L - $elm$core$Set$size(model.aC))) / model.L),
+										cZ: 1
 									}))));
 				}
-			case 3:
-				var value = msg.a;
-				var dataFromIndexedDbSecoder = $elm$json$Json$Decode$oneOf(
-					_List_fromArray(
-						[
-							A3(
-							$elm$json$Json$Decode$map2,
-							F2(
-								function (f, c) {
-									return $author$project$KanjiDictWorker$IndexedDbData(
-										{bt: c, by: f});
-								}),
-							A2($elm$json$Json$Decode$field, 'filename', $elm$json$Json$Decode$string),
-							A2($elm$json$Json$Decode$field, 'content', $elm$json$Json$Decode$string)),
-							A2(
-							$elm$json$Json$Decode$map,
-							$author$project$KanjiDictWorker$NoData,
-							A2($elm$json$Json$Decode$field, 'noData', $elm$json$Json$Decode$string))
-						]));
-				var _v3 = A2($elm$json$Json$Decode$decodeValue, dataFromIndexedDbSecoder, value);
-				if (!_v3.$) {
-					if (!_v3.a.$) {
-						var filename = _v3.a.a.by;
-						var content = _v3.a.a.bt;
-						var requested = A2($elm$core$Set$remove, filename, model.D);
-						var maxLineLength = A3(
-							$elm$core$List$foldr,
-							F2(
-								function (s, acc) {
-									return A2(
-										$elm$core$Basics$max,
-										$elm$core$String$length(s),
-										acc);
-								}),
-							model.K,
-							$elm$core$String$lines(content));
-						var filename_ = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', filename);
+			case 2:
+				var s = msg.a;
+				var _v2 = $author$project$Worker$getWorker(model.F);
+				switch (_v2) {
+					case 2:
+						var getMatch = F2(
+							function (n, s_) {
+								var rigthStr = A2(
+									$elm_community$string_extra$String$Extra$leftOf,
+									'\n',
+									A2($elm$core$String$dropLeft, n, s_));
+								var leftStr = A2(
+									$elm_community$string_extra$String$Extra$rightOfBack,
+									'\n',
+									A2($elm$core$String$left, n, s_));
+								return _Utils_ap(leftStr, rigthStr);
+							});
+						var searchResult = function (s_) {
+							return A2(
+								$elm$core$List$sortBy,
+								function (e) {
+									return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.az, s_);
+								},
+								(A2(
+									$elm$core$List$all,
+									$elm$core$Char$isAlphaNum,
+									$elm$core$String$toList(s_)) ? $elm$core$List$filter(
+									function (e) {
+										return A2(
+											$elm$core$List$member,
+											$elm$core$String$toLower(s_),
+											A2(
+												$elm$core$List$concatMap,
+												A2($elm$core$Basics$composeL, $elm$core$String$words, $elm$core$String$toLower),
+												e.a0));
+									}) : $elm$core$List$filter(
+									function (e) {
+										return A2($elm$core$String$contains, s_, e.az);
+									}))(
+									A2(
+										$elm$core$List$filterMap,
+										$elm$core$Basics$identity,
+										A2(
+											$elm$core$List$map,
+											$author$project$Worker$readKanjiEntry,
+											$elm_community$list_extra$List$Extra$unique(
+												A2(
+													$elm$core$List$map,
+													getMatch(model.y),
+													A2(
+														$elm$core$List$map,
+														function (n) {
+															return A3($elm$core$String$slice, n - model.y, n + model.y, model.R);
+														},
+														A2($elm$core$String$indexes, s_, model.R))))))));
+						};
 						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									K: maxLineLength,
-									U: _Utils_ap(
-										model.U,
-										A2($elm$core$String$cons, '\n', content)),
-									D: requested
-								}),
-							$author$project$KanjiDictWorker$outbound(
+							model,
+							$author$project$Worker$outbound(
 								A2(
 									$miniBill$elm_codec$Codec$encoder,
 									$author$project$Common$workerMsgCodec,
-									A2(
-										$author$project$Common$LoadingStatusMsg,
-										2,
+									$author$project$Common$SearchResultMsg(
 										{
-											bW: 'Loaded ' + (filename_ + ' from local backup'),
-											cb: $elm$core$Basics$round(
-												(100 * ($author$project$KanjiDictWorker$nbrFiles - $elm$core$Set$size(requested))) / $author$project$KanjiDictWorker$nbrFiles),
-											ct: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
+											cP: A2(
+												$elm$core$List$all,
+												$elm$core$Char$isAlphaNum,
+												$elm$core$String$toList(s)) ? $author$project$Common$KanjiDictResult(
+												searchResult(s)) : $author$project$Common$KanjiDictResult(
+												A2(
+													$elm$core$List$concatMap,
+													searchResult,
+													A2(
+														$elm$core$List$map,
+														$elm$core$String$fromChar,
+														A2(
+															$elm$core$List$filter,
+															function (c) {
+																return A2($elm$core$List$member, c, $author$project$Common$kanji);
+															},
+															$elm$core$String$toList(s))))),
+											cU: s
 										}))));
-					} else {
-						var path = _v3.a.a;
-						return _Utils_Tuple2(
-							model,
-							$author$project$KanjiDictWorker$getData(path));
-					}
-				} else {
-					var e = _v3.a;
-					return _Utils_Tuple2(
-						model,
-						$author$project$KanjiDictWorker$outbound(
-							A2(
-								$miniBill$elm_codec$Codec$encoder,
-								$author$project$Common$workerMsgCodec,
-								A2(
-									$author$project$Common$LoadingStatusMsg,
-									2,
-									{
-										bW: 'IndexedDB Error: ' + $elm$json$Json$Decode$errorToString(e),
-										cb: $elm$core$Basics$round(
-											(100 * ($author$project$KanjiDictWorker$nbrFiles - $elm$core$Set$size(model.D))) / $author$project$KanjiDictWorker$nbrFiles),
-										ct: 1
-									}))));
-				}
-			case 4:
-				var s = msg.a;
-				var getMatch = F2(
-					function (n, s_) {
-						var rigthStr = A2(
-							$elm_community$string_extra$String$Extra$leftOf,
-							'\n',
-							A2($elm$core$String$dropLeft, n, s_));
-						var leftStr = A2(
-							$elm_community$string_extra$String$Extra$rightOfBack,
-							'\n',
-							A2($elm$core$String$left, n, s_));
-						return _Utils_ap(leftStr, rigthStr);
-					});
-				var searchResult = function (s_) {
-					return A2(
-						$elm$core$List$sortBy,
-						function (e) {
-							return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.aj, s_);
-						},
-						(A2(
-							$elm$core$List$all,
-							$elm$core$Char$isAlphaNum,
-							$elm$core$String$toList(s_)) ? $elm$core$List$filter(
+					case 1:
+						var getMatch = F2(
+							function (n, s_) {
+								var rigthStr = A2(
+									$elm_community$string_extra$String$Extra$leftOf,
+									'\n',
+									A2($elm$core$String$dropLeft, n, s_));
+								var leftStr = A2(
+									$elm_community$string_extra$String$Extra$rightOfBack,
+									'\n',
+									A2($elm$core$String$left, n, s_));
+								return _Utils_ap(leftStr, rigthStr);
+							});
+						var searchResult = A2(
+							$elm$core$List$sortBy,
 							function (e) {
-								return A2(
-									$elm$core$List$member,
-									$elm$core$String$toLower(s_),
-									A2(
-										$elm$core$List$concatMap,
-										A2($elm$core$Basics$composeL, $elm$core$String$words, $elm$core$String$toLower),
-										e.aI));
-							}) : $elm$core$List$filter(
-							function (e) {
-								return A2($elm$core$String$contains, s_, e.aj);
-							}))(
-							A2(
-								$elm$core$List$filterMap,
-								$elm$core$Basics$identity,
-								A2(
-									$elm$core$List$map,
-									$author$project$KanjiDictWorker$readKanjiEntry,
-									$elm_community$list_extra$List$Extra$unique(
-										A2(
-											$elm$core$List$map,
-											getMatch(model.K),
-											A2(
-												$elm$core$List$map,
-												function (n) {
-													return A3($elm$core$String$slice, n - model.K, n + model.K, model.U);
-												},
-												A2($elm$core$String$indexes, s_, model.U))))))));
-				};
-				return _Utils_Tuple2(
-					model,
-					$author$project$KanjiDictWorker$outbound(
-						A2(
-							$miniBill$elm_codec$Codec$encoder,
-							$author$project$Common$workerMsgCodec,
-							$author$project$Common$SearchResultMsg(
-								{
-									cj: A2(
-										$elm$core$List$all,
-										$elm$core$Char$isAlphaNum,
-										$elm$core$String$toList(s)) ? $author$project$Common$KanjiDictResult(
-										searchResult(s)) : $author$project$Common$KanjiDictResult(
+								return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.az, s);
+							},
+							(A2(
+								$elm$core$List$all,
+								$elm$core$Char$isAlphaNum,
+								$elm$core$String$toList(s)) ? $elm$core$List$filter(
+								function (e) {
+									return A2(
+										$elm$core$List$member,
+										$elm$core$String$toLower(s),
 										A2(
 											$elm$core$List$concatMap,
-											searchResult,
+											A2($elm$core$Basics$composeL, $elm$core$String$words, $elm$core$String$toLower),
+											e.a0));
+								}) : $elm$core$List$filter(
+								function (e) {
+									return A2($elm$core$String$contains, s, e.az);
+								}))(
+								A2(
+									$elm$core$List$filterMap,
+									$elm$core$Basics$identity,
+									A2(
+										$elm$core$List$map,
+										A2($elm$core$Basics$composeR, $author$project$Worker$parseDictEntry, $elm$core$Result$toMaybe),
+										$elm_community$list_extra$List$Extra$unique(
 											A2(
 												$elm$core$List$map,
-												$elm$core$String$fromChar,
+												getMatch(model.y),
 												A2(
-													$elm$core$List$filter,
-													function (c) {
-														return A2($elm$core$List$member, c, $author$project$Common$kanji);
+													$elm$core$List$map,
+													function (n) {
+														return A3($elm$core$String$slice, n - model.y, n + model.y, model.R);
 													},
-													$elm$core$String$toList(s))))),
-									co: s
-								}))));
-			case 5:
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+													A2($elm$core$String$indexes, s, model.R))))))));
+						return _Utils_Tuple2(
+							model,
+							$author$project$Worker$outbound(
+								A2(
+									$miniBill$elm_codec$Codec$encoder,
+									$author$project$Common$workerMsgCodec,
+									$author$project$Common$SearchResultMsg(
+										{
+											cP: $author$project$Common$DictResult(searchResult),
+											cU: s
+										}))));
+					default:
+						var getMatch = F2(
+							function (n, s_) {
+								var rigthStr = A2(
+									$elm_community$string_extra$String$Extra$leftOf,
+									'\n',
+									A2($elm$core$String$dropLeft, n, s_));
+								var leftStr = A2(
+									$elm_community$string_extra$String$Extra$rightOfBack,
+									'\n',
+									A2($elm$core$String$left, n, s_));
+								return _Utils_ap(leftStr, rigthStr);
+							});
+						var searchResult = A2(
+							$elm$core$List$sortBy,
+							function (e) {
+								return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.az, s);
+							},
+							(A2(
+								$elm$core$List$all,
+								$elm$core$Char$isAlphaNum,
+								$elm$core$String$toList(s)) ? $elm$core$List$filter(
+								function (e) {
+									return A2(
+										$elm$core$List$member,
+										$elm$core$String$toLower(s),
+										$elm$core$String$words(
+											$elm$core$String$toLower(e.cn)));
+								}) : $elm$core$List$filter(
+								function (e) {
+									return A2($elm$core$String$contains, s, e.az);
+								}))(
+								A2(
+									$elm$core$List$filterMap,
+									$elm$core$Basics$identity,
+									A2(
+										$elm$core$List$map,
+										A2($elm$core$Basics$composeR, $author$project$Worker$parseNameDictEntry, $elm$core$Result$toMaybe),
+										$elm_community$list_extra$List$Extra$unique(
+											A2(
+												$elm$core$List$map,
+												getMatch(model.y),
+												A2(
+													$elm$core$List$map,
+													function (n) {
+														return A3($elm$core$String$slice, n - model.y, n + model.y, model.R);
+													},
+													A2($elm$core$String$indexes, s, model.R))))))));
+						return _Utils_Tuple2(
+							model,
+							$author$project$Worker$outbound(
+								A2(
+									$miniBill$elm_codec$Codec$encoder,
+									$author$project$Common$workerMsgCodec,
+									$author$project$Common$SearchResultMsg(
+										{
+											cP: $author$project$Common$NameDictResult(searchResult),
+											cU: s
+										}))));
+				}
 			default:
-				var s = msg.a;
-				return _Utils_Tuple2(
-					model,
-					$author$project$KanjiDictWorker$outbound(
-						A2(
-							$miniBill$elm_codec$Codec$encoder,
-							$author$project$Common$workerMsgCodec,
-							A2(
-								$author$project$Common$LoadingStatusMsg,
-								2,
-								{
-									bW: s,
-									cb: $elm$core$Basics$round(
-										(100 * ($author$project$KanjiDictWorker$nbrFiles - $elm$core$Set$size(model.D))) / $author$project$KanjiDictWorker$nbrFiles),
-									ct: 1
-								}))));
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $elm$core$Platform$worker = _Platform_worker;
-var $author$project$KanjiDictWorker$main = $elm$core$Platform$worker(
-	{dA: $author$project$KanjiDictWorker$init, ei: $author$project$KanjiDictWorker$subscriptions, eC: $author$project$KanjiDictWorker$update});
-_Platform_export({'KanjiDictWorker':{'init':$author$project$KanjiDictWorker$main(
-	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
+var $author$project$Worker$main = $elm$core$Platform$worker(
+	{d8: $author$project$Worker$init, eU: $author$project$Worker$subscriptions, fd: $author$project$Worker$update});
+_Platform_export({'Worker':{'init':$author$project$Worker$main(
+	A2(
+		$elm$json$Json$Decode$andThen,
+		function (pathbase) {
+			return A2(
+				$elm$json$Json$Decode$andThen,
+				function (nbrFiles) {
+					return $elm$json$Json$Decode$succeed(
+						{L: nbrFiles, F: pathbase});
+				},
+				A2($elm$json$Json$Decode$field, 'nbrFiles', $elm$json$Json$Decode$int));
+		},
+		A2($elm$json$Json$Decode$field, 'pathbase', $elm$json$Json$Decode$string)))(0)}});}(this));
