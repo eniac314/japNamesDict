@@ -1,1 +1,2 @@
-split -n l/50 -d names.dat names --additional-suffix=.dat
+split -n l/60 -d names.dat names --additional-suffix=.dat && split -n l/30 -d kanji.dat kanji --additional-suffix=.dat && split -n l/60 -d dict.dat dict --additional-suffix=.dat
+

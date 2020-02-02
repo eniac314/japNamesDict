@@ -600,11 +600,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.a1.ap === region.bi.ap)
+	if (region.bc.aq === region.bu.aq)
 	{
-		return 'on line ' + region.a1.ap;
+		return 'on line ' + region.bc.aq;
 	}
-	return 'on lines ' + region.a1.ap + ' through ' + region.bi.ap;
+	return 'on lines ' + region.bc.aq + ' through ' + region.bu.aq;
 }
 
 
@@ -1894,9 +1894,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dk,
-		impl.em,
-		impl.d2,
+		impl.dz,
+		impl.eB,
+		impl.eh,
 		function() { return function() {} }
 	);
 });
@@ -2403,25 +2403,25 @@ var _Http_toTask = F3(function(router, toTask, request)
 	return _Scheduler_binding(function(callback)
 	{
 		function done(response) {
-			callback(toTask(request.c6.a(response)));
+			callback(toTask(request.dl.a(response)));
 		}
 
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
-		xhr.addEventListener('load', function() { done(_Http_toResponse(request.c6.b, xhr)); });
-		$elm$core$Maybe$isJust(request.ch) && _Http_track(router, xhr, request.ch.a);
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.dl.b, xhr)); });
+		$elm$core$Maybe$isJust(request.cw) && _Http_track(router, xhr, request.cw.a);
 
 		try {
-			xhr.open(request.du, request.en, true);
+			xhr.open(request.dJ, request.eC, true);
 		} catch (e) {
-			return done($elm$http$Http$BadUrl_(request.en));
+			return done($elm$http$Http$BadUrl_(request.eC));
 		}
 
 		_Http_configureRequest(xhr, request);
 
-		request.cN.a && xhr.setRequestHeader('Content-Type', request.cN.a);
-		xhr.send(request.cN.b);
+		request.c0.a && xhr.setRequestHeader('Content-Type', request.c0.a);
+		xhr.send(request.c0.b);
 
 		return function() { xhr.c = true; xhr.abort(); };
 	});
@@ -2432,13 +2432,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.br; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.bD; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.eh.a || 0;
-	xhr.responseType = request.c6.d;
-	xhr.withCredentials = request.cF;
+	xhr.timeout = request.ew.a || 0;
+	xhr.responseType = request.dl.d;
+	xhr.withCredentials = request.cU;
 }
 
 
@@ -2459,10 +2459,10 @@ function _Http_toResponse(toBody, xhr)
 function _Http_toMetadata(xhr)
 {
 	return {
-		en: xhr.responseURL,
-		dX: xhr.status,
-		dY: xhr.statusText,
-		br: _Http_parseHeaders(xhr.getAllResponseHeaders())
+		eC: xhr.responseURL,
+		ea: xhr.status,
+		eb: xhr.statusText,
+		bD: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
 
@@ -2557,15 +2557,15 @@ function _Http_track(router, xhr, tracker)
 	xhr.upload.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Sending({
-			dQ: event.loaded,
-			cb: event.total
+			d3: event.loaded,
+			cq: event.total
 		}))));
 	});
 	xhr.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Receiving({
-			dI: event.loaded,
-			cb: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
+			dX: event.loaded,
+			cq: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
 		}))));
 	});
 }
@@ -2577,8 +2577,8 @@ var _Regex_never = /.^/;
 var _Regex_fromStringWith = F2(function(options, string)
 {
 	var flags = 'g';
-	if (options.dx) { flags += 'm'; }
-	if (options.cW) { flags += 'i'; }
+	if (options.dM) { flags += 'm'; }
+	if (options.c9) { flags += 'i'; }
 
 	try
 	{
@@ -3148,7 +3148,7 @@ var $elm$core$List$map = F2(
 			_List_Nil,
 			xs);
 	});
-var $author$project$NameDictWorker$nbrFiles = 50;
+var $author$project$NameDictWorker$nbrFiles = 60;
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -3509,7 +3509,7 @@ var $author$project$NameDictWorker$init = function (flags) {
 	var ids = A2($elm$core$List$range, 0, $author$project$NameDictWorker$nbrFiles - 1);
 	return _Utils_Tuple2(
 		{
-			aF: 'loading indexedDb...',
+			aG: 'loading indexedDb...',
 			J: 0,
 			T: '',
 			U: $elm$core$Set$fromList(
@@ -3564,7 +3564,7 @@ var $miniBill$elm_codec$Codec$buildCustom = function (_v0) {
 			},
 			A2($elm$json$Json$Decode$field, 'tag', $elm$json$Json$Decode$string)),
 		g: function (v) {
-			return am.dt(v);
+			return am.dI(v);
 		}
 	};
 };
@@ -3574,7 +3574,7 @@ var $miniBill$elm_codec$Codec$custom = function (match) {
 		e: function (_v0) {
 			return $elm$core$Basics$identity;
 		},
-		dt: match
+		dI: match
 	};
 };
 var $miniBill$elm_codec$Codec$build = F2(
@@ -3627,7 +3627,7 @@ var $miniBill$elm_codec$Codec$variant = F4(
 			});
 		return {
 			e: decoder_,
-			dt: am.dt(
+			dI: am.dI(
 				matchPiece(enc))
 		};
 	});
@@ -4291,7 +4291,7 @@ var $elm$http$Http$resolve = F2(
 			case 3:
 				var metadata = response.a;
 				return $elm$core$Result$Err(
-					$elm$http$Http$BadStatus(metadata.dX));
+					$elm$http$Http$BadStatus(metadata.ea));
 			default:
 				var body = response.b;
 				return A2(
@@ -4312,7 +4312,7 @@ var $elm$http$Http$Request = function (a) {
 };
 var $elm$http$Http$State = F2(
 	function (reqs, subs) {
-		return {b$: reqs, ce: subs};
+		return {ce: reqs, ct: subs};
 	});
 var $elm$core$Task$succeed = _Scheduler_succeed;
 var $elm$http$Http$init = $elm$core$Task$succeed(
@@ -4359,7 +4359,7 @@ var $elm$http$Http$updateReqs = F3(
 					return A2(
 						$elm$core$Task$andThen,
 						function (pid) {
-							var _v4 = req.ch;
+							var _v4 = req.cw;
 							if (_v4.$ === 1) {
 								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
@@ -4389,7 +4389,7 @@ var $elm$http$Http$onEffects = F4(
 				return $elm$core$Task$succeed(
 					A2($elm$http$Http$State, reqs, subs));
 			},
-			A3($elm$http$Http$updateReqs, router, cmds, state.b$));
+			A3($elm$http$Http$updateReqs, router, cmds, state.ce));
 	});
 var $elm$http$Http$maybeSend = F4(
 	function (router, desiredTracker, progress, _v0) {
@@ -4436,7 +4436,7 @@ var $elm$http$Http$onSelfMsg = F3(
 				A2(
 					$elm$core$List$filterMap,
 					A3($elm$http$Http$maybeSend, router, tracker, progress),
-					state.ce)));
+					state.ct)));
 	});
 var $elm$http$Http$Cancel = function (a) {
 	return {$: 0, a: a};
@@ -4450,14 +4450,14 @@ var $elm$http$Http$cmdMap = F2(
 			var r = cmd.a;
 			return $elm$http$Http$Request(
 				{
-					cF: r.cF,
-					cN: r.cN,
-					c6: A2(_Http_mapExpect, func, r.c6),
-					br: r.br,
-					du: r.du,
-					eh: r.eh,
-					ch: r.ch,
-					en: r.en
+					cU: r.cU,
+					c0: r.c0,
+					dl: A2(_Http_mapExpect, func, r.dl),
+					bD: r.bD,
+					dJ: r.dJ,
+					ew: r.ew,
+					cw: r.cw,
+					eC: r.eC
 				});
 		}
 	});
@@ -4480,18 +4480,18 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{cF: false, cN: r.cN, c6: r.c6, br: r.br, du: r.du, eh: r.eh, ch: r.ch, en: r.en}));
+			{cU: false, c0: r.c0, dl: r.dl, bD: r.bD, dJ: r.dJ, ew: r.ew, cw: r.cw, eC: r.eC}));
 };
 var $elm$http$Http$get = function (r) {
 	return $elm$http$Http$request(
-		{cN: $elm$http$Http$emptyBody, c6: r.c6, br: _List_Nil, du: 'GET', eh: $elm$core$Maybe$Nothing, ch: $elm$core$Maybe$Nothing, en: r.en});
+		{c0: $elm$http$Http$emptyBody, dl: r.dl, bD: _List_Nil, dJ: 'GET', ew: $elm$core$Maybe$Nothing, cw: $elm$core$Maybe$Nothing, eC: r.eC});
 };
 var $author$project$NameDictWorker$getData = function (path) {
 	return $elm$http$Http$get(
 		{
-			c6: $elm$http$Http$expectString(
+			dl: $elm$http$Http$expectString(
 				$author$project$NameDictWorker$GotRemoteData(path)),
-			en: path
+			eC: path
 		});
 };
 var $elm$core$String$indexes = _String_indexes;
@@ -4501,7 +4501,7 @@ var $elm$core$String$left = F2(
 	});
 var $elm$regex$Regex$Match = F4(
 	function (match, index, number, submatches) {
-		return {dj: index, dt: match, dz: number, d1: submatches};
+		return {dy: index, dI: match, dO: number, eg: submatches};
 	});
 var $elm$regex$Regex$findAtMost = _Regex_findAtMost;
 var $elm_community$string_extra$String$Extra$firstResultHelp = F2(
@@ -4533,7 +4533,7 @@ var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
 var $elm$regex$Regex$fromString = function (string) {
 	return A2(
 		$elm$regex$Regex$fromStringWith,
-		{cW: false, dx: false},
+		{c9: false, dM: false},
 		string);
 };
 var $elm$regex$Regex$never = _Regex_never;
@@ -4555,7 +4555,7 @@ var $elm_community$string_extra$String$Extra$regexEscape = A2(
 	$elm$regex$Regex$replace,
 	$elm_community$string_extra$String$Extra$regexFromString('[-/\\^$*+?.()|[\\]{}]'),
 	function (_v0) {
-		var match = _v0.dt;
+		var match = _v0.dI;
 		return '\\' + match;
 	});
 var $elm_community$string_extra$String$Extra$leftOf = F2(
@@ -4568,7 +4568,7 @@ var $elm_community$string_extra$String$Extra$leftOf = F2(
 				A2(
 					$elm$core$Basics$composeR,
 					function ($) {
-						return $.d1;
+						return $.eg;
 					},
 					$elm_community$string_extra$String$Extra$firstResult),
 				A3(
@@ -4594,7 +4594,7 @@ var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$NameDictWorker$outbound = _Platform_outgoingPort('outbound', $elm$core$Basics$identity);
 var $author$project$Common$NameDictEntry = F5(
 	function (key, reading, kind, meaning, abr) {
-		return {a6: abr, aG: key, bC: kind, bH: meaning, aJ: reading};
+		return {bi: abr, aj: key, bO: kind, bU: meaning, aK: reading};
 	});
 var $elm$parser$Parser$Advanced$Bad = F2(
 	function (a, b) {
@@ -4634,7 +4634,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 					$elm$parser$Parser$Advanced$Good,
 					_Utils_cmp(s0.b, offset) < 0,
 					0,
-					{bf: col, d: s0.d, f: s0.f, b: offset, b5: row, a: s0.a});
+					{br: col, d: s0.d, f: s0.f, b: offset, ck: row, a: s0.a});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -4666,7 +4666,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.b5, s.bf, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.ck, s.br, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -4807,14 +4807,14 @@ var $elm$parser$Parser$Advanced$AddRight = F2(
 	});
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {bf: col, c0: contextStack, bU: problem, b5: row};
+		return {br: col, df: contextStack, b7: problem, ck: row};
 	});
 var $elm$parser$Parser$Advanced$fromState = F2(
 	function (s, x) {
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.b5, s.bf, x, s.d));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.ck, s.br, x, s.d));
 	});
 var $elm$core$String$isEmpty = function (string) {
 	return string === '';
@@ -4825,7 +4825,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(str);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.b5, s.bf, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.ck, s.br, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -4836,7 +4836,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{bf: newCol, d: s.d, f: s.f, b: newOffset, b5: newRow, a: s.a});
+			{br: newCol, d: s.d, f: s.f, b: newOffset, ck: newRow, a: s.a});
 	};
 };
 var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
@@ -5019,10 +5019,10 @@ var $author$project$NameDictWorker$entryParser = A2(
 	$author$project$NameDictWorker$abrParser);
 var $elm$parser$Parser$DeadEnd = F3(
 	function (row, col, problem) {
-		return {bf: col, bU: problem, b5: row};
+		return {br: col, b7: problem, ck: row};
 	});
 var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.b5, p.bf, p.bU);
+	return A3($elm$parser$Parser$DeadEnd, p.ck, p.br, p.b7);
 };
 var $elm$parser$Parser$Advanced$bagToList = F2(
 	function (bag, list) {
@@ -5054,7 +5054,7 @@ var $elm$parser$Parser$Advanced$run = F2(
 	function (_v0, src) {
 		var parse = _v0;
 		var _v1 = parse(
-			{bf: 1, d: _List_Nil, f: 1, b: 0, b5: 1, a: src});
+			{br: 1, d: _List_Nil, f: 1, b: 0, ck: 1, a: src});
 		if (!_v1.$) {
 			var value = _v1.b;
 			return $elm$core$Result$Ok(value);
@@ -5316,14 +5316,17 @@ var $miniBill$elm_codec$Codec$object = function (ctor) {
 };
 var $author$project$Common$SearchResultMeta = F2(
 	function (searchString, result) {
-		return {b3: result, b8: searchString};
+		return {ci: result, cn: searchString};
 	});
 var $author$project$Common$DictResult = function (a) {
 	return {$: 1, a: a};
 };
+var $author$project$Common$KanjiDictResult = function (a) {
+	return {$: 2, a: a};
+};
 var $author$project$Common$DictEntry = F3(
 	function (key, reading, meanings) {
-		return {aG: key, bI: meanings, aJ: reading};
+		return {aj: key, aI: meanings, aK: reading};
 	});
 var $miniBill$elm_codec$Codec$composite = F3(
 	function (enc, dec, _v0) {
@@ -5363,24 +5366,245 @@ var $author$project$Common$dictEntryCodec = $miniBill$elm_codec$Codec$buildObjec
 		$miniBill$elm_codec$Codec$field,
 		'meanings',
 		function ($) {
-			return $.bI;
+			return $.aI;
 		},
 		$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'reading',
 			function ($) {
-				return $.aJ;
+				return $.aK;
 			},
 			$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
 			A4(
 				$miniBill$elm_codec$Codec$field,
 				'key',
 				function ($) {
-					return $.aG;
+					return $.aj;
 				},
 				$miniBill$elm_codec$Codec$string,
 				$miniBill$elm_codec$Codec$object($author$project$Common$DictEntry)))));
+var $author$project$Common$KanjiDictEntry = F6(
+	function (key, meta, onYomi, kunYomi, nanori, meanings) {
+		return {aj: key, bP: kunYomi, aI: meanings, bW: meta, bY: nanori, b$: onYomi};
+	});
+var $author$project$Common$KanjiMeta = function (radical) {
+	return function (grade) {
+		return function (strokes) {
+			return function (frequency) {
+				return function (classicNelson) {
+					return function (newNelson) {
+						return function (halpern) {
+							return function (henshall) {
+								return function (skip) {
+									return function (pinyin) {
+										return function (kanjiKentei) {
+											return {aT: classicNelson, aU: frequency, aV: grade, aX: halpern, a$: henshall, a0: kanjiKentei, a3: newNelson, a5: pinyin, a7: radical, bb: skip, be: strokes};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var $elm$json$Json$Decode$map3 = _Json_map3;
+var $miniBill$elm_codec$Codec$triple = F3(
+	function (m1, m2, m3) {
+		return {
+			e: A4(
+				$elm$json$Json$Decode$map3,
+				F3(
+					function (a, b, c) {
+						return _Utils_Tuple3(a, b, c);
+					}),
+				A2(
+					$elm$json$Json$Decode$index,
+					0,
+					$miniBill$elm_codec$Codec$decoder(m1)),
+				A2(
+					$elm$json$Json$Decode$index,
+					1,
+					$miniBill$elm_codec$Codec$decoder(m2)),
+				A2(
+					$elm$json$Json$Decode$index,
+					2,
+					$miniBill$elm_codec$Codec$decoder(m3))),
+			g: function (_v0) {
+				var v1 = _v0.a;
+				var v2 = _v0.b;
+				var v3 = _v0.c;
+				return A2(
+					$elm$json$Json$Encode$list,
+					$elm$core$Basics$identity,
+					_List_fromArray(
+						[
+							A2($miniBill$elm_codec$Codec$encoder, m1, v1),
+							A2($miniBill$elm_codec$Codec$encoder, m2, v2),
+							A2($miniBill$elm_codec$Codec$encoder, m3, v3)
+						]));
+			}
+		};
+	});
+var $miniBill$elm_codec$Codec$tuple = F2(
+	function (m1, m2) {
+		return {
+			e: A3(
+				$elm$json$Json$Decode$map2,
+				F2(
+					function (a, b) {
+						return _Utils_Tuple2(a, b);
+					}),
+				A2(
+					$elm$json$Json$Decode$index,
+					0,
+					$miniBill$elm_codec$Codec$decoder(m1)),
+				A2(
+					$elm$json$Json$Decode$index,
+					1,
+					$miniBill$elm_codec$Codec$decoder(m2))),
+			g: function (_v0) {
+				var v1 = _v0.a;
+				var v2 = _v0.b;
+				return A2(
+					$elm$json$Json$Encode$list,
+					$elm$core$Basics$identity,
+					_List_fromArray(
+						[
+							A2($miniBill$elm_codec$Codec$encoder, m1, v1),
+							A2($miniBill$elm_codec$Codec$encoder, m2, v2)
+						]));
+			}
+		};
+	});
+var $author$project$Common$kanjiMetaCodec = $miniBill$elm_codec$Codec$buildObject(
+	A4(
+		$miniBill$elm_codec$Codec$field,
+		'kanjiKentei',
+		function ($) {
+			return $.a0;
+		},
+		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+		A4(
+			$miniBill$elm_codec$Codec$field,
+			'pinyin',
+			function ($) {
+				return $.a5;
+			},
+			$miniBill$elm_codec$Codec$maybe(
+				A2($miniBill$elm_codec$Codec$tuple, $miniBill$elm_codec$Codec$string, $miniBill$elm_codec$Codec$int)),
+			A4(
+				$miniBill$elm_codec$Codec$field,
+				'skip',
+				function ($) {
+					return $.bb;
+				},
+				$miniBill$elm_codec$Codec$maybe(
+					A3($miniBill$elm_codec$Codec$triple, $miniBill$elm_codec$Codec$int, $miniBill$elm_codec$Codec$int, $miniBill$elm_codec$Codec$int)),
+				A4(
+					$miniBill$elm_codec$Codec$field,
+					'henshall',
+					function ($) {
+						return $.a$;
+					},
+					$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+					A4(
+						$miniBill$elm_codec$Codec$field,
+						'halpern',
+						function ($) {
+							return $.aX;
+						},
+						$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+						A4(
+							$miniBill$elm_codec$Codec$field,
+							'newNelson',
+							function ($) {
+								return $.a3;
+							},
+							$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+							A4(
+								$miniBill$elm_codec$Codec$field,
+								'classicNelson',
+								function ($) {
+									return $.aT;
+								},
+								$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+								A4(
+									$miniBill$elm_codec$Codec$field,
+									'frequency',
+									function ($) {
+										return $.aU;
+									},
+									$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+									A4(
+										$miniBill$elm_codec$Codec$field,
+										'strokes',
+										function ($) {
+											return $.be;
+										},
+										$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+										A4(
+											$miniBill$elm_codec$Codec$field,
+											'grade',
+											function ($) {
+												return $.aV;
+											},
+											$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+											A4(
+												$miniBill$elm_codec$Codec$field,
+												'radical',
+												function ($) {
+													return $.a7;
+												},
+												$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
+												$miniBill$elm_codec$Codec$object($author$project$Common$KanjiMeta)))))))))))));
+var $author$project$Common$kanjiDictEntryCodec = $miniBill$elm_codec$Codec$buildObject(
+	A4(
+		$miniBill$elm_codec$Codec$field,
+		'meanings',
+		function ($) {
+			return $.aI;
+		},
+		$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
+		A4(
+			$miniBill$elm_codec$Codec$field,
+			'nanori',
+			function ($) {
+				return $.bY;
+			},
+			$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
+			A4(
+				$miniBill$elm_codec$Codec$field,
+				'kunYomi',
+				function ($) {
+					return $.bP;
+				},
+				$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
+				A4(
+					$miniBill$elm_codec$Codec$field,
+					'onYomi',
+					function ($) {
+						return $.b$;
+					},
+					$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
+					A4(
+						$miniBill$elm_codec$Codec$field,
+						'meta',
+						function ($) {
+							return $.bW;
+						},
+						$author$project$Common$kanjiMetaCodec,
+						A4(
+							$miniBill$elm_codec$Codec$field,
+							'key',
+							function ($) {
+								return $.aj;
+							},
+							$miniBill$elm_codec$Codec$string,
+							$miniBill$elm_codec$Codec$object($author$project$Common$KanjiDictEntry))))))));
 var $author$project$Common$nameKindCodec = $miniBill$elm_codec$Codec$buildCustom(
 	A3(
 		$miniBill$elm_codec$Codec$variant0,
@@ -5480,73 +5704,82 @@ var $author$project$Common$nameDictEntryCodec = $miniBill$elm_codec$Codec$buildO
 		$miniBill$elm_codec$Codec$field,
 		'abr',
 		function ($) {
-			return $.a6;
+			return $.bi;
 		},
 		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'meaning',
 			function ($) {
-				return $.bH;
+				return $.bU;
 			},
 			$miniBill$elm_codec$Codec$string,
 			A4(
 				$miniBill$elm_codec$Codec$field,
 				'kind',
 				function ($) {
-					return $.bC;
+					return $.bO;
 				},
 				$miniBill$elm_codec$Codec$list($author$project$Common$nameKindCodec),
 				A4(
 					$miniBill$elm_codec$Codec$field,
 					'reading',
 					function ($) {
-						return $.aJ;
+						return $.aK;
 					},
 					$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'key',
 						function ($) {
-							return $.aG;
+							return $.aj;
 						},
 						$miniBill$elm_codec$Codec$string,
 						$miniBill$elm_codec$Codec$object($author$project$Common$NameDictEntry)))))));
 var $author$project$Common$searchResultCodec = $miniBill$elm_codec$Codec$buildCustom(
 	A4(
 		$miniBill$elm_codec$Codec$variant1,
-		'DictResult',
-		$author$project$Common$DictResult,
-		$miniBill$elm_codec$Codec$list($author$project$Common$dictEntryCodec),
+		'KanjiDictResult',
+		$author$project$Common$KanjiDictResult,
+		$miniBill$elm_codec$Codec$list($author$project$Common$kanjiDictEntryCodec),
 		A4(
 			$miniBill$elm_codec$Codec$variant1,
-			'NameDictResult',
-			$author$project$Common$NameDictResult,
-			$miniBill$elm_codec$Codec$list($author$project$Common$nameDictEntryCodec),
-			$miniBill$elm_codec$Codec$custom(
-				F3(
-					function (fNameDictResult, fDictResult, value) {
-						if (!value.$) {
-							var xs = value.a;
-							return fNameDictResult(xs);
-						} else {
-							var xs = value.a;
-							return fDictResult(xs);
-						}
-					})))));
+			'DictResult',
+			$author$project$Common$DictResult,
+			$miniBill$elm_codec$Codec$list($author$project$Common$dictEntryCodec),
+			A4(
+				$miniBill$elm_codec$Codec$variant1,
+				'NameDictResult',
+				$author$project$Common$NameDictResult,
+				$miniBill$elm_codec$Codec$list($author$project$Common$nameDictEntryCodec),
+				$miniBill$elm_codec$Codec$custom(
+					F4(
+						function (fNameDictResult, fDictResult, fKanjiDictResult, value) {
+							switch (value.$) {
+								case 0:
+									var xs = value.a;
+									return fNameDictResult(xs);
+								case 1:
+									var xs = value.a;
+									return fDictResult(xs);
+								default:
+									var xs = value.a;
+									return fKanjiDictResult(xs);
+							}
+						}))))));
 var $author$project$Common$searchResultMetaCodec = $miniBill$elm_codec$Codec$buildObject(
 	A4(
 		$miniBill$elm_codec$Codec$field,
 		'result',
 		function ($) {
-			return $.b3;
+			return $.ci;
 		},
 		$author$project$Common$searchResultCodec,
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'searchString',
 			function ($) {
-				return $.b8;
+				return $.cn;
 			},
 			$miniBill$elm_codec$Codec$string,
 			$miniBill$elm_codec$Codec$object($author$project$Common$SearchResultMeta))));
@@ -5610,24 +5843,32 @@ var $miniBill$elm_codec$Codec$variant2 = F4(
 					$miniBill$elm_codec$Codec$decoder(m2))));
 	});
 var $author$project$Common$DictWorker = 1;
+var $author$project$Common$KanjiDictWorker = 2;
 var $author$project$Common$workerCodec = $miniBill$elm_codec$Codec$buildCustom(
 	A3(
 		$miniBill$elm_codec$Codec$variant0,
-		'DictWorker',
-		1,
+		'KanjiDictWorker',
+		2,
 		A3(
 			$miniBill$elm_codec$Codec$variant0,
-			'NameDictWorker',
-			0,
-			$miniBill$elm_codec$Codec$custom(
-				F3(
-					function (fNameDictWorker, fDictWorker, value) {
-						if (!value) {
-							return fNameDictWorker;
-						} else {
-							return fDictWorker;
-						}
-					})))));
+			'DictWorker',
+			1,
+			A3(
+				$miniBill$elm_codec$Codec$variant0,
+				'NameDictWorker',
+				0,
+				$miniBill$elm_codec$Codec$custom(
+					F4(
+						function (fNameDictWorker, fDictWorker, fKanjiDictWorker, value) {
+							switch (value) {
+								case 0:
+									return fNameDictWorker;
+								case 1:
+									return fDictWorker;
+								default:
+									return fKanjiDictWorker;
+							}
+						}))))));
 var $author$project$Common$workerMsgCodec = $miniBill$elm_codec$Codec$buildCustom(
 	A4(
 		$miniBill$elm_codec$Codec$variant1,
@@ -5644,27 +5885,27 @@ var $author$project$Common$workerMsgCodec = $miniBill$elm_codec$Codec$buildCusto
 					$miniBill$elm_codec$Codec$field,
 					'status',
 					function ($) {
-						return $.cd;
+						return $.cs;
 					},
 					$author$project$Common$statusCodec,
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'message',
 						function ($) {
-							return $.bJ;
+							return $.bV;
 						},
 						$miniBill$elm_codec$Codec$string,
 						A4(
 							$miniBill$elm_codec$Codec$field,
 							'progress',
 							function ($) {
-								return $.bX;
+								return $.ca;
 							},
 							$miniBill$elm_codec$Codec$int,
 							$miniBill$elm_codec$Codec$object(
 								F3(
 									function (p, m, s) {
-										return {bJ: m, bX: p, cd: s};
+										return {bV: m, ca: p, cs: s};
 									})))))),
 			$miniBill$elm_codec$Codec$custom(
 				F3(
@@ -5689,7 +5930,7 @@ var $author$project$NameDictWorker$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{aF: 'indexedDb is ready'}),
+							{aG: 'indexedDb is ready'}),
 						$elm$core$Platform$Cmd$batch(
 							A2(
 								$elm$core$List$map,
@@ -5699,7 +5940,7 @@ var $author$project$NameDictWorker$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{aF: 'indexedDb error'}),
+							{aG: 'indexedDb error'}),
 						$elm$core$Platform$Cmd$none);
 				}
 			case 1:
@@ -5766,14 +6007,16 @@ var $author$project$NameDictWorker$update = F2(
 											$author$project$Common$LoadingStatusMsg,
 											0,
 											{
-												bJ: 'Loaded ' + (filename + ' from network'),
-												bX: $elm$core$Basics$round(
+												bV: 'Loaded ' + (filename + ' from network'),
+												ca: $elm$core$Basics$round(
 													(100 * ($author$project$NameDictWorker$nbrFiles - $elm$core$Set$size(requested))) / $author$project$NameDictWorker$nbrFiles),
-												cd: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
+												cs: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
 											})))
 								])));
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						model,
+						$author$project$NameDictWorker$getData(path));
 				}
 			case 3:
 				var value = msg.a;
@@ -5785,7 +6028,7 @@ var $author$project$NameDictWorker$update = F2(
 							F2(
 								function (f, c) {
 									return $author$project$NameDictWorker$IndexedDbData(
-										{bg: c, bl: f});
+										{bs: c, bx: f});
 								}),
 							A2($elm$json$Json$Decode$field, 'filename', $elm$json$Json$Decode$string),
 							A2($elm$json$Json$Decode$field, 'content', $elm$json$Json$Decode$string)),
@@ -5797,8 +6040,8 @@ var $author$project$NameDictWorker$update = F2(
 				var _v3 = A2($elm$json$Json$Decode$decodeValue, dataFromIndexedDbSecoder, value);
 				if (!_v3.$) {
 					if (!_v3.a.$) {
-						var filename = _v3.a.a.bl;
-						var content = _v3.a.a.bg;
+						var filename = _v3.a.a.bx;
+						var content = _v3.a.a.bs;
 						var requested = A2($elm$core$Set$remove, filename, model.U);
 						var maxLineLength = A3(
 							$elm$core$List$foldr,
@@ -5830,10 +6073,10 @@ var $author$project$NameDictWorker$update = F2(
 										$author$project$Common$LoadingStatusMsg,
 										0,
 										{
-											bJ: 'Loaded ' + (filename_ + ' from local backup'),
-											bX: $elm$core$Basics$round(
+											bV: 'Loaded ' + (filename_ + ' from local backup'),
+											ca: $elm$core$Basics$round(
 												(100 * ($author$project$NameDictWorker$nbrFiles - $elm$core$Set$size(requested))) / $author$project$NameDictWorker$nbrFiles),
-											cd: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
+											cs: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
 										}))));
 					} else {
 						var path = _v3.a.a;
@@ -5861,7 +6104,7 @@ var $author$project$NameDictWorker$update = F2(
 				var searchResult = A2(
 					$elm$core$List$sortBy,
 					function (e) {
-						return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.aG, s);
+						return A2($rluiten$stringdistance$StringDistance$sift3Distance, e.aj, s);
 					},
 					(A2(
 						$elm$core$List$all,
@@ -5872,10 +6115,10 @@ var $author$project$NameDictWorker$update = F2(
 								$elm$core$List$member,
 								$elm$core$String$toLower(s),
 								$elm$core$String$words(
-									$elm$core$String$toLower(e.bH)));
+									$elm$core$String$toLower(e.bU)));
 						}) : $elm$core$List$filter(
 						function (e) {
-							return A2($elm$core$String$contains, s, e.aG);
+							return A2($elm$core$String$contains, s, e.aj);
 						}))(
 						A2(
 							$elm$core$List$filterMap,
@@ -5901,8 +6144,8 @@ var $author$project$NameDictWorker$update = F2(
 							$author$project$Common$workerMsgCodec,
 							$author$project$Common$SearchResultMsg(
 								{
-									b3: $author$project$Common$NameDictResult(searchResult),
-									b8: s
+									ci: $author$project$Common$NameDictResult(searchResult),
+									cn: s
 								}))));
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -5910,6 +6153,6 @@ var $author$project$NameDictWorker$update = F2(
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$NameDictWorker$main = $elm$core$Platform$worker(
-	{dk: $author$project$NameDictWorker$init, d2: $author$project$NameDictWorker$subscriptions, em: $author$project$NameDictWorker$update});
+	{dz: $author$project$NameDictWorker$init, eh: $author$project$NameDictWorker$subscriptions, eB: $author$project$NameDictWorker$update});
 _Platform_export({'NameDictWorker':{'init':$author$project$NameDictWorker$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

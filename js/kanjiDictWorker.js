@@ -3148,7 +3148,7 @@ var $elm$core$List$map = F2(
 			_List_Nil,
 			xs);
 	});
-var $author$project$KanjiDictWorker$nbrFiles = 25;
+var $author$project$KanjiDictWorker$nbrFiles = 30;
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -6319,7 +6319,9 @@ var $author$project$KanjiDictWorker$update = F2(
 											})))
 								])));
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						model,
+						$author$project$KanjiDictWorker$getData(path));
 				}
 			case 3:
 				var value = msg.a;

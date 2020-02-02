@@ -81,7 +81,7 @@ init flags =
 
 
 nbrFiles =
-    25
+    30
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -155,7 +155,7 @@ update msg model =
                     )
 
                 Err _ ->
-                    ( model, Cmd.none )
+                    ( model, getData path )
 
         GotDataFromIndexedDb value ->
             let

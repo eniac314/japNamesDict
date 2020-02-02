@@ -468,8 +468,8 @@ searchDashboardview model =
 
         searchStatusBox s =
             el
-                [ width (px 20)
-                , height (px 20)
+                [ width (px 10)
+                , height (px 10)
                 , Border.rounded 10
                 , Background.color <|
                     case s of
@@ -486,7 +486,8 @@ searchDashboardview model =
     in
     column
         [ width fill
-        , height (px dashboardHeight)
+
+        --, height (px dashboardHeight)
         , spacing 15
         , padding 15
         , Background.color (rgb255 255 255 255)
@@ -494,31 +495,31 @@ searchDashboardview model =
         [ row
             [ width fill
             , spacing 15
-            , Font.size 12
+            , Font.size 14
             ]
             [ row
                 [ spacing 10
                 , Events.onClick (ScrollTo "nameDict")
                 ]
-                [ el [] (text "人名地名辞典")
+                [ el [] (text "人名地名")
                 , searchStatusBox nameDictSearchStatus
-                , text <| String.fromInt nbrMatchesNameDict
+                , el [ Font.size 12 ] (text <| String.fromInt nbrMatchesNameDict)
                 ]
             , row
                 [ spacing 10
                 , Events.onClick (ScrollTo "japDict")
                 ]
-                [ el [] (text "和英辞典")
+                [ el [] (text "和英")
                 , searchStatusBox dictSearchStatus
-                , text <| String.fromInt nbrMatchesDict
+                , el [ Font.size 12 ] (text <| String.fromInt nbrMatchesDict)
                 ]
             , row
                 [ spacing 10
                 , Events.onClick (ScrollTo "kanjiDict")
                 ]
-                [ el [] (text "漢字辞典")
+                [ el [] (text "漢字")
                 , searchStatusBox kanjiDictSearchStatus
-                , text <| String.fromInt nbrMatchesKanjiDict
+                , el [ Font.size 12 ] (text <| String.fromInt nbrMatchesKanjiDict)
                 ]
             ]
         , row
@@ -526,7 +527,7 @@ searchDashboardview model =
             , width fill
             ]
             [ Input.text
-                []
+                [ padding 6 ]
                 { onChange = SearchInput
                 , text = model.searchInput |> Maybe.withDefault ""
                 , placeholder = Nothing
