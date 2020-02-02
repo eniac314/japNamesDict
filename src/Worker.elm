@@ -66,7 +66,7 @@ init flags =
       , pendingRequests =
             pendingRequests
                 |> Set.fromList
-      , maxLineLength = 0
+      , maxLineLength = getMLL flags.pathbase
       , pathbase = flags.pathbase
       , nbrFiles = flags.nbrFiles
       }
@@ -98,10 +98,6 @@ update msg model =
             case res of
                 Ok str ->
                     let
-                        maxLineLength =
-                            String.lines str
-                                |> List.foldr (\s acc -> max (String.length s) acc) model.maxLineLength
-
                         filename =
                             rightOfBack "/" path
 
@@ -117,10 +113,9 @@ update msg model =
                                 Set.remove path model.pendingRequests
                     in
                     ( { model
-                        | rawData = model.rawData ++ String.cons '\n' str
+                        | rawData = str ++ String.cons '\n' model.rawData
                         , toRequest = toRequest
                         , pendingRequests = pendingRequests
-                        , maxLineLength = maxLineLength
                       }
                     , Cmd.batch
                         [ { progress = round <| 100 * toFloat (model.nbrFiles - Set.size toRequest) / toFloat model.nbrFiles
@@ -342,6 +337,23 @@ getWorker basePath =
 
     else
         DictWorker
+
+
+getMLL basePath =
+    if
+        basePath
+            == "kanji"
+    then
+        374
+
+    else if
+        basePath
+            == "names"
+    then
+        248
+
+    else
+        1624
 
 
 getData path =

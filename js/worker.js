@@ -4197,6 +4197,9 @@ var $author$project$Worker$getData = function (path) {
 			fe: path
 		});
 };
+var $author$project$Worker$getMLL = function (basePath) {
+	return (basePath === 'kanji') ? 374 : ((basePath === 'names') ? 248 : 1624);
+};
 var $elm$core$List$map = F2(
 	function (f, xs) {
 		return A3(
@@ -4342,19 +4345,19 @@ var $author$project$Worker$init = function (flags) {
 	var ids = A2($elm$core$List$range, 0, flags.L - 1);
 	var pendingRequests = A2(
 		$elm$core$List$map,
-		$author$project$Worker$dataPath(flags.F),
+		$author$project$Worker$dataPath(flags.z),
 		A2($elm$core$List$take, $author$project$Worker$nbrConcurentRequest, ids));
 	return _Utils_Tuple2(
 		{
-			y: 0,
+			K: $author$project$Worker$getMLL(flags.z),
 			L: flags.L,
-			F: flags.F,
+			z: flags.z,
 			aK: $elm$core$Set$fromList(pendingRequests),
 			R: '',
 			aC: $elm$core$Set$fromList(
 				A2(
 					$elm$core$List$map,
-					$author$project$Worker$dataPath(flags.F),
+					$author$project$Worker$dataPath(flags.z),
 					ids))
 		},
 		$elm$core$Platform$Cmd$batch(
@@ -4730,7 +4733,6 @@ var $elm_community$string_extra$String$Extra$leftOf = F2(
 						'^(.*?)' + $elm_community$string_extra$String$Extra$regexEscape(pattern)),
 					string)));
 	});
-var $elm$core$String$lines = _String_lines;
 var $elm$core$List$member = F2(
 	function (x, xs) {
 		return A2(
@@ -6852,7 +6854,7 @@ var $author$project$Worker$update = F2(
 							aC: $elm$core$Set$fromList(
 								A2(
 									$elm$core$List$map,
-									$author$project$Worker$dataPath(model.F),
+									$author$project$Worker$dataPath(model.z),
 									ids))
 						}),
 					$elm$core$Platform$Cmd$batch(
@@ -6861,7 +6863,7 @@ var $author$project$Worker$update = F2(
 							$author$project$Worker$getData,
 							A2(
 								$elm$core$List$map,
-								$author$project$Worker$dataPath(model.F),
+								$author$project$Worker$dataPath(model.z),
 								ids))));
 			case 1:
 				var path = msg.a;
@@ -6876,27 +6878,15 @@ var $author$project$Worker$update = F2(
 							$elm$core$List$take,
 							$author$project$Worker$nbrConcurentRequest,
 							$elm$core$Set$toList(toRequest))) : A2($elm$core$Set$remove, path, model.aK);
-					var maxLineLength = A3(
-						$elm$core$List$foldr,
-						F2(
-							function (s, acc) {
-								return A2(
-									$elm$core$Basics$max,
-									$elm$core$String$length(s),
-									acc);
-							}),
-						model.y,
-						$elm$core$String$lines(str));
 					var filename = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', path);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								y: maxLineLength,
 								aK: pendingRequests,
 								R: _Utils_ap(
-									model.R,
-									A2($elm$core$String$cons, '\n', str)),
+									str,
+									A2($elm$core$String$cons, '\n', model.R)),
 								aC: toRequest
 							}),
 						$elm$core$Platform$Cmd$batch(
@@ -6908,7 +6898,7 @@ var $author$project$Worker$update = F2(
 										$author$project$Common$workerMsgCodec,
 										A2(
 											$author$project$Common$LoadingStatusMsg,
-											$author$project$Worker$getWorker(model.F),
+											$author$project$Worker$getWorker(model.z),
 											{
 												co: 'Loaded ' + (filename + ' from network'),
 												cH: $elm$core$Basics$round(
@@ -6932,7 +6922,7 @@ var $author$project$Worker$update = F2(
 								$author$project$Common$workerMsgCodec,
 								A2(
 									$author$project$Common$LoadingStatusMsg,
-									$author$project$Worker$getWorker(model.F),
+									$author$project$Worker$getWorker(model.z),
 									{
 										co: 'Network Error: ' + path,
 										cH: $elm$core$Basics$round(
@@ -6942,7 +6932,7 @@ var $author$project$Worker$update = F2(
 				}
 			case 2:
 				var s = msg.a;
-				var _v2 = $author$project$Worker$getWorker(model.F);
+				var _v2 = $author$project$Worker$getWorker(model.z);
 				switch (_v2) {
 					case 2:
 						var getMatch = F2(
@@ -6988,11 +6978,11 @@ var $author$project$Worker$update = F2(
 											$elm_community$list_extra$List$Extra$unique(
 												A2(
 													$elm$core$List$map,
-													getMatch(model.y),
+													getMatch(model.K),
 													A2(
 														$elm$core$List$map,
 														function (n) {
-															return A3($elm$core$String$slice, n - model.y, n + model.y, model.R);
+															return A3($elm$core$String$slice, n - model.K, n + model.K, model.R);
 														},
 														A2($elm$core$String$indexes, s_, model.R))))))));
 						};
@@ -7066,11 +7056,11 @@ var $author$project$Worker$update = F2(
 										$elm_community$list_extra$List$Extra$unique(
 											A2(
 												$elm$core$List$map,
-												getMatch(model.y),
+												getMatch(model.K),
 												A2(
 													$elm$core$List$map,
 													function (n) {
-														return A3($elm$core$String$slice, n - model.y, n + model.y, model.R);
+														return A3($elm$core$String$slice, n - model.K, n + model.K, model.R);
 													},
 													A2($elm$core$String$indexes, s, model.R))))))));
 						return _Utils_Tuple2(
@@ -7125,11 +7115,11 @@ var $author$project$Worker$update = F2(
 										$elm_community$list_extra$List$Extra$unique(
 											A2(
 												$elm$core$List$map,
-												getMatch(model.y),
+												getMatch(model.K),
 												A2(
 													$elm$core$List$map,
 													function (n) {
-														return A3($elm$core$String$slice, n - model.y, n + model.y, model.R);
+														return A3($elm$core$String$slice, n - model.K, n + model.K, model.R);
 													},
 													A2($elm$core$String$indexes, s, model.R))))))));
 						return _Utils_Tuple2(
@@ -7159,7 +7149,7 @@ _Platform_export({'Worker':{'init':$author$project$Worker$main(
 				$elm$json$Json$Decode$andThen,
 				function (nbrFiles) {
 					return $elm$json$Json$Decode$succeed(
-						{L: nbrFiles, F: pathbase});
+						{L: nbrFiles, z: pathbase});
 				},
 				A2($elm$json$Json$Decode$field, 'nbrFiles', $elm$json$Json$Decode$int));
 		},
