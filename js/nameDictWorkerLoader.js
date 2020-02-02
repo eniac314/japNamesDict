@@ -23,7 +23,10 @@ app.ports.loadFromIndexedDb.subscribe(function(key) {
         .get(key);
 
     request.onerror = function(event) {
-        console.log("Unable to retrieve daa from database!");
+        console.log("Unable to retrieve data from database!");
+        app.ports.loadedFromIndexedDb.send({
+            error: request.error
+        });
     };
 
     request.onsuccess = function(event) {

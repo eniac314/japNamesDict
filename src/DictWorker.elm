@@ -10,6 +10,7 @@ import Parser exposing (..)
 import Set exposing (..)
 import String.Extra exposing (leftOf, rightOfBack)
 import StringDistance exposing (sift3Distance)
+import Time exposing (..)
 
 
 port outbound : E.Value -> Cmd msg
@@ -51,6 +52,7 @@ type Msg
     | GotDataFromIndexedDb E.Value
     | Search String
     | NoOp
+    | Broadcast String Time.Posix
 
 
 main : Program Flags Model Msg
@@ -164,7 +166,16 @@ update msg model =
                     )
 
                 Err _ ->
-                    ( model, getData path )
+                    ( model
+                    , { progress = round <| 100 * toFloat (nbrFiles - Set.size model.requested) / toFloat nbrFiles
+                      , message = "Network Error: " ++ path
+                      , status =
+                            Pending
+                      }
+                        |> LoadingStatusMsg DictWorker
+                        |> Codec.encoder workerMsgCodec
+                        |> outbound
+                    )
 
         GotDataFromIndexedDb value ->
             let
@@ -216,8 +227,17 @@ update msg model =
                 Ok (NoData path) ->
                     ( model, getData path )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err e ->
+                    ( model
+                    , { progress = round <| 100 * toFloat (nbrFiles - Set.size model.requested) / toFloat nbrFiles
+                      , message = "IndexedDB Error: " ++ D.errorToString e
+                      , status =
+                            Pending
+                      }
+                        |> LoadingStatusMsg DictWorker
+                        |> Codec.encoder workerMsgCodec
+                        |> outbound
+                    )
 
         Search s ->
             let
@@ -265,6 +285,18 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
+        Broadcast s _ ->
+            ( model
+            , { progress = round <| 100 * toFloat (nbrFiles - Set.size model.requested) / toFloat nbrFiles
+              , message = s
+              , status =
+                    Pending
+              }
+                |> LoadingStatusMsg DictWorker
+                |> Codec.encoder workerMsgCodec
+                |> outbound
+            )
+
 
 subscriptions model =
     Sub.batch
@@ -282,6 +314,8 @@ subscriptions model =
                     _ ->
                         NoOp
             )
+        , Time.every 2000 (Broadcast "")
+        , Time.every 1000 (Broadcast "worker alive")
         ]
 
 

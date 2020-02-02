@@ -1,7 +1,12 @@
 port module NameDictWorker exposing (..)
 
+import Base64 exposing (fromBytes, toBytes)
+import Bytes exposing (..)
+import Bytes.Decode exposing (decode, string)
+import Bytes.Encode exposing (..)
 import Codec exposing (decoder, encoder)
 import Common exposing (..)
+import Flate exposing (deflate, inflate)
 import Http exposing (..)
 import Json.Decode as D
 import Json.Encode as E
@@ -10,6 +15,16 @@ import Parser exposing (..)
 import Set exposing (..)
 import String.Extra exposing (leftOf, rightOfBack)
 import StringDistance exposing (sift3Distance)
+import Time exposing (..)
+
+
+decodeAsString : Bytes -> Maybe String
+decodeAsString buffer =
+    let
+        decoder =
+            Bytes.Decode.string (Bytes.width buffer)
+    in
+    Bytes.Decode.decode decoder buffer
 
 
 port outbound : E.Value -> Cmd msg
@@ -51,6 +66,7 @@ type Msg
     | GotDataFromIndexedDb E.Value
     | Search String
     | NoOp
+    | Broadcast String Time.Posix
 
 
 main : Program Flags Model Msg
@@ -136,6 +152,12 @@ update msg model =
 
                         requested =
                             Set.remove path model.requested
+
+                        compressed =
+                            Bytes.Encode.encode (Bytes.Encode.string str)
+                                |> deflate
+                                |> fromBytes
+                                |> Maybe.withDefault ""
                     in
                     ( { model
                         | rawData = model.rawData ++ String.cons '\n' str
@@ -145,7 +167,7 @@ update msg model =
                     , Cmd.batch
                         [ E.object
                             [ ( "filename", E.string path )
-                            , ( "content", E.string str )
+                            , ( "content", E.string compressed )
                             ]
                             |> saveToIndexedDb
                         , { progress = round <| 100 * toFloat (nbrFiles - Set.size requested) / toFloat nbrFiles
@@ -164,7 +186,16 @@ update msg model =
                     )
 
                 Err _ ->
-                    ( model, getData path )
+                    ( model
+                    , { progress = round <| 100 * toFloat (nbrFiles - Set.size model.requested) / toFloat nbrFiles
+                      , message = "Network Error: " ++ path
+                      , status =
+                            Pending
+                      }
+                        |> LoadingStatusMsg NameDictWorker
+                        |> Codec.encoder workerMsgCodec
+                        |> outbound
+                    )
 
         GotDataFromIndexedDb value ->
             let
@@ -182,8 +213,14 @@ update msg model =
             case D.decodeValue dataFromIndexedDbSecoder value of
                 Ok (IndexedDbData { filename, content }) ->
                     let
+                        content_ =
+                            toBytes content
+                                |> Maybe.andThen inflate
+                                |> Maybe.andThen decodeAsString
+                                |> Maybe.withDefault ""
+
                         maxLineLength =
-                            String.lines content
+                            String.lines content_
                                 |> List.foldr
                                     (\s acc -> max (String.length s) acc)
                                     model.maxLineLength
@@ -195,7 +232,7 @@ update msg model =
                             Set.remove filename model.requested
                     in
                     ( { model
-                        | rawData = model.rawData ++ String.cons '\n' content
+                        | rawData = model.rawData ++ String.cons '\n' content_
                         , requested = requested
                         , maxLineLength = maxLineLength
                       }
@@ -216,8 +253,17 @@ update msg model =
                 Ok (NoData path) ->
                     ( model, getData path )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err e ->
+                    ( model
+                    , { progress = round <| 100 * toFloat (nbrFiles - Set.size model.requested) / toFloat nbrFiles
+                      , message = "IndexedDB Error: " ++ D.errorToString e
+                      , status =
+                            Pending
+                      }
+                        |> LoadingStatusMsg NameDictWorker
+                        |> Codec.encoder workerMsgCodec
+                        |> outbound
+                    )
 
         Search s ->
             let
@@ -265,6 +311,18 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
+        Broadcast s _ ->
+            ( model
+            , { progress = round <| 100 * toFloat (nbrFiles - Set.size model.requested) / toFloat nbrFiles
+              , message = s
+              , status =
+                    Pending
+              }
+                |> LoadingStatusMsg NameDictWorker
+                |> Codec.encoder workerMsgCodec
+                |> outbound
+            )
+
 
 subscriptions model =
     Sub.batch
@@ -282,6 +340,8 @@ subscriptions model =
                     _ ->
                         NoOp
             )
+        , Time.every 2000 (Broadcast "")
+        , Time.every 1000 (Broadcast "worker alive")
         ]
 
 

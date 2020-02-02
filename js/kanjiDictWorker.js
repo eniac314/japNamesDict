@@ -2396,6 +2396,52 @@ function _Platform_mergeExportsDebug(moduleName, obj, exports)
 
 
 
+function _Time_now(millisToPosix)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(millisToPosix(Date.now())));
+	});
+}
+
+var _Time_setInterval = F2(function(interval, task)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		var id = setInterval(function() { _Scheduler_rawSpawn(task); }, interval);
+		return function() { clearInterval(id); };
+	});
+});
+
+function _Time_here()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(
+			A2($elm$time$Time$customZone, -(new Date().getTimezoneOffset()), _List_Nil)
+		));
+	});
+}
+
+
+function _Time_getZoneName()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		try
+		{
+			var name = $elm$time$Time$Name(Intl.DateTimeFormat().resolvedOptions().timeZone);
+		}
+		catch (e)
+		{
+			var name = $elm$time$Time$Offset(new Date().getTimezoneOffset());
+		}
+		callback(_Scheduler_succeed(name));
+	});
+}
+
+
+
 // SEND REQUEST
 
 var _Http_toTask = F3(function(router, toTask, request)
@@ -3510,14 +3556,18 @@ var $author$project$KanjiDictWorker$init = function (flags) {
 	return _Utils_Tuple2(
 		{
 			aG: 'loading indexedDb...',
-			J: 0,
-			T: '',
-			U: $elm$core$Set$fromList(
+			K: 0,
+			U: '',
+			D: $elm$core$Set$fromList(
 				A2($elm$core$List$map, $author$project$KanjiDictWorker$dataPath, ids)),
 			aN: false
 		},
 		$elm$core$Platform$Cmd$none);
 };
+var $author$project$KanjiDictWorker$Broadcast = F2(
+	function (a, b) {
+		return {$: 6, a: a, b: b};
+	});
 var $author$project$KanjiDictWorker$GetData = {$: 1};
 var $author$project$KanjiDictWorker$GotDataFromIndexedDb = function (a) {
 	return {$: 3, a: a};
@@ -3535,6 +3585,333 @@ var $miniBill$elm_codec$Codec$decoder = function (_v0) {
 	var m = _v0;
 	return m.e;
 };
+var $elm$time$Time$Every = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $elm$time$Time$State = F2(
+	function (taggers, processes) {
+		return {ca: processes, cv: taggers};
+	});
+var $elm$core$Task$succeed = _Scheduler_succeed;
+var $elm$time$Time$init = $elm$core$Task$succeed(
+	A2($elm$time$Time$State, $elm$core$Dict$empty, $elm$core$Dict$empty));
+var $elm$core$Dict$get = F2(
+	function (targetKey, dict) {
+		get:
+		while (true) {
+			if (dict.$ === -2) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
+				switch (_v1) {
+					case 0:
+						var $temp$targetKey = targetKey,
+							$temp$dict = left;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+					case 1:
+						return $elm$core$Maybe$Just(value);
+					default:
+						var $temp$targetKey = targetKey,
+							$temp$dict = right;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+				}
+			}
+		}
+	});
+var $elm$time$Time$addMySub = F2(
+	function (_v0, state) {
+		var interval = _v0.a;
+		var tagger = _v0.b;
+		var _v1 = A2($elm$core$Dict$get, interval, state);
+		if (_v1.$ === 1) {
+			return A3(
+				$elm$core$Dict$insert,
+				interval,
+				_List_fromArray(
+					[tagger]),
+				state);
+		} else {
+			var taggers = _v1.a;
+			return A3(
+				$elm$core$Dict$insert,
+				interval,
+				A2($elm$core$List$cons, tagger, taggers),
+				state);
+		}
+	});
+var $elm$core$Task$andThen = _Scheduler_andThen;
+var $elm$core$Process$kill = _Scheduler_kill;
+var $elm$core$Dict$foldl = F3(
+	function (func, acc, dict) {
+		foldl:
+		while (true) {
+			if (dict.$ === -2) {
+				return acc;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$func = func,
+					$temp$acc = A3(
+					func,
+					key,
+					value,
+					A3($elm$core$Dict$foldl, func, acc, left)),
+					$temp$dict = right;
+				func = $temp$func;
+				acc = $temp$acc;
+				dict = $temp$dict;
+				continue foldl;
+			}
+		}
+	});
+var $elm$core$Dict$merge = F6(
+	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
+		var stepState = F3(
+			function (rKey, rValue, _v0) {
+				stepState:
+				while (true) {
+					var list = _v0.a;
+					var result = _v0.b;
+					if (!list.b) {
+						return _Utils_Tuple2(
+							list,
+							A3(rightStep, rKey, rValue, result));
+					} else {
+						var _v2 = list.a;
+						var lKey = _v2.a;
+						var lValue = _v2.b;
+						var rest = list.b;
+						if (_Utils_cmp(lKey, rKey) < 0) {
+							var $temp$rKey = rKey,
+								$temp$rValue = rValue,
+								$temp$_v0 = _Utils_Tuple2(
+								rest,
+								A3(leftStep, lKey, lValue, result));
+							rKey = $temp$rKey;
+							rValue = $temp$rValue;
+							_v0 = $temp$_v0;
+							continue stepState;
+						} else {
+							if (_Utils_cmp(lKey, rKey) > 0) {
+								return _Utils_Tuple2(
+									list,
+									A3(rightStep, rKey, rValue, result));
+							} else {
+								return _Utils_Tuple2(
+									rest,
+									A4(bothStep, lKey, lValue, rValue, result));
+							}
+						}
+					}
+				}
+			});
+		var _v3 = A3(
+			$elm$core$Dict$foldl,
+			stepState,
+			_Utils_Tuple2(
+				$elm$core$Dict$toList(leftDict),
+				initialResult),
+			rightDict);
+		var leftovers = _v3.a;
+		var intermediateResult = _v3.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v4, result) {
+					var k = _v4.a;
+					var v = _v4.b;
+					return A3(leftStep, k, v, result);
+				}),
+			intermediateResult,
+			leftovers);
+	});
+var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
+var $elm$time$Time$Name = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$time$Time$Offset = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $elm$time$Time$customZone = $elm$time$Time$Zone;
+var $elm$time$Time$setInterval = _Time_setInterval;
+var $elm$core$Process$spawn = _Scheduler_spawn;
+var $elm$time$Time$spawnHelp = F3(
+	function (router, intervals, processes) {
+		if (!intervals.b) {
+			return $elm$core$Task$succeed(processes);
+		} else {
+			var interval = intervals.a;
+			var rest = intervals.b;
+			var spawnTimer = $elm$core$Process$spawn(
+				A2(
+					$elm$time$Time$setInterval,
+					interval,
+					A2($elm$core$Platform$sendToSelf, router, interval)));
+			var spawnRest = function (id) {
+				return A3(
+					$elm$time$Time$spawnHelp,
+					router,
+					rest,
+					A3($elm$core$Dict$insert, interval, id, processes));
+			};
+			return A2($elm$core$Task$andThen, spawnRest, spawnTimer);
+		}
+	});
+var $elm$time$Time$onEffects = F3(
+	function (router, subs, _v0) {
+		var processes = _v0.ca;
+		var rightStep = F3(
+			function (_v6, id, _v7) {
+				var spawns = _v7.a;
+				var existing = _v7.b;
+				var kills = _v7.c;
+				return _Utils_Tuple3(
+					spawns,
+					existing,
+					A2(
+						$elm$core$Task$andThen,
+						function (_v5) {
+							return kills;
+						},
+						$elm$core$Process$kill(id)));
+			});
+		var newTaggers = A3($elm$core$List$foldl, $elm$time$Time$addMySub, $elm$core$Dict$empty, subs);
+		var leftStep = F3(
+			function (interval, taggers, _v4) {
+				var spawns = _v4.a;
+				var existing = _v4.b;
+				var kills = _v4.c;
+				return _Utils_Tuple3(
+					A2($elm$core$List$cons, interval, spawns),
+					existing,
+					kills);
+			});
+		var bothStep = F4(
+			function (interval, taggers, id, _v3) {
+				var spawns = _v3.a;
+				var existing = _v3.b;
+				var kills = _v3.c;
+				return _Utils_Tuple3(
+					spawns,
+					A3($elm$core$Dict$insert, interval, id, existing),
+					kills);
+			});
+		var _v1 = A6(
+			$elm$core$Dict$merge,
+			leftStep,
+			bothStep,
+			rightStep,
+			newTaggers,
+			processes,
+			_Utils_Tuple3(
+				_List_Nil,
+				$elm$core$Dict$empty,
+				$elm$core$Task$succeed(0)));
+		var spawnList = _v1.a;
+		var existingDict = _v1.b;
+		var killTask = _v1.c;
+		return A2(
+			$elm$core$Task$andThen,
+			function (newProcesses) {
+				return $elm$core$Task$succeed(
+					A2($elm$time$Time$State, newTaggers, newProcesses));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (_v2) {
+					return A3($elm$time$Time$spawnHelp, router, spawnList, existingDict);
+				},
+				killTask));
+	});
+var $elm$time$Time$Posix = $elm$core$Basics$identity;
+var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
+var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
+var $elm$core$Platform$sendToApp = _Platform_sendToApp;
+var $elm$core$Task$map2 = F3(
+	function (func, taskA, taskB) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (a) {
+				return A2(
+					$elm$core$Task$andThen,
+					function (b) {
+						return $elm$core$Task$succeed(
+							A2(func, a, b));
+					},
+					taskB);
+			},
+			taskA);
+	});
+var $elm$core$Task$sequence = function (tasks) {
+	return A3(
+		$elm$core$List$foldr,
+		$elm$core$Task$map2($elm$core$List$cons),
+		$elm$core$Task$succeed(_List_Nil),
+		tasks);
+};
+var $elm$time$Time$onSelfMsg = F3(
+	function (router, interval, state) {
+		var _v0 = A2($elm$core$Dict$get, interval, state.cv);
+		if (_v0.$ === 1) {
+			return $elm$core$Task$succeed(state);
+		} else {
+			var taggers = _v0.a;
+			var tellTaggers = function (time) {
+				return $elm$core$Task$sequence(
+					A2(
+						$elm$core$List$map,
+						function (tagger) {
+							return A2(
+								$elm$core$Platform$sendToApp,
+								router,
+								tagger(time));
+						},
+						taggers));
+			};
+			return A2(
+				$elm$core$Task$andThen,
+				function (_v1) {
+					return $elm$core$Task$succeed(state);
+				},
+				A2($elm$core$Task$andThen, tellTaggers, $elm$time$Time$now));
+		}
+	});
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$time$Time$subMap = F2(
+	function (f, _v0) {
+		var interval = _v0.a;
+		var tagger = _v0.b;
+		return A2(
+			$elm$time$Time$Every,
+			interval,
+			A2($elm$core$Basics$composeL, f, tagger));
+	});
+_Platform_effectManagers['Time'] = _Platform_createManager($elm$time$Time$init, $elm$time$Time$onEffects, $elm$time$Time$onSelfMsg, 0, $elm$time$Time$subMap);
+var $elm$time$Time$subscription = _Platform_leaf('Time');
+var $elm$time$Time$every = F2(
+	function (interval, tagger) {
+		return $elm$time$Time$subscription(
+			A2($elm$time$Time$Every, interval, tagger));
+	});
 var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $author$project$KanjiDictWorker$inbound = _Platform_incomingPort('inbound', $elm$json$Json$Decode$value);
 var $author$project$KanjiDictWorker$indexedDbStatus = _Platform_incomingPort('indexedDbStatus', $elm$json$Json$Decode$value);
@@ -3712,7 +4089,15 @@ var $author$project$KanjiDictWorker$subscriptions = function (model) {
 					} else {
 						return $author$project$KanjiDictWorker$NoOp;
 					}
-				})
+				}),
+				A2(
+				$elm$time$Time$every,
+				2000,
+				$author$project$KanjiDictWorker$Broadcast('')),
+				A2(
+				$elm$time$Time$every,
+				1000,
+				$author$project$KanjiDictWorker$Broadcast('worker alive'))
 			]));
 };
 var $author$project$KanjiDictWorker$IndexedDbData = function (a) {
@@ -3754,11 +4139,6 @@ var $elm$core$List$any = F2(
 				}
 			}
 		}
-	});
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
 	});
 var $elm$core$Basics$not = _Basics_not;
 var $elm$core$List$all = F2(
@@ -3854,38 +4234,6 @@ var $elm$core$Maybe$isJust = function (maybe) {
 		return false;
 	}
 };
-var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
-var $elm$core$Dict$get = F2(
-	function (targetKey, dict) {
-		get:
-		while (true) {
-			if (dict.$ === -2) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
-				switch (_v1) {
-					case 0:
-						var $temp$targetKey = targetKey,
-							$temp$dict = left;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-					case 1:
-						return $elm$core$Maybe$Just(value);
-					default:
-						var $temp$targetKey = targetKey,
-							$temp$dict = right;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-				}
-			}
-		}
-	});
 var $elm$core$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
@@ -4331,13 +4679,8 @@ var $elm$http$Http$State = F2(
 	function (reqs, subs) {
 		return {cf: reqs, cu: subs};
 	});
-var $elm$core$Task$succeed = _Scheduler_succeed;
 var $elm$http$Http$init = $elm$core$Task$succeed(
 	A2($elm$http$Http$State, $elm$core$Dict$empty, _List_Nil));
-var $elm$core$Task$andThen = _Scheduler_andThen;
-var $elm$core$Process$kill = _Scheduler_kill;
-var $elm$core$Platform$sendToApp = _Platform_sendToApp;
-var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$http$Http$updateReqs = F3(
 	function (router, cmds, reqs) {
 		updateReqs:
@@ -4418,28 +4761,6 @@ var $elm$http$Http$maybeSend = F4(
 				router,
 				toMsg(progress))) : $elm$core$Maybe$Nothing;
 	});
-var $elm$core$Task$map2 = F3(
-	function (func, taskA, taskB) {
-		return A2(
-			$elm$core$Task$andThen,
-			function (a) {
-				return A2(
-					$elm$core$Task$andThen,
-					function (b) {
-						return $elm$core$Task$succeed(
-							A2(func, a, b));
-					},
-					taskB);
-			},
-			taskA);
-	});
-var $elm$core$Task$sequence = function (tasks) {
-	return A3(
-		$elm$core$List$foldr,
-		$elm$core$Task$map2($elm$core$List$cons),
-		$elm$core$Task$succeed(_List_Nil),
-		tasks);
-};
 var $elm$http$Http$onSelfMsg = F3(
 	function (router, _v0, state) {
 		var tracker = _v0.a;
@@ -6241,7 +6562,7 @@ var $author$project$KanjiDictWorker$update = F2(
 							A2(
 								$elm$core$List$map,
 								$author$project$KanjiDictWorker$loadFromIndexedDb,
-								$elm$core$Set$toList(model.U))));
+								$elm$core$Set$toList(model.D))));
 				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
@@ -6255,7 +6576,7 @@ var $author$project$KanjiDictWorker$update = F2(
 					_Utils_update(
 						model,
 						{
-							U: $elm$core$Set$fromList(
+							D: $elm$core$Set$fromList(
 								A2($elm$core$List$map, $author$project$KanjiDictWorker$dataPath, ids))
 						}),
 					$elm$core$Platform$Cmd$batch(
@@ -6268,7 +6589,7 @@ var $author$project$KanjiDictWorker$update = F2(
 				var res = msg.b;
 				if (!res.$) {
 					var str = res.a;
-					var requested = A2($elm$core$Set$remove, path, model.U);
+					var requested = A2($elm$core$Set$remove, path, model.D);
 					var maxLineLength = A3(
 						$elm$core$List$foldr,
 						F2(
@@ -6278,18 +6599,18 @@ var $author$project$KanjiDictWorker$update = F2(
 									$elm$core$String$length(s),
 									acc);
 							}),
-						model.J,
+						model.K,
 						$elm$core$String$lines(str));
 					var filename = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', path);
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								J: maxLineLength,
-								T: _Utils_ap(
-									model.T,
+								K: maxLineLength,
+								U: _Utils_ap(
+									model.U,
 									A2($elm$core$String$cons, '\n', str)),
-								U: requested
+								D: requested
 							}),
 						$elm$core$Platform$Cmd$batch(
 							_List_fromArray(
@@ -6320,7 +6641,21 @@ var $author$project$KanjiDictWorker$update = F2(
 											})))
 								])));
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						model,
+						$author$project$KanjiDictWorker$outbound(
+							A2(
+								$miniBill$elm_codec$Codec$encoder,
+								$author$project$Common$workerMsgCodec,
+								A2(
+									$author$project$Common$LoadingStatusMsg,
+									2,
+									{
+										bW: 'Network Error: ' + path,
+										cb: $elm$core$Basics$round(
+											(100 * ($author$project$KanjiDictWorker$nbrFiles - $elm$core$Set$size(model.D))) / $author$project$KanjiDictWorker$nbrFiles),
+										ct: 1
+									}))));
 				}
 			case 3:
 				var value = msg.a;
@@ -6346,7 +6681,7 @@ var $author$project$KanjiDictWorker$update = F2(
 					if (!_v3.a.$) {
 						var filename = _v3.a.a.by;
 						var content = _v3.a.a.bt;
-						var requested = A2($elm$core$Set$remove, filename, model.U);
+						var requested = A2($elm$core$Set$remove, filename, model.D);
 						var maxLineLength = A3(
 							$elm$core$List$foldr,
 							F2(
@@ -6356,18 +6691,18 @@ var $author$project$KanjiDictWorker$update = F2(
 										$elm$core$String$length(s),
 										acc);
 								}),
-							model.J,
+							model.K,
 							$elm$core$String$lines(content));
 						var filename_ = A2($elm_community$string_extra$String$Extra$rightOfBack, '/', filename);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									J: maxLineLength,
-									T: _Utils_ap(
-										model.T,
+									K: maxLineLength,
+									U: _Utils_ap(
+										model.U,
 										A2($elm$core$String$cons, '\n', content)),
-									U: requested
+									D: requested
 								}),
 							$author$project$KanjiDictWorker$outbound(
 								A2(
@@ -6389,7 +6724,22 @@ var $author$project$KanjiDictWorker$update = F2(
 							$author$project$KanjiDictWorker$getData(path));
 					}
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					var e = _v3.a;
+					return _Utils_Tuple2(
+						model,
+						$author$project$KanjiDictWorker$outbound(
+							A2(
+								$miniBill$elm_codec$Codec$encoder,
+								$author$project$Common$workerMsgCodec,
+								A2(
+									$author$project$Common$LoadingStatusMsg,
+									2,
+									{
+										bW: 'IndexedDB Error: ' + $elm$json$Json$Decode$errorToString(e),
+										cb: $elm$core$Basics$round(
+											(100 * ($author$project$KanjiDictWorker$nbrFiles - $elm$core$Set$size(model.D))) / $author$project$KanjiDictWorker$nbrFiles),
+										ct: 1
+									}))));
 				}
 			case 4:
 				var s = msg.a;
@@ -6436,13 +6786,13 @@ var $author$project$KanjiDictWorker$update = F2(
 									$elm_community$list_extra$List$Extra$unique(
 										A2(
 											$elm$core$List$map,
-											getMatch(model.J),
+											getMatch(model.K),
 											A2(
 												$elm$core$List$map,
 												function (n) {
-													return A3($elm$core$String$slice, n - model.J, n + model.J, model.T);
+													return A3($elm$core$String$slice, n - model.K, n + model.K, model.U);
 												},
-												A2($elm$core$String$indexes, s_, model.T))))))));
+												A2($elm$core$String$indexes, s_, model.U))))))));
 				};
 				return _Utils_Tuple2(
 					model,
@@ -6471,8 +6821,25 @@ var $author$project$KanjiDictWorker$update = F2(
 													$elm$core$String$toList(s))))),
 									co: s
 								}))));
-			default:
+			case 5:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			default:
+				var s = msg.a;
+				return _Utils_Tuple2(
+					model,
+					$author$project$KanjiDictWorker$outbound(
+						A2(
+							$miniBill$elm_codec$Codec$encoder,
+							$author$project$Common$workerMsgCodec,
+							A2(
+								$author$project$Common$LoadingStatusMsg,
+								2,
+								{
+									bW: s,
+									cb: $elm$core$Basics$round(
+										(100 * ($author$project$KanjiDictWorker$nbrFiles - $elm$core$Set$size(model.D))) / $author$project$KanjiDictWorker$nbrFiles),
+									ct: 1
+								}))));
 		}
 	});
 var $elm$core$Platform$worker = _Platform_worker;

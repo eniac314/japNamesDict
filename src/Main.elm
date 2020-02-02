@@ -743,10 +743,10 @@ kanjiDictEntryView n e =
                         ]
                         [ wrappedRow
                             [ spacing 15 ]
-                            (List.map onYomiView e.kunYomi)
+                            (List.map onYomiView e.onYomi)
                         , wrappedRow
                             [ spacing 15 ]
-                            (List.map kunYomiView e.onYomi)
+                            (List.map kunYomiView e.kunYomi)
                         ]
                     ]
                 ]

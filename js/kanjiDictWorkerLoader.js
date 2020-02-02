@@ -24,6 +24,9 @@ app.ports.loadFromIndexedDb.subscribe(function(key) {
 
     request.onerror = function(event) {
         console.log("Unable to retrieve " + key + " from database!");
+        app.ports.loadedFromIndexedDb.send({
+            error: request.error
+        });
     };
 
     request.onsuccess = function(event) {
