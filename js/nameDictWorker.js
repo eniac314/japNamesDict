@@ -600,11 +600,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.bc.aq === region.bu.aq)
+	if (region.bd.aq === region.bv.aq)
 	{
-		return 'on line ' + region.bc.aq;
+		return 'on line ' + region.bd.aq;
 	}
-	return 'on lines ' + region.bc.aq + ' through ' + region.bu.aq;
+	return 'on lines ' + region.bd.aq + ' through ' + region.bv.aq;
 }
 
 
@@ -1894,9 +1894,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.dz,
-		impl.eB,
-		impl.eh,
+		impl.dA,
+		impl.eC,
+		impl.ei,
 		function() { return function() {} }
 	);
 });
@@ -2403,25 +2403,25 @@ var _Http_toTask = F3(function(router, toTask, request)
 	return _Scheduler_binding(function(callback)
 	{
 		function done(response) {
-			callback(toTask(request.dl.a(response)));
+			callback(toTask(request.dm.a(response)));
 		}
 
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
-		xhr.addEventListener('load', function() { done(_Http_toResponse(request.dl.b, xhr)); });
-		$elm$core$Maybe$isJust(request.cw) && _Http_track(router, xhr, request.cw.a);
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.dm.b, xhr)); });
+		$elm$core$Maybe$isJust(request.cx) && _Http_track(router, xhr, request.cx.a);
 
 		try {
-			xhr.open(request.dJ, request.eC, true);
+			xhr.open(request.dK, request.eD, true);
 		} catch (e) {
-			return done($elm$http$Http$BadUrl_(request.eC));
+			return done($elm$http$Http$BadUrl_(request.eD));
 		}
 
 		_Http_configureRequest(xhr, request);
 
-		request.c0.a && xhr.setRequestHeader('Content-Type', request.c0.a);
-		xhr.send(request.c0.b);
+		request.c1.a && xhr.setRequestHeader('Content-Type', request.c1.a);
+		xhr.send(request.c1.b);
 
 		return function() { xhr.c = true; xhr.abort(); };
 	});
@@ -2432,13 +2432,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.bD; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.bE; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.ew.a || 0;
-	xhr.responseType = request.dl.d;
-	xhr.withCredentials = request.cU;
+	xhr.timeout = request.ex.a || 0;
+	xhr.responseType = request.dm.d;
+	xhr.withCredentials = request.cV;
 }
 
 
@@ -2459,10 +2459,10 @@ function _Http_toResponse(toBody, xhr)
 function _Http_toMetadata(xhr)
 {
 	return {
-		eC: xhr.responseURL,
-		ea: xhr.status,
-		eb: xhr.statusText,
-		bD: _Http_parseHeaders(xhr.getAllResponseHeaders())
+		eD: xhr.responseURL,
+		eb: xhr.status,
+		ec: xhr.statusText,
+		bE: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
 
@@ -2557,15 +2557,15 @@ function _Http_track(router, xhr, tracker)
 	xhr.upload.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Sending({
-			d3: event.loaded,
-			cq: event.total
+			d4: event.loaded,
+			cr: event.total
 		}))));
 	});
 	xhr.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Receiving({
-			dX: event.loaded,
-			cq: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
+			dY: event.loaded,
+			cr: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
 		}))));
 	});
 }
@@ -2577,8 +2577,8 @@ var _Regex_never = /.^/;
 var _Regex_fromStringWith = F2(function(options, string)
 {
 	var flags = 'g';
-	if (options.dM) { flags += 'm'; }
-	if (options.c9) { flags += 'i'; }
+	if (options.dN) { flags += 'm'; }
+	if (options.da) { flags += 'i'; }
 
 	try
 	{
@@ -2879,6 +2879,7 @@ var $elm$core$Set$toList = function (_v0) {
 	return $elm$core$Dict$keys(dict);
 };
 var $elm$core$Basics$GT = 2;
+var $elm$core$Basics$False = 1;
 var $elm$core$Basics$apR = F2(
 	function (x, f) {
 		return f(x);
@@ -3170,7 +3171,6 @@ var $elm$core$Result$Ok = function (a) {
 var $elm$json$Json$Decode$OneOf = function (a) {
 	return {$: 2, a: a};
 };
-var $elm$core$Basics$False = 1;
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$json$Json$Encode$encode = _Json_encode;
@@ -3513,7 +3513,8 @@ var $author$project$NameDictWorker$init = function (flags) {
 			J: 0,
 			T: '',
 			U: $elm$core$Set$fromList(
-				A2($elm$core$List$map, $author$project$NameDictWorker$dataPath, ids))
+				A2($elm$core$List$map, $author$project$NameDictWorker$dataPath, ids)),
+			aN: false
 		},
 		$elm$core$Platform$Cmd$none);
 };
@@ -3564,7 +3565,7 @@ var $miniBill$elm_codec$Codec$buildCustom = function (_v0) {
 			},
 			A2($elm$json$Json$Decode$field, 'tag', $elm$json$Json$Decode$string)),
 		g: function (v) {
-			return am.dI(v);
+			return am.dJ(v);
 		}
 	};
 };
@@ -3574,7 +3575,7 @@ var $miniBill$elm_codec$Codec$custom = function (match) {
 		e: function (_v0) {
 			return $elm$core$Basics$identity;
 		},
-		dI: match
+		dJ: match
 	};
 };
 var $miniBill$elm_codec$Codec$build = F2(
@@ -3627,7 +3628,7 @@ var $miniBill$elm_codec$Codec$variant = F4(
 			});
 		return {
 			e: decoder_,
-			dI: am.dI(
+			dJ: am.dJ(
 				matchPiece(enc))
 		};
 	});
@@ -4291,7 +4292,7 @@ var $elm$http$Http$resolve = F2(
 			case 3:
 				var metadata = response.a;
 				return $elm$core$Result$Err(
-					$elm$http$Http$BadStatus(metadata.ea));
+					$elm$http$Http$BadStatus(metadata.eb));
 			default:
 				var body = response.b;
 				return A2(
@@ -4312,7 +4313,7 @@ var $elm$http$Http$Request = function (a) {
 };
 var $elm$http$Http$State = F2(
 	function (reqs, subs) {
-		return {ce: reqs, ct: subs};
+		return {cf: reqs, cu: subs};
 	});
 var $elm$core$Task$succeed = _Scheduler_succeed;
 var $elm$http$Http$init = $elm$core$Task$succeed(
@@ -4359,7 +4360,7 @@ var $elm$http$Http$updateReqs = F3(
 					return A2(
 						$elm$core$Task$andThen,
 						function (pid) {
-							var _v4 = req.cw;
+							var _v4 = req.cx;
 							if (_v4.$ === 1) {
 								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
@@ -4389,7 +4390,7 @@ var $elm$http$Http$onEffects = F4(
 				return $elm$core$Task$succeed(
 					A2($elm$http$Http$State, reqs, subs));
 			},
-			A3($elm$http$Http$updateReqs, router, cmds, state.ce));
+			A3($elm$http$Http$updateReqs, router, cmds, state.cf));
 	});
 var $elm$http$Http$maybeSend = F4(
 	function (router, desiredTracker, progress, _v0) {
@@ -4436,7 +4437,7 @@ var $elm$http$Http$onSelfMsg = F3(
 				A2(
 					$elm$core$List$filterMap,
 					A3($elm$http$Http$maybeSend, router, tracker, progress),
-					state.ct)));
+					state.cu)));
 	});
 var $elm$http$Http$Cancel = function (a) {
 	return {$: 0, a: a};
@@ -4450,14 +4451,14 @@ var $elm$http$Http$cmdMap = F2(
 			var r = cmd.a;
 			return $elm$http$Http$Request(
 				{
-					cU: r.cU,
-					c0: r.c0,
-					dl: A2(_Http_mapExpect, func, r.dl),
-					bD: r.bD,
-					dJ: r.dJ,
-					ew: r.ew,
-					cw: r.cw,
-					eC: r.eC
+					cV: r.cV,
+					c1: r.c1,
+					dm: A2(_Http_mapExpect, func, r.dm),
+					bE: r.bE,
+					dK: r.dK,
+					ex: r.ex,
+					cx: r.cx,
+					eD: r.eD
 				});
 		}
 	});
@@ -4480,18 +4481,18 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{cU: false, c0: r.c0, dl: r.dl, bD: r.bD, dJ: r.dJ, ew: r.ew, cw: r.cw, eC: r.eC}));
+			{cV: false, c1: r.c1, dm: r.dm, bE: r.bE, dK: r.dK, ex: r.ex, cx: r.cx, eD: r.eD}));
 };
 var $elm$http$Http$get = function (r) {
 	return $elm$http$Http$request(
-		{c0: $elm$http$Http$emptyBody, dl: r.dl, bD: _List_Nil, dJ: 'GET', ew: $elm$core$Maybe$Nothing, cw: $elm$core$Maybe$Nothing, eC: r.eC});
+		{c1: $elm$http$Http$emptyBody, dm: r.dm, bE: _List_Nil, dK: 'GET', ex: $elm$core$Maybe$Nothing, cx: $elm$core$Maybe$Nothing, eD: r.eD});
 };
 var $author$project$NameDictWorker$getData = function (path) {
 	return $elm$http$Http$get(
 		{
-			dl: $elm$http$Http$expectString(
+			dm: $elm$http$Http$expectString(
 				$author$project$NameDictWorker$GotRemoteData(path)),
-			eC: path
+			eD: path
 		});
 };
 var $elm$core$String$indexes = _String_indexes;
@@ -4501,7 +4502,7 @@ var $elm$core$String$left = F2(
 	});
 var $elm$regex$Regex$Match = F4(
 	function (match, index, number, submatches) {
-		return {dy: index, dI: match, dO: number, eg: submatches};
+		return {dz: index, dJ: match, dP: number, eh: submatches};
 	});
 var $elm$regex$Regex$findAtMost = _Regex_findAtMost;
 var $elm_community$string_extra$String$Extra$firstResultHelp = F2(
@@ -4533,7 +4534,7 @@ var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
 var $elm$regex$Regex$fromString = function (string) {
 	return A2(
 		$elm$regex$Regex$fromStringWith,
-		{c9: false, dM: false},
+		{da: false, dN: false},
 		string);
 };
 var $elm$regex$Regex$never = _Regex_never;
@@ -4555,7 +4556,7 @@ var $elm_community$string_extra$String$Extra$regexEscape = A2(
 	$elm$regex$Regex$replace,
 	$elm_community$string_extra$String$Extra$regexFromString('[-/\\^$*+?.()|[\\]{}]'),
 	function (_v0) {
-		var match = _v0.dI;
+		var match = _v0.dJ;
 		return '\\' + match;
 	});
 var $elm_community$string_extra$String$Extra$leftOf = F2(
@@ -4568,7 +4569,7 @@ var $elm_community$string_extra$String$Extra$leftOf = F2(
 				A2(
 					$elm$core$Basics$composeR,
 					function ($) {
-						return $.eg;
+						return $.eh;
 					},
 					$elm_community$string_extra$String$Extra$firstResult),
 				A3(
@@ -4594,7 +4595,7 @@ var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$NameDictWorker$outbound = _Platform_outgoingPort('outbound', $elm$core$Basics$identity);
 var $author$project$Common$NameDictEntry = F5(
 	function (key, reading, kind, meaning, abr) {
-		return {bi: abr, aj: key, bO: kind, bU: meaning, aK: reading};
+		return {bj: abr, aj: key, bP: kind, bV: meaning, aK: reading};
 	});
 var $elm$parser$Parser$Advanced$Bad = F2(
 	function (a, b) {
@@ -4634,7 +4635,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 					$elm$parser$Parser$Advanced$Good,
 					_Utils_cmp(s0.b, offset) < 0,
 					0,
-					{br: col, d: s0.d, f: s0.f, b: offset, ck: row, a: s0.a});
+					{bs: col, d: s0.d, f: s0.f, b: offset, cl: row, a: s0.a});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -4666,7 +4667,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.ck, s.br, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.cl, s.bs, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -4807,14 +4808,14 @@ var $elm$parser$Parser$Advanced$AddRight = F2(
 	});
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {br: col, df: contextStack, b7: problem, ck: row};
+		return {bs: col, dg: contextStack, b8: problem, cl: row};
 	});
 var $elm$parser$Parser$Advanced$fromState = F2(
 	function (s, x) {
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.ck, s.br, x, s.d));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.cl, s.bs, x, s.d));
 	});
 var $elm$core$String$isEmpty = function (string) {
 	return string === '';
@@ -4825,7 +4826,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(str);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.ck, s.br, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.cl, s.bs, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -4836,7 +4837,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{br: newCol, d: s.d, f: s.f, b: newOffset, ck: newRow, a: s.a});
+			{bs: newCol, d: s.d, f: s.f, b: newOffset, cl: newRow, a: s.a});
 	};
 };
 var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
@@ -5019,10 +5020,10 @@ var $author$project$NameDictWorker$entryParser = A2(
 	$author$project$NameDictWorker$abrParser);
 var $elm$parser$Parser$DeadEnd = F3(
 	function (row, col, problem) {
-		return {br: col, b7: problem, ck: row};
+		return {bs: col, b8: problem, cl: row};
 	});
 var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.ck, p.br, p.b7);
+	return A3($elm$parser$Parser$DeadEnd, p.cl, p.bs, p.b8);
 };
 var $elm$parser$Parser$Advanced$bagToList = F2(
 	function (bag, list) {
@@ -5054,7 +5055,7 @@ var $elm$parser$Parser$Advanced$run = F2(
 	function (_v0, src) {
 		var parse = _v0;
 		var _v1 = parse(
-			{br: 1, d: _List_Nil, f: 1, b: 0, ck: 1, a: src});
+			{bs: 1, d: _List_Nil, f: 1, b: 0, cl: 1, a: src});
 		if (!_v1.$) {
 			var value = _v1.b;
 			return $elm$core$Result$Ok(value);
@@ -5316,7 +5317,7 @@ var $miniBill$elm_codec$Codec$object = function (ctor) {
 };
 var $author$project$Common$SearchResultMeta = F2(
 	function (searchString, result) {
-		return {ci: result, cn: searchString};
+		return {cj: result, co: searchString};
 	});
 var $author$project$Common$DictResult = function (a) {
 	return {$: 1, a: a};
@@ -5386,7 +5387,7 @@ var $author$project$Common$dictEntryCodec = $miniBill$elm_codec$Codec$buildObjec
 				$miniBill$elm_codec$Codec$object($author$project$Common$DictEntry)))));
 var $author$project$Common$KanjiDictEntry = F6(
 	function (key, meta, onYomi, kunYomi, nanori, meanings) {
-		return {aj: key, bP: kunYomi, aI: meanings, bW: meta, bY: nanori, b$: onYomi};
+		return {aj: key, bQ: kunYomi, aI: meanings, bX: meta, bZ: nanori, b0: onYomi};
 	});
 var $author$project$Common$KanjiMeta = function (radical) {
 	return function (grade) {
@@ -5399,7 +5400,7 @@ var $author$project$Common$KanjiMeta = function (radical) {
 								return function (skip) {
 									return function (pinyin) {
 										return function (kanjiKentei) {
-											return {aT: classicNelson, aU: frequency, aV: grade, aX: halpern, a$: henshall, a0: kanjiKentei, a3: newNelson, a5: pinyin, a7: radical, bb: skip, be: strokes};
+											return {aU: classicNelson, aV: frequency, aW: grade, aY: halpern, a0: henshall, a1: kanjiKentei, a4: newNelson, a6: pinyin, a8: radical, bc: skip, bf: strokes};
 										};
 									};
 								};
@@ -5485,14 +5486,14 @@ var $author$project$Common$kanjiMetaCodec = $miniBill$elm_codec$Codec$buildObjec
 		$miniBill$elm_codec$Codec$field,
 		'kanjiKentei',
 		function ($) {
-			return $.a0;
+			return $.a1;
 		},
 		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'pinyin',
 			function ($) {
-				return $.a5;
+				return $.a6;
 			},
 			$miniBill$elm_codec$Codec$maybe(
 				A2($miniBill$elm_codec$Codec$tuple, $miniBill$elm_codec$Codec$string, $miniBill$elm_codec$Codec$int)),
@@ -5500,7 +5501,7 @@ var $author$project$Common$kanjiMetaCodec = $miniBill$elm_codec$Codec$buildObjec
 				$miniBill$elm_codec$Codec$field,
 				'skip',
 				function ($) {
-					return $.bb;
+					return $.bc;
 				},
 				$miniBill$elm_codec$Codec$maybe(
 					A3($miniBill$elm_codec$Codec$triple, $miniBill$elm_codec$Codec$int, $miniBill$elm_codec$Codec$int, $miniBill$elm_codec$Codec$int)),
@@ -5508,56 +5509,56 @@ var $author$project$Common$kanjiMetaCodec = $miniBill$elm_codec$Codec$buildObjec
 					$miniBill$elm_codec$Codec$field,
 					'henshall',
 					function ($) {
-						return $.a$;
+						return $.a0;
 					},
 					$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'halpern',
 						function ($) {
-							return $.aX;
+							return $.aY;
 						},
 						$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 						A4(
 							$miniBill$elm_codec$Codec$field,
 							'newNelson',
 							function ($) {
-								return $.a3;
+								return $.a4;
 							},
 							$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 							A4(
 								$miniBill$elm_codec$Codec$field,
 								'classicNelson',
 								function ($) {
-									return $.aT;
+									return $.aU;
 								},
 								$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 								A4(
 									$miniBill$elm_codec$Codec$field,
 									'frequency',
 									function ($) {
-										return $.aU;
+										return $.aV;
 									},
 									$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 									A4(
 										$miniBill$elm_codec$Codec$field,
 										'strokes',
 										function ($) {
-											return $.be;
+											return $.bf;
 										},
 										$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 										A4(
 											$miniBill$elm_codec$Codec$field,
 											'grade',
 											function ($) {
-												return $.aV;
+												return $.aW;
 											},
 											$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 											A4(
 												$miniBill$elm_codec$Codec$field,
 												'radical',
 												function ($) {
-													return $.a7;
+													return $.a8;
 												},
 												$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$int),
 												$miniBill$elm_codec$Codec$object($author$project$Common$KanjiMeta)))))))))))));
@@ -5573,28 +5574,28 @@ var $author$project$Common$kanjiDictEntryCodec = $miniBill$elm_codec$Codec$build
 			$miniBill$elm_codec$Codec$field,
 			'nanori',
 			function ($) {
-				return $.bY;
+				return $.bZ;
 			},
 			$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 			A4(
 				$miniBill$elm_codec$Codec$field,
 				'kunYomi',
 				function ($) {
-					return $.bP;
+					return $.bQ;
 				},
 				$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 				A4(
 					$miniBill$elm_codec$Codec$field,
 					'onYomi',
 					function ($) {
-						return $.b$;
+						return $.b0;
 					},
 					$miniBill$elm_codec$Codec$list($miniBill$elm_codec$Codec$string),
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'meta',
 						function ($) {
-							return $.bW;
+							return $.bX;
 						},
 						$author$project$Common$kanjiMetaCodec,
 						A4(
@@ -5704,21 +5705,21 @@ var $author$project$Common$nameDictEntryCodec = $miniBill$elm_codec$Codec$buildO
 		$miniBill$elm_codec$Codec$field,
 		'abr',
 		function ($) {
-			return $.bi;
+			return $.bj;
 		},
 		$miniBill$elm_codec$Codec$maybe($miniBill$elm_codec$Codec$string),
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'meaning',
 			function ($) {
-				return $.bU;
+				return $.bV;
 			},
 			$miniBill$elm_codec$Codec$string,
 			A4(
 				$miniBill$elm_codec$Codec$field,
 				'kind',
 				function ($) {
-					return $.bO;
+					return $.bP;
 				},
 				$miniBill$elm_codec$Codec$list($author$project$Common$nameKindCodec),
 				A4(
@@ -5772,14 +5773,14 @@ var $author$project$Common$searchResultMetaCodec = $miniBill$elm_codec$Codec$bui
 		$miniBill$elm_codec$Codec$field,
 		'result',
 		function ($) {
-			return $.ci;
+			return $.cj;
 		},
 		$author$project$Common$searchResultCodec,
 		A4(
 			$miniBill$elm_codec$Codec$field,
 			'searchString',
 			function ($) {
-				return $.cn;
+				return $.co;
 			},
 			$miniBill$elm_codec$Codec$string,
 			$miniBill$elm_codec$Codec$object($author$project$Common$SearchResultMeta))));
@@ -5885,27 +5886,27 @@ var $author$project$Common$workerMsgCodec = $miniBill$elm_codec$Codec$buildCusto
 					$miniBill$elm_codec$Codec$field,
 					'status',
 					function ($) {
-						return $.cs;
+						return $.ct;
 					},
 					$author$project$Common$statusCodec,
 					A4(
 						$miniBill$elm_codec$Codec$field,
 						'message',
 						function ($) {
-							return $.bV;
+							return $.bW;
 						},
 						$miniBill$elm_codec$Codec$string,
 						A4(
 							$miniBill$elm_codec$Codec$field,
 							'progress',
 							function ($) {
-								return $.ca;
+								return $.cb;
 							},
 							$miniBill$elm_codec$Codec$int,
 							$miniBill$elm_codec$Codec$object(
 								F3(
 									function (p, m, s) {
-										return {bV: m, ca: p, cs: s};
+										return {bW: m, cb: p, ct: s};
 									})))))),
 			$miniBill$elm_codec$Codec$custom(
 				F3(
@@ -5927,10 +5928,10 @@ var $author$project$NameDictWorker$update = F2(
 				var statusDecoder = A2($elm$json$Json$Decode$field, 'indexedDbReady', $elm$json$Json$Decode$bool);
 				var _v1 = A2($elm$json$Json$Decode$decodeValue, statusDecoder, value);
 				if ((!_v1.$) && _v1.a) {
-					return _Utils_Tuple2(
+					return model.aN ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{aG: 'indexedDb is ready'}),
+							{aG: 'indexedDb is ready', aN: true}),
 						$elm$core$Platform$Cmd$batch(
 							A2(
 								$elm$core$List$map,
@@ -6007,10 +6008,10 @@ var $author$project$NameDictWorker$update = F2(
 											$author$project$Common$LoadingStatusMsg,
 											0,
 											{
-												bV: 'Loaded ' + (filename + ' from network'),
-												ca: $elm$core$Basics$round(
+												bW: 'Loaded ' + (filename + ' from network'),
+												cb: $elm$core$Basics$round(
 													(100 * ($author$project$NameDictWorker$nbrFiles - $elm$core$Set$size(requested))) / $author$project$NameDictWorker$nbrFiles),
-												cs: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
+												ct: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
 											})))
 								])));
 				} else {
@@ -6028,7 +6029,7 @@ var $author$project$NameDictWorker$update = F2(
 							F2(
 								function (f, c) {
 									return $author$project$NameDictWorker$IndexedDbData(
-										{bs: c, bx: f});
+										{bt: c, by: f});
 								}),
 							A2($elm$json$Json$Decode$field, 'filename', $elm$json$Json$Decode$string),
 							A2($elm$json$Json$Decode$field, 'content', $elm$json$Json$Decode$string)),
@@ -6040,8 +6041,8 @@ var $author$project$NameDictWorker$update = F2(
 				var _v3 = A2($elm$json$Json$Decode$decodeValue, dataFromIndexedDbSecoder, value);
 				if (!_v3.$) {
 					if (!_v3.a.$) {
-						var filename = _v3.a.a.bx;
-						var content = _v3.a.a.bs;
+						var filename = _v3.a.a.by;
+						var content = _v3.a.a.bt;
 						var requested = A2($elm$core$Set$remove, filename, model.U);
 						var maxLineLength = A3(
 							$elm$core$List$foldr,
@@ -6073,10 +6074,10 @@ var $author$project$NameDictWorker$update = F2(
 										$author$project$Common$LoadingStatusMsg,
 										0,
 										{
-											bV: 'Loaded ' + (filename_ + ' from local backup'),
-											ca: $elm$core$Basics$round(
+											bW: 'Loaded ' + (filename_ + ' from local backup'),
+											cb: $elm$core$Basics$round(
 												(100 * ($author$project$NameDictWorker$nbrFiles - $elm$core$Set$size(requested))) / $author$project$NameDictWorker$nbrFiles),
-											cs: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
+											ct: _Utils_eq(requested, $elm$core$Set$empty) ? 2 : 1
 										}))));
 					} else {
 						var path = _v3.a.a;
@@ -6115,7 +6116,7 @@ var $author$project$NameDictWorker$update = F2(
 								$elm$core$List$member,
 								$elm$core$String$toLower(s),
 								$elm$core$String$words(
-									$elm$core$String$toLower(e.bU)));
+									$elm$core$String$toLower(e.bV)));
 						}) : $elm$core$List$filter(
 						function (e) {
 							return A2($elm$core$String$contains, s, e.aj);
@@ -6144,8 +6145,8 @@ var $author$project$NameDictWorker$update = F2(
 							$author$project$Common$workerMsgCodec,
 							$author$project$Common$SearchResultMsg(
 								{
-									ci: $author$project$Common$NameDictResult(searchResult),
-									cn: s
+									cj: $author$project$Common$NameDictResult(searchResult),
+									co: s
 								}))));
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -6153,6 +6154,6 @@ var $author$project$NameDictWorker$update = F2(
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$NameDictWorker$main = $elm$core$Platform$worker(
-	{dz: $author$project$NameDictWorker$init, eh: $author$project$NameDictWorker$subscriptions, eB: $author$project$NameDictWorker$update});
+	{dA: $author$project$NameDictWorker$init, ei: $author$project$NameDictWorker$subscriptions, eC: $author$project$NameDictWorker$update});
 _Platform_export({'NameDictWorker':{'init':$author$project$NameDictWorker$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

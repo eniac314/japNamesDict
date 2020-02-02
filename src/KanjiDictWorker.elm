@@ -35,6 +35,7 @@ type alias Model =
     , requested : Set String
     , maxLineLength : Int
     , indexedDbStatusStr : String
+    , startedLoading : Bool
     }
 
 
@@ -75,6 +76,7 @@ init flags =
       , requested = Set.fromList (List.map dataPath ids)
       , maxLineLength = 0
       , indexedDbStatusStr = "loading indexedDb..."
+      , startedLoading = False
       }
     , Cmd.none
     )
@@ -94,11 +96,18 @@ update msg model =
             in
             case D.decodeValue statusDecoder value of
                 Ok True ->
-                    ( { model | indexedDbStatusStr = "indexedDb is ready" }
-                    , Set.toList model.requested
-                        |> List.map loadFromIndexedDb
-                        |> Cmd.batch
-                    )
+                    if model.startedLoading then
+                        ( model, Cmd.none )
+
+                    else
+                        ( { model
+                            | indexedDbStatusStr = "indexedDb is ready"
+                            , startedLoading = True
+                          }
+                        , Set.toList model.requested
+                            |> List.map loadFromIndexedDb
+                            |> Cmd.batch
+                        )
 
                 _ ->
                     ( { model | indexedDbStatusStr = "indexedDb error" }, Cmd.none )
@@ -155,7 +164,7 @@ update msg model =
                     )
 
                 Err _ ->
-                    ( model, getData path )
+                    ( model, Cmd.none )
 
         GotDataFromIndexedDb value ->
             let

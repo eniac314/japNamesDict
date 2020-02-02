@@ -23,7 +23,7 @@ app.ports.loadFromIndexedDb.subscribe(function(key) {
         .get(key);
 
     request.onerror = function(event) {
-        console.log("Unable to retrieve data from database!");
+        console.log("Unable to retrieve " + key + " from database!");
     };
 
     request.onsuccess = function(event) {
@@ -31,6 +31,7 @@ app.ports.loadFromIndexedDb.subscribe(function(key) {
         if (request.result) {
             app.ports.loadedFromIndexedDb.send(request.result);
         } else {
+            console.log("No data for " + key);
             app.ports.loadedFromIndexedDb.send({
                 noData: key
             });
@@ -98,11 +99,11 @@ function addToDatabase(data) {
         });
 
     request.onsuccess = function(event) {
-        console.log('The data has been written successfully');
+        console.log(data.filename + ' has been written successfully');
     };
 
     request.onerror = function(event) {
-        console.log('The data has not been written successfully');
+        console.log(data.filename + ' has not been written successfully: ' + request.error);
     };
 }
 

@@ -98,11 +98,11 @@ function addToDatabase(data) {
         });
 
     request.onsuccess = function(event) {
-        console.log('The data has been written successfully');
+        console.log(data.filename + ' has been written successfully');
     };
 
     request.onerror = function(event) {
-        console.log('The data has not been written successfully');
+        console.log(data.filename + 'The data has not been written successfully: ' + request.error);
     };
 }
 
